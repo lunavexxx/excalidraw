@@ -1,0 +1,19 @@
+# Caddy 反向代理(服务器 test.yml 挂载)
+# 域名不写死:经环境变量注入(WEB_DOMAIN / API_DOMAIN,来自 deploy/.env,由 compose 传入)
+# 证书自动签发/续期,持久化在 caddy-data 卷;www 旧证书(conduit 时代)不迁移,自动重签
+
+{
+	# email <你的邮箱>
+}
+
+www.{$WEB_DOMAIN} {
+	redir https://{$WEB_DOMAIN}{uri} permanent
+}
+
+{$WEB_DOMAIN} {
+	reverse_proxy web:80
+}
+
+{$API_DOMAIN} {
+	reverse_proxy api:8080
+}

@@ -3,6 +3,10 @@
 .env.local
 .env.production.local
 .env.test.local
+deploy/.env
+deploy/local.yml
+deploy/test.yml
+memory/
 .envrc
 .eslintcache
 .history
