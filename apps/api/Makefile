@@ -15,7 +15,7 @@ vet:
 	go vet ./...
 
 migrate-up:
-	migrate -path migrations -database "$(DATABASE_URL)" up
+	migrate -path internal/migrate/migrations -database "$(DATABASE_URL)" up
 
 migrate-down:
-	migrate -path migrations -database "$(DATABASE_URL)" down 1
+	migrate -path internal/migrate/migrations -database "$(DATABASE_URL)" down 1

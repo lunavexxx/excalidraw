@@ -13,11 +13,15 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/lunavexxx/excalidraw/apps/api/internal/config"
+	"github.com/lunavexxx/excalidraw/apps/api/internal/migrate"
 	"github.com/lunavexxx/excalidraw/apps/api/internal/store"
 )
 
 func main() {
-	cfg := config.Load()
+	cfg, err := config.Load(os.Args[1:])
+	if err != nil {
+		log.Fatalf("load config: %v", err)
+	}
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
@@ -25,7 +29,9 @@ func main() {
 
 	var db *store.DB
 	if cfg.DatabaseURL != "" {
-		var err error
+		if err := migrate.Run(cfg.DatabaseURL); err != nil {
+			log.Fatalf("migrate: %v", err)
+		}
 		db, err = store.New(context.Background(), cfg.DatabaseURL)
 		if err != nil {
 			log.Fatalf("connect database: %v", err)
