@@ -14,8 +14,8 @@ excalidraw/
 │   ├── web/      # 前端:yarn workspace monorepo(原 excalidraw 根项目 + excalidraw-app 合并)
 │   │             #   packages/ — @excalidraw/* 核心包
 │   │             #   src/      — 应用代码
-│   └── api/      # 后端:Go(Gin + pgx + golang-migrate)
-├── dev-docs/     # 独立的 Docusaurus 文档站
+│   ├── api/      # 后端:Go(Gin + pgx + golang-migrate)
+│   └── dev-docs/ # 独立的 Docusaurus 文档站(上游编辑器文档)
 └── plans/        # 改造计划文档
 ```
 

@@ -9,7 +9,7 @@ This repo is a multi-project container — **the root is not a yarn/Go project**
   - **`apps/web/packages/`** — Core packages published to npm as `@excalidraw/*` (excalidraw, element, math, utils, common, …)
   - **`apps/web/examples/`** — Integration examples (NextJS, browser script)
 - **`apps/api/`** — Backend: Go (Gin + pgx + golang-migrate)
-- **`dev-docs/`** — Standalone Docusaurus docs site
+- **`apps/dev-docs/`** — Standalone Docusaurus docs site (upstream editor docs)
 - **`plans/`** — Product roadmap / planning docs (Chinese)
 
 ## Development Workflow
