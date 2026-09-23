@@ -1,0 +1,2 @@
+-- Placeholder migration. The initial schema (users, documents, ...)
+-- lands with M1 (accounts & online saving); see plans/collab-platform.md.
