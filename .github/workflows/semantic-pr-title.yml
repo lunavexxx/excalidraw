@@ -33,8 +33,10 @@ jobs:
           scopes: |
             app
             editor
-            packages/excalidraw
-            packages/utils
+            apps/web/packages/excalidraw
+            apps/web/packages/utils
+            web
+            api
             docker
             repo
           ignoreLabels: |
@@ -73,7 +75,7 @@ jobs:
               labels.add("s-app");
             } else if (scope === "editor") {
               labels.add("s-editor");
-            } else if (scope.startsWith("packages/")) {
+            } else if (scope.startsWith("apps/web/packages/")) {
               labels.add("s-package");
             }
           }

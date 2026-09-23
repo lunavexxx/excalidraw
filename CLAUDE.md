@@ -2,33 +2,37 @@
 
 ## Project Structure
 
-Excalidraw is a **monorepo** with a clear separation between the core library and the application:
+This repo is a multi-project container — **the root is not a yarn/Go project**. Each app is self-contained:
 
-- **`packages/excalidraw/`** - Main React component library published to npm as `@excalidraw/excalidraw`
-- **`excalidraw-app/`** - Full-featured web application (excalidraw.com) that uses the library
-- **`packages/`** - Core packages: `@excalidraw/common`, `@excalidraw/element`, `@excalidraw/math`, `@excalidraw/utils`
-- **`examples/`** - Integration examples (NextJS, browser script)
+- **`apps/web/`** — Frontend: self-contained yarn workspace monorepo
+  - **`apps/web/src/`** — Web application (formerly `excalidraw-app/`)
+  - **`apps/web/packages/`** — Core packages published to npm as `@excalidraw/*` (excalidraw, element, math, utils, common, …)
+  - **`apps/web/examples/`** — Integration examples (NextJS, browser script)
+- **`apps/api/`** — Backend: Go (Gin + pgx + golang-migrate)
+- **`dev-docs/`** — Standalone Docusaurus docs site
+- **`plans/`** — Product roadmap / planning docs (Chinese)
 
 ## Development Workflow
 
-1. **Package Development**: Work in `packages/*` for editor features
-2. **App Development**: Work in `excalidraw-app/` for app-specific features
-3. **Testing**: Always run `yarn test:update` before committing
-4. **Type Safety**: Use `yarn test:typecheck` to verify TypeScript
-
-## Development Commands
+All yarn commands run inside `apps/web` (there is no root package.json):
 
 ```bash
+cd apps/web
 yarn test:typecheck  # TypeScript type checking
 yarn test:update     # Run all tests (with snapshot updates)
 yarn fix             # Auto-fix formatting and linting issues
 ```
 
+For the Go API:
+
+```bash
+cd apps/api
+go build ./...
+go test ./...
+```
+
 ## Architecture Notes
 
-### Package System
-
-- Uses Yarn workspaces for monorepo management
-- Internal packages use path aliases (see `vitest.config.mts`)
-- Build system uses esbuild for packages, Vite for the app
-- TypeScript throughout with strict configuration
+- `apps/web` uses Yarn 1 workspaces; internal packages resolve via the `@excalidraw/*` aliases (see `apps/web/vitest.config.mts` and `apps/web/tsconfig.json`)
+- Build system: esbuild for packages, Vite for the app
+- This is an independent product fork — upstream (excalidraw/excalidraw) is not merged routinely; security fixes are cherry-picked as needed

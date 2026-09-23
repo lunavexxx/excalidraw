@@ -7,10 +7,10 @@ import { VitePWA } from "vite-plugin-pwa";
 import checker from "vite-plugin-checker";
 import { createHtmlPlugin } from "vite-plugin-html";
 import Sitemap from "vite-plugin-sitemap";
-import { woff2BrowserPlugin } from "../scripts/woff2/woff2-vite-plugins";
+import { woff2BrowserPlugin } from "./scripts/woff2/woff2-vite-plugins";
 export default defineConfig(({ mode }) => {
   // To load .env variables
-  const envVars = loadEnv(mode, `../`);
+  const envVars = loadEnv(mode, `.`);
   // https://vitejs.dev/config/
   return {
     server: {
@@ -18,75 +18,72 @@ export default defineConfig(({ mode }) => {
       // open the browser
       open: true,
     },
-    // We need to specify the envDir since now there are no
-    //more located in parallel with the vite.config.ts file but in parent dir
-    envDir: "../",
     resolve: {
       alias: [
         {
           find: /^@excalidraw\/common$/,
           replacement: path.resolve(
             __dirname,
-            "../packages/common/src/index.ts",
+            "./packages/common/src/index.ts",
           ),
         },
         {
           find: /^@excalidraw\/common\/(.*?)/,
-          replacement: path.resolve(__dirname, "../packages/common/src/$1"),
+          replacement: path.resolve(__dirname, "./packages/common/src/$1"),
         },
         {
           find: /^@excalidraw\/element$/,
           replacement: path.resolve(
             __dirname,
-            "../packages/element/src/index.ts",
+            "./packages/element/src/index.ts",
           ),
         },
         {
           find: /^@excalidraw\/element\/(.*?)/,
-          replacement: path.resolve(__dirname, "../packages/element/src/$1"),
+          replacement: path.resolve(__dirname, "./packages/element/src/$1"),
         },
         {
           find: /^@excalidraw\/excalidraw$/,
           replacement: path.resolve(
             __dirname,
-            "../packages/excalidraw/index.tsx",
+            "./packages/excalidraw/index.tsx",
           ),
         },
         {
           find: /^@excalidraw\/excalidraw\/(.*?)/,
-          replacement: path.resolve(__dirname, "../packages/excalidraw/$1"),
+          replacement: path.resolve(__dirname, "./packages/excalidraw/$1"),
         },
         {
           find: /^@excalidraw\/math$/,
-          replacement: path.resolve(__dirname, "../packages/math/src/index.ts"),
+          replacement: path.resolve(__dirname, "./packages/math/src/index.ts"),
         },
         {
           find: /^@excalidraw\/math\/(.*?)/,
-          replacement: path.resolve(__dirname, "../packages/math/src/$1"),
+          replacement: path.resolve(__dirname, "./packages/math/src/$1"),
         },
         {
           find: /^@excalidraw\/utils$/,
           replacement: path.resolve(
             __dirname,
-            "../packages/utils/src/index.ts",
+            "./packages/utils/src/index.ts",
           ),
         },
         {
           find: /^@excalidraw\/utils\/(.*?)/,
-          replacement: path.resolve(__dirname, "../packages/utils/src/$1"),
+          replacement: path.resolve(__dirname, "./packages/utils/src/$1"),
         },
         {
           find: /^@excalidraw\/fractional-indexing$/,
           replacement: path.resolve(
             __dirname,
-            "../packages/fractional-indexing/src/index.ts",
+            "./packages/fractional-indexing/src/index.ts",
           ),
         },
         {
           find: /^@excalidraw\/laser-pointer$/,
           replacement: path.resolve(
             __dirname,
-            "../packages/laser-pointer/src/index.ts",
+            "./packages/laser-pointer/src/index.ts",
           ),
         },
       ],
@@ -146,7 +143,7 @@ export default defineConfig(({ mode }) => {
         eslint:
           envVars.VITE_APP_ENABLE_ESLINT === "false"
             ? undefined
-            : { lintCommand: 'eslint "./**/*.{js,ts,tsx}"' },
+            : { lintCommand: 'eslint "./src/**/*.{js,ts,tsx}"' },
         overlay: {
           initialIsOpen: envVars.VITE_APP_COLLAPSE_OVERLAY === "false",
           badgeStyle: "margin-bottom: 4rem; margin-left: 1rem",
@@ -320,6 +317,5 @@ export default defineConfig(({ mode }) => {
         minify: true,
       }),
     ],
-    publicDir: "../public",
   };
 });

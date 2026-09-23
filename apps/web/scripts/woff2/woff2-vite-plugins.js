@@ -63,7 +63,7 @@ module.exports.woff2BrowserPlugin = () => {
       }`;
       }
 
-      if (!isDev && id.endsWith("excalidraw-app/index.html")) {
+      if (!isDev && id.endsWith("apps/web/index.html")) {
         return code.replace(
           "<!-- PLACEHOLDER:EXCALIDRAW_APP_FONTS -->",
           `<script>

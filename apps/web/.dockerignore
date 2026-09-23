@@ -4,12 +4,14 @@
 !.eslintrc.json
 !.npmrc
 !.prettierrc
-!excalidraw-app/
+!index.html
 !package.json
 !public/
 !packages/
 !scripts/
+!src/
 !tsconfig.json
+!vite.config.mts
 !yarn.lock
 
 # keep (sub)sub directories at the end to exclude from explicit included

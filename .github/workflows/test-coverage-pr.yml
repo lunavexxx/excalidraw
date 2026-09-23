@@ -8,6 +8,9 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    defaults:
+      run:
+        working-directory: apps/web
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -24,3 +27,5 @@ jobs:
         uses: davelosert/vitest-coverage-report-action@2500dafcee7dd64f85ab689c0b83798a8359770e # v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          json-summary-path: apps/web/coverage/coverage-summary.json
+          json-final-path: apps/web/coverage/coverage-final.json

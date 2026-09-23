@@ -8,6 +8,9 @@ on:
 jobs:
   locales:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -22,6 +25,7 @@ jobs:
       - name: Create report file
         run: |
           yarn locales-coverage
+          # git pathspecs are cwd-relative (apps/web)
           FILE_CHANGED=$(git diff packages/excalidraw/locales/percentages.json)
           if [ ! -z "${FILE_CHANGED}" ]; then
             git config --global user.name 'Excalidraw Bot'
