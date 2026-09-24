@@ -1,5 +1,8 @@
 FROM golang:1.26-alpine AS build
 
+# 国内服务器直连 proxy.golang.org 不可达,统一走 goproxy.cn
+ENV GOPROXY=https://goproxy.cn,direct
+
 WORKDIR /src
 
 COPY go.mod go.sum ./
