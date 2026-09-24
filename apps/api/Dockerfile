@@ -11,8 +11,11 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /api ./cmd/api
 
-FROM gcr.io/distroless/static-debian12
+# gcr.io 国内不可达,运行层用 alpine(docker.io,可走镜像加速);
+# CA 证书从构建阶段复制,运行阶段无需 apk 联网
+FROM alpine:3
 
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build /api /api
 
 EXPOSE 8080
