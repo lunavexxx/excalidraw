@@ -9,12 +9,19 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import Sitemap from "vite-plugin-sitemap";
 import { woff2BrowserPlugin } from "./scripts/woff2/woff2-vite-plugins";
 export default defineConfig(({ mode }) => {
+  // Keep the app root tied to this config file. This matters when Vite is
+  // started from the monorepo root (for example with --config apps/web/...):
+  // otherwise public/ would be resolved from the caller's current directory.
+  const appRoot = __dirname;
+
   // To load .env variables
-  const envVars = loadEnv(mode, `.`);
+  const envVars = loadEnv(mode, appRoot);
   // https://vitejs.dev/config/
   return {
+    root: appRoot,
     server: {
       port: Number(envVars.VITE_APP_PORT || 3000),
+      strictPort: true,
       // open the browser
       open: true,
     },
@@ -139,7 +146,10 @@ export default defineConfig(({ mode }) => {
       woff2BrowserPlugin(),
       react(),
       checker({
-        typescript: true,
+        typescript: {
+          tsconfigPath: "tsconfig.json",
+          root: appRoot,
+        },
         eslint:
           envVars.VITE_APP_ENABLE_ESLINT === "false"
             ? undefined
