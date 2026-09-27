@@ -760,5 +760,14 @@
     "spacebar": "Space",
     "delete": "Delete",
     "mmb": "Scroll wheel"
+  },
+  "presentationPanel": {
+    "focusHint": "Click to zoom to this frame",
+    "empty": "Start your first presentation with the Frame tool",
+    "start": "Start presentation",
+    "exit": "Exit presentation",
+    "prevSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "slideCounter": "{{current}} / {{total}}"
   }
 }

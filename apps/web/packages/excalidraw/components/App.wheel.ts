@@ -26,6 +26,13 @@ export class AppWheel {
    * are DOM, but sit inside the container this listener is attached to */
   private isOverEditorSurface = (event: WheelEvent) => {
     const { ownerWindow } = this.app;
+    if (
+      event.target instanceof ownerWindow.HTMLElement &&
+      event.target.closest(`.${CLASSES.SIDEBAR}`)
+    ) {
+      return false;
+    }
+
     return (
       event.target instanceof ownerWindow.HTMLCanvasElement ||
       event.target instanceof ownerWindow.HTMLTextAreaElement ||

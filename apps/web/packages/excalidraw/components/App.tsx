@@ -27,6 +27,7 @@ import {
   KEYS,
   APP_NAME,
   CURSOR_TYPE,
+  DEFAULT_FRAME_ASPECT_RATIO,
   DEFAULT_STROKE_STREAMLINE,
   DEFAULT_STROKE_STREAMLINE_PRECISE,
   DEFAULT_TRANSFORM_HANDLE_SPACING,
@@ -13367,8 +13368,13 @@ class App extends React.Component<AppProps, AppState> {
     const image =
       isInitializedImageElement(newElement) &&
       this.imageCache.get(newElement.fileId)?.image;
-    const aspectRatio =
+    const imageAspectRatio =
       image && !(image instanceof Promise) ? image.width / image.height : null;
+    // frames double as presentation slides: Shift constrains to 16:9
+    const frameAspectRatio =
+      this.state.activeTool.type === TOOL_TYPE.frame
+        ? DEFAULT_FRAME_ASPECT_RATIO
+        : null;
 
     this.maybeCacheReferenceSnapPoints(event, [newElement]);
 
@@ -13410,6 +13416,7 @@ class App extends React.Component<AppProps, AppState> {
         height: distance(pointerDownState.originInGrid.y, gridY),
         // images and sticky notes are proportional by default — Shift frees
         // them; every other shape is free by default and Shift constrains it
+        // (for frames the Shift constraint is the 16:9 slide ratio)
         shouldMaintainAspectRatio:
           isImageElement(newElement) || isStickyNoteElement(newElement)
             ? !shouldMaintainAspectRatio(event)
@@ -13417,7 +13424,7 @@ class App extends React.Component<AppProps, AppState> {
         shouldResizeFromCenter: shouldResizeFromCenter(event),
         zoom: this.state.zoom.value,
         scene: this.scene,
-        widthAspectRatio: aspectRatio,
+        widthAspectRatio: imageAspectRatio ?? frameAspectRatio,
         originOffset: this.state.originSnapOffset,
         informMutation,
       });

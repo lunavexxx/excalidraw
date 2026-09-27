@@ -334,7 +334,13 @@ export const dragNewElement = ({
 }) => {
   if (shouldMaintainAspectRatio && newElement.type !== "selection") {
     if (widthAspectRatio) {
-      height = width / widthAspectRatio;
+      // size follows the dominant drag axis — a mostly-vertical drag would
+      // otherwise collapse to a sliver (width is near zero)
+      if (Math.abs(y - originY) > Math.abs(x - originX)) {
+        width = height * widthAspectRatio;
+      } else {
+        height = width / widthAspectRatio;
+      }
     } else {
       // Depending on where the cursor is at (x, y) relative to where the starting point is
       // (originX, originY), we use ONLY width or height to control size increase.

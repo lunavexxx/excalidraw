@@ -752,5 +752,14 @@
     "spacebar": "空格",
     "delete": "Delete",
     "mmb": "鼠标滚轮"
+  },
+  "presentationPanel": {
+    "focusHint": "点击定位到该画框",
+    "empty": "用画框工具开始你的第一个演示文稿",
+    "start": "开始演示",
+    "exit": "退出演示",
+    "prevSlide": "上一页",
+    "nextSlide": "下一页",
+    "slideCounter": "{{current}} / {{total}}"
   }
 }

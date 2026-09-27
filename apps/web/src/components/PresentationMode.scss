@@ -1,0 +1,57 @@
+.excalidraw {
+  .presentation-mode {
+    position: absolute;
+    inset: 0;
+    z-index: calc(var(--zIndex-layerUI) + 1);
+    display: none;
+
+    // control bar footprint: ~56px bar + 16px bottom margin must fit within
+    // SLIDE_BOTTOM_OFFSET in PresentationMode.tsx
+    &__controls {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.75rem;
+      background-color: var(--island-bg-color);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-island);
+    }
+
+    &__counter {
+      min-width: 3.5rem;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary-color);
+      font-variant-numeric: tabular-nums;
+    }
+
+    &__controls-divider {
+      width: 1px;
+      height: 1.25rem;
+      margin: 0 0.25rem;
+      background-color: var(--color-border-outline-variant);
+    }
+  }
+
+  &.excalidraw--presenting {
+    // hide all editing chrome — desktop wrapper + phone MobileMenu surfaces
+    // (rendered outside the wrapper). the presentation overlay renders as a
+    // sibling of the wrapper, so it is unaffected
+    .layer-ui__wrapper,
+    .App-bottom-bar,
+    .App-toolbar,
+    .excalidraw-ui-top-left,
+    .excalidraw-ui-top-right {
+      display: none;
+    }
+
+    .presentation-mode {
+      display: block;
+    }
+  }
+}

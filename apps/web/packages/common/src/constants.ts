@@ -212,6 +212,9 @@ export const FRAME_STYLE = {
   nameLineHeight: 1.25,
 };
 
+// frames double as presentation slides — Shift constrains drags to 16:9
+export const DEFAULT_FRAME_ASPECT_RATIO = 16 / 9;
+
 export const MIN_FONT_SIZE = 1;
 export const DEFAULT_FONT_SIZE = 20;
 export const STICKY_NOTE_MIN_FONT_SIZE = 16;
