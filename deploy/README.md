@@ -17,8 +17,10 @@
 服务器 <服务器IP>(test.yml)
 ┌────────────────────────────────────────────┐
 │ Caddy 80/443(自动 HTTPS)                  │
-│  ├ <域名> / www.<域名> → web               │
-│  └ api.<域名>        → api                 │
+│  ├ <域名> / www.<域名>                     │
+│  │   ├ /api/*  → api(同源转发,无 CORS)   │
+│  │   └ 其余    → web                       │
+│  └ api.<域名>        → api(运维直连)      │
 │ web(nginx 静态)                           │
 │ api(Gin)← 配置来自 Nacos(namespace server)│
 │ nacos(standalone + 鉴权;8848/9848)        │
@@ -122,11 +124,16 @@ docker compose -f test.yml up -d --build
 1. **改 Nacos 管理员密码**:浏览器开 `http://<服务器IP>:8848/nacos`(安全组已限 IP),默认 `nacos/nacos`,改掉后回填 `.env` 的 `NACOS_USERNAME/NACOS_PASSWORD`
 2. **初始化配置**:
    ```bash
-   NACOS_ADDR=<服务器IP>:8848 SERVER_IP=<服务器IP> \
+   NACOS_ADDR=<服务器IP>:8848 SERVER_IP=<服务器IP> WEB_DOMAIN=<域名> \
    NACOS_USERNAME=xxx NACOS_PASSWORD=xxx \
-   PG_PASSWORD=<与 .env 相同> ./init-nacos.sh
+   PG_PASSWORD=<与 .env 相同> \
+   JWT_SECRET=$(openssl rand -base64 32) \
+   PHONE_CRYPTO_KEY=$(openssl rand -base64 32) \
+   ./init-nacos.sh
    docker compose -f test.yml restart api
    ```
+   > 密钥生成后同步回填 `.env` 存档(Nacos 控制台看不到 base64 原文时以 .env 为准);
+   > 重跑 init-nacos.sh 会整体覆盖配置,自定义键值先备份。
 3. **验证**:
    ```bash
    curl https://api.<域名>/healthz    # 200
@@ -168,10 +175,13 @@ curl http://localhost:8080/readyz     # 200 = 连通服务器 Nacos(local namesp
 | 项 | 存放 | 说明 |
 |---|---|---|
 | `database_url`(含 PG 密码) | Nacos | 应用配置唯一来源 |
+| `jwt_secret` | Nacos | api access token 签名(`.env` 的 `JWT_SECRET` 发布进去) |
+| `phone_crypto_key` | Nacos | 手机号加解密/HMAC 主密钥,**一经使用不可更换** |
 | `PG_PASSWORD` | `.env`(gitignore) | pg 容器启动;与 Nacos 保持一致 |
 | `SERVER_IP` / `WEB_DOMAIN` / `API_DOMAIN` | `.env` | 部署位置与域名,不进 git |
 | `NACOS_AUTH_*` | `.env` | nacos 容器自身鉴权 |
 | `NACOS_USERNAME/PASSWORD` | `.env` | api SDK + init 脚本登录 |
+| `JWT_SECRET` / `PHONE_CRYPTO_KEY` | `.env` | 应用密钥存档(经 init-nacos.sh 发布进 Nacos) |
 
 ## 故障排查
 
@@ -182,6 +192,6 @@ curl http://localhost:8080/readyz     # 200 = 连通服务器 Nacos(local namesp
 
 ## 已知边界(按计划推进)
 
-- web 前端仍指向 excalidraw.com 官方后端,M1 切自建 API;web 为静态构建不经 Nacos
+- 账号体系已自建(`/api/v1/auth/*`,手机号+密码,web 经 Caddy 同源访问);在线保存/文档 API/图片上传随 M1 余项落地,此前 web 前端的历史云功能仍指向上游后端
 - MinIO / room / admin / 备份脚本分别随 M1 / M3 / M7 落地
 - api 自动迁移以单副本为前提,compose 不要 `--scale api`

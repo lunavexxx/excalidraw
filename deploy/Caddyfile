@@ -11,7 +11,14 @@ www.{$WEB_DOMAIN} {
 }
 
 {$WEB_DOMAIN} {
-	reverse_proxy web:80
+	# api 与 web 同站:前端请求相对路径 /api/v1/*,由这里转发到 Go api,
+	# 生产全程同源(无 CORS,refresh cookie 为一方 cookie)。
+	handle /api/* {
+		reverse_proxy api:8080
+	}
+	handle {
+		reverse_proxy web:80
+	}
 }
 
 {$API_DOMAIN} {

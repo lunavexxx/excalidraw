@@ -3,16 +3,21 @@
 # 幂等,可重复执行(重新发布 = 覆盖)。
 #
 # 用法(在能访问 Nacos 的机器上执行,通常直接在服务器上):
-#   NACOS_ADDR=<服务器IP>:8848 SERVER_IP=<服务器IP> \
+#   NACOS_ADDR=<服务器IP>:8848 SERVER_IP=<服务器IP> WEB_DOMAIN=<正式域名> \
 #   NACOS_USERNAME=xxx NACOS_PASSWORD=xxx \
-#   PG_PASSWORD=xxx ./init-nacos.sh
+#   PG_PASSWORD=xxx JWT_SECRET=xxx PHONE_CRYPTO_KEY=xxx ./init-nacos.sh
+# 密钥生成: openssl rand -base64 32
+# 注意:重新执行会整体覆盖两份配置,保留自定义键值时先在控制台备份。
 set -euo pipefail
 
 : "${NACOS_ADDR:?need NACOS_ADDR, e.g. <server-ip>:8848}"
 : "${SERVER_IP:?need SERVER_IP}"
+: "${WEB_DOMAIN:?need WEB_DOMAIN}"
 : "${NACOS_USERNAME:?need NACOS_USERNAME}"
 : "${NACOS_PASSWORD:?need NACOS_PASSWORD}"
 : "${PG_PASSWORD:?need PG_PASSWORD}"
+: "${JWT_SECRET:?need JWT_SECRET (openssl rand -base64 32)}"
+: "${PHONE_CRYPTO_KEY:?need PHONE_CRYPTO_KEY (openssl rand -base64 32)}"
 
 DATA_ID="excalidraw-api.yaml"
 GROUP="DEFAULT_GROUP"
@@ -47,7 +52,9 @@ done
 publish() {
   ns=$1
   db_url=$2
-  content=$(printf 'port: "8080"\ndatabase_url: "%s"\n' "$db_url")
+  cors=$3
+  content=$(printf 'port: "8080"\ndatabase_url: "%s"\njwt_secret: "%s"\nphone_crypto_key: "%s"\ncors_origins: "%s"\n' \
+    "$db_url" "$JWT_SECRET" "$PHONE_CRYPTO_KEY" "$cors")
   echo "==> publish ${DATA_ID} -> namespace ${ns}"
   ok=$(curl -fsS -X POST "http://${NACOS_ADDR}/nacos/v1/cs/configs" \
     --data-urlencode "accessToken=${TOKEN}" \
@@ -58,7 +65,9 @@ publish() {
   [ "$ok" = "true" ] || { echo "publish to ${ns} failed: ${ok}"; exit 1; }
 }
 
-publish server "$SERVER_DB_URL"
-publish local "$LOCAL_DB_URL"
+# server:web 与 api 同站(经 Caddy /api 同源转发),CORS 仅作为兜底
+publish server "$SERVER_DB_URL" "https://${WEB_DOMAIN}"
+# local:local.yml 的 web(3000) → api(8080) 跨端口,需要 CORS
+publish local "$LOCAL_DB_URL" "http://localhost:3000"
 
 echo "==> done. 重启 api 生效: docker compose -f test.yml restart api"
