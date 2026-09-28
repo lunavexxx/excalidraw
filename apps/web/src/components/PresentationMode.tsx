@@ -36,9 +36,11 @@ const SLIDE_NAV_DURATION = 400;
 // keep in sync with the control-bar footprint in PresentationMode.scss
 const SLIDE_BOTTOM_OFFSET = 88;
 
-const doubleRaf = () =>
+const doubleRaf = (ownerWindow: Window & typeof globalThis) =>
   new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+    ownerWindow.requestAnimationFrame(() =>
+      ownerWindow.requestAnimationFrame(() => resolve()),
+    ),
   );
 
 type PresentationFrame = NonDeleted<ExcalidrawFrameLikeElement>;
@@ -105,14 +107,19 @@ export const PresentationMode = () => {
     const saved = savedRef.current;
     savedRef.current = null;
     isActiveRef.current = false;
+    const ownerDocument = rootRef.current?.ownerDocument;
+    if (!ownerDocument) {
+      setPresentationMode(false);
+      return;
+    }
 
     rootRef.current
       ?.closest(".excalidraw")
       ?.classList.remove("excalidraw--presenting");
 
     try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
+      if (ownerDocument.fullscreenElement) {
+        await ownerDocument.exitFullscreen();
       }
     } catch {
       // restore regardless
@@ -149,6 +156,11 @@ export const PresentationMode = () => {
     }
     const container = rootRef.current?.closest(".excalidraw");
     const appState = excalidrawAPI.getAppState();
+    const ownerDocument = rootRef.current?.ownerDocument;
+    const ownerWindow = ownerDocument?.defaultView;
+    if (!ownerDocument || !ownerWindow) {
+      return;
+    }
     // getAppState() values are mutated in place — copy
     savedRef.current = {
       scrollX: appState.scrollX,
@@ -172,11 +184,11 @@ export const PresentationMode = () => {
 
     const start = async () => {
       try {
-        if (container && !document.fullscreenElement) {
+        if (container && !ownerDocument.fullscreenElement) {
           await container.requestFullscreen();
         }
         // let the fullscreen resize propagate before viewport math
-        await doubleRaf();
+        await doubleRaf(ownerWindow);
       } catch {
         // fullscreen unavailable (e.g. iframe without allowfullscreen) —
         // present windowed
@@ -215,7 +227,7 @@ export const PresentationMode = () => {
         case KEYS.ESCAPE:
           // in fullscreen the browser exits fullscreen itself (and may not
           // even deliver the keydown) — the fullscreenchange handler exits
-          if (!document.fullscreenElement) {
+          if (!rootRef.current?.ownerDocument.fullscreenElement) {
             event.preventDefault();
             event.stopPropagation();
             void exitRef.current();
@@ -224,26 +236,34 @@ export const PresentationMode = () => {
       }
     };
     // capture on window beats the editor's document-level bubble listener
-    window.addEventListener("keydown", onKeyDown, { capture: true });
+    const ownerWindow = rootRef.current?.ownerDocument.defaultView;
+    if (!ownerWindow) {
+      return;
+    }
+    ownerWindow.addEventListener("keydown", onKeyDown, { capture: true });
     return () => {
-      window.removeEventListener("keydown", onKeyDown, { capture: true });
+      ownerWindow.removeEventListener("keydown", onKeyDown, { capture: true });
     };
-  }, [isActive, goToIndex]);
+  }, [isActive, goToIndex, excalidrawAPI]);
 
   React.useEffect(() => {
     if (!isActive) {
       return;
     }
+    const ownerDocument = rootRef.current?.ownerDocument;
+    if (!ownerDocument) {
+      return;
+    }
     const onFullscreenChange = () => {
-      if (!document.fullscreenElement && isActiveRef.current) {
+      if (!ownerDocument.fullscreenElement && isActiveRef.current) {
         void exitRef.current();
       }
     };
-    document.addEventListener("fullscreenchange", onFullscreenChange);
+    ownerDocument.addEventListener("fullscreenchange", onFullscreenChange);
     return () => {
-      document.removeEventListener("fullscreenchange", onFullscreenChange);
+      ownerDocument.removeEventListener("fullscreenchange", onFullscreenChange);
     };
-  }, [isActive]);
+  }, [isActive, excalidrawAPI]);
 
   React.useEffect(() => {
     if (!isActive) {

@@ -37,6 +37,7 @@ export const PresentationPanel = () => {
   const { theme, exportBackground, viewBackgroundColor, exportWithDarkMode } =
     useUIAppState();
   const [, setPresentationMode] = useAtom(presentationModeAtom);
+  const panelRef = React.useRef<HTMLDivElement>(null);
 
   const frames = React.useMemo(
     () =>
@@ -85,10 +86,15 @@ export const PresentationPanel = () => {
   }, []);
 
   React.useEffect(() => {
-    const timer = window.setTimeout(() => {
-      if (!excalidrawAPI) {
-        return;
-      }
+    if (!excalidrawAPI) {
+      return;
+    }
+
+    const ownerWindow = panelRef.current?.ownerDocument.defaultView;
+    if (!ownerWindow) {
+      return;
+    }
+    const timer = ownerWindow.setTimeout(() => {
       const appState = excalidrawAPI.getAppState();
       const files = excalidrawAPI.getFiles();
 
@@ -161,7 +167,7 @@ export const PresentationPanel = () => {
     }, THUMBNAIL_DEBOUNCE_MS);
 
     return () => {
-      window.clearTimeout(timer);
+      ownerWindow.clearTimeout(timer);
     };
   }, [
     frames,
@@ -183,7 +189,7 @@ export const PresentationPanel = () => {
   };
 
   return (
-    <div className="presentation-panel">
+    <div className="presentation-panel" ref={panelRef}>
       {frames.length === 0 ? (
         <div className="app-sidebar-promo-container presentation-panel__empty">
           <div
