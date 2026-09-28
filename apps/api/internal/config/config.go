@@ -32,6 +32,12 @@ const (
 type Config struct {
 	Port        string
 	DatabaseURL string
+	// JWTSecret 签发 access token;为空则不注册 auth 路由。
+	JWTSecret string
+	// PhoneCryptoKey 为 base64 编码的 32 字节主密钥,HKDF 域分离派生出
+	// 手机号 AES-GCM 加密与 HMAC 查找哈希两组子密钥;为空则不注册 auth 路由。
+	PhoneCryptoKey string
+	CORSOrigins    []string
 }
 
 type nacosOptions struct {
@@ -70,8 +76,11 @@ func parseFlags(args []string) (nacosOptions, error) {
 
 func loadFromEnv() Config {
 	return Config{
-		Port:        getenv("PORT", "8080"),
-		DatabaseURL: os.Getenv("DATABASE_URL"),
+		Port:           getenv("PORT", "8080"),
+		DatabaseURL:    os.Getenv("DATABASE_URL"),
+		JWTSecret:      os.Getenv("JWT_SECRET"),
+		PhoneCryptoKey: os.Getenv("PHONE_CRYPTO_KEY"),
+		CORSOrigins:    splitOrigins(os.Getenv("CORS_ORIGINS")),
 	}
 }
 
@@ -147,8 +156,11 @@ func fetchConfig(host string, port int, opts nacosOptions) (string, error) {
 }
 
 type yamlConfig struct {
-	Port        string `yaml:"port"`
-	DatabaseURL string `yaml:"database_url"`
+	Port           string `yaml:"port"`
+	DatabaseURL    string `yaml:"database_url"`
+	JWTSecret      string `yaml:"jwt_secret"`
+	PhoneCryptoKey string `yaml:"phone_crypto_key"`
+	CORSOrigins    string `yaml:"cors_origins"`
 }
 
 func parseConfigYAML(content string) (Config, error) {
@@ -156,11 +168,31 @@ func parseConfigYAML(content string) (Config, error) {
 	if err := yaml.Unmarshal([]byte(content), &raw); err != nil {
 		return Config{}, fmt.Errorf("parse nacos config yaml: %w", err)
 	}
-	cfg := Config{Port: raw.Port, DatabaseURL: raw.DatabaseURL}
+	cfg := Config{
+		Port:           raw.Port,
+		DatabaseURL:    raw.DatabaseURL,
+		JWTSecret:      raw.JWTSecret,
+		PhoneCryptoKey: raw.PhoneCryptoKey,
+		CORSOrigins:    splitOrigins(raw.CORSOrigins),
+	}
 	if cfg.Port == "" {
 		cfg.Port = "8080"
 	}
 	return cfg, nil
+}
+
+// splitOrigins 解析逗号分隔的允许跨域来源;空白与空段丢弃。
+func splitOrigins(s string) []string {
+	if strings.TrimSpace(s) == "" {
+		return nil
+	}
+	var origins []string
+	for _, part := range strings.Split(s, ",") {
+		if part = strings.TrimSpace(part); part != "" {
+			origins = append(origins, part)
+		}
+	}
+	return origins
 }
 
 func getenv(key, fallback string) string {

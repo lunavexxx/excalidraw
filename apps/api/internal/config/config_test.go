@@ -1,9 +1,14 @@
 package config
 
-import "testing"
+import (
+	"slices"
+	"testing"
+)
 
 func TestParseConfigYAML(t *testing.T) {
-	content := "port: \"9090\"\ndatabase_url: postgres://u:p@pg:5432/excalidraw\n"
+	content := "port: \"9090\"\ndatabase_url: postgres://u:p@pg:5432/excalidraw\n" +
+		"jwt_secret: s3cret\nphone_crypto_key: aGVsbG8=\n" +
+		"cors_origins: \"https://a.example, https://b.example\"\n"
 	cfg, err := parseConfigYAML(content)
 	if err != nil {
 		t.Fatalf("parseConfigYAML: %v", err)
@@ -13,6 +18,16 @@ func TestParseConfigYAML(t *testing.T) {
 	}
 	if cfg.DatabaseURL != "postgres://u:p@pg:5432/excalidraw" {
 		t.Errorf("DatabaseURL = %q", cfg.DatabaseURL)
+	}
+	if cfg.JWTSecret != "s3cret" {
+		t.Errorf("JWTSecret = %q", cfg.JWTSecret)
+	}
+	if cfg.PhoneCryptoKey != "aGVsbG8=" {
+		t.Errorf("PhoneCryptoKey = %q", cfg.PhoneCryptoKey)
+	}
+	want := []string{"https://a.example", "https://b.example"}
+	if !slices.Equal(cfg.CORSOrigins, want) {
+		t.Errorf("CORSOrigins = %q, want %q", cfg.CORSOrigins, want)
 	}
 }
 
@@ -96,8 +111,27 @@ func TestParseAddr(t *testing.T) {
 func TestLoadFromEnv(t *testing.T) {
 	t.Setenv("PORT", "9000")
 	t.Setenv("DATABASE_URL", "postgres://foo")
+	t.Setenv("JWT_SECRET", "s3cret")
+	t.Setenv("PHONE_CRYPTO_KEY", "aGVsbG8=")
+	t.Setenv("CORS_ORIGINS", " http://localhost:3000 , ,https://a.example")
 	cfg := loadFromEnv()
 	if cfg.Port != "9000" || cfg.DatabaseURL != "postgres://foo" {
 		t.Errorf("loadFromEnv = %+v", cfg)
+	}
+	if cfg.JWTSecret != "s3cret" || cfg.PhoneCryptoKey != "aGVsbG8=" {
+		t.Errorf("loadFromEnv secrets = %+v", cfg)
+	}
+	want := []string{"http://localhost:3000", "https://a.example"}
+	if !slices.Equal(cfg.CORSOrigins, want) {
+		t.Errorf("CORSOrigins = %q, want %q", cfg.CORSOrigins, want)
+	}
+}
+
+func TestSplitOriginsEmpty(t *testing.T) {
+	if got := splitOrigins(""); got != nil {
+		t.Errorf("splitOrigins(\"\") = %q, want nil", got)
+	}
+	if got := splitOrigins("  , , "); got != nil {
+		t.Errorf("splitOrigins(blank) = %q, want nil", got)
 	}
 }

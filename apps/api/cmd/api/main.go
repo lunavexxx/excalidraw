@@ -10,8 +10,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
+	"github.com/lunavexxx/excalidraw/apps/api/internal/auth"
 	"github.com/lunavexxx/excalidraw/apps/api/internal/config"
 	"github.com/lunavexxx/excalidraw/apps/api/internal/migrate"
 	"github.com/lunavexxx/excalidraw/apps/api/internal/store"
@@ -59,6 +61,28 @@ func main() {
 		}
 		c.JSON(http.StatusOK, gin.H{"status": "ready"})
 	})
+
+	// 生产 web 与 api 同站(经 Caddy /api 同源转发),CORS 仅服务
+	// 本地 docker(web:3000 → api:8080)这类跨端口场景。
+	// 认证走 Authorization 头,不需要 credentials。
+	apiGroup := router.Group("/api/v1")
+	if len(cfg.CORSOrigins) > 0 {
+		apiGroup.Use(cors.New(cors.Config{
+			AllowOrigins: cfg.CORSOrigins,
+			AllowMethods: []string{"GET", "POST", "OPTIONS"},
+			AllowHeaders: []string{"Authorization", "Content-Type"},
+			MaxAge:       12 * time.Hour,
+		}))
+	}
+	if db == nil || cfg.JWTSecret == "" || cfg.PhoneCryptoKey == "" {
+		log.Println("auth disabled: need database, jwt_secret and phone_crypto_key")
+	} else {
+		phoneCrypto, err := auth.NewPhoneCrypto(cfg.PhoneCryptoKey)
+		if err != nil {
+			log.Fatalf("phone crypto: %v", err)
+		}
+		auth.RegisterRoutes(apiGroup, db, cfg.JWTSecret, phoneCrypto)
+	}
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,
