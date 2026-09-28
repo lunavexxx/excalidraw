@@ -1,6 +1,7 @@
 import { expect, vi } from "vitest";
 
 import { pointFrom } from "@excalidraw/math";
+
 import type { LocalPoint } from "@excalidraw/math";
 
 import { Excalidraw } from "../index";
