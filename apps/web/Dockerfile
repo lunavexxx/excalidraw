@@ -11,10 +11,16 @@ RUN --mount=type=cache,target=/root/.cache/yarn \
 
 ARG NODE_ENV=production
 
+# api 基址:默认同源 /api/v1(生产经 Caddy /api 转发);local.yml 跨端口时
+# 由 compose 传 http://localhost:8080/api/v1 覆盖。值不进 git。
+ARG VITE_APP_API_URL=/api/v1
+ENV VITE_APP_API_URL=${VITE_APP_API_URL}
+
 RUN npm_config_target_arch=${TARGETARCH} yarn build:app:docker
 
 FROM nginx:stable-alpine-slim@sha256:2c605dbeab79a6b2a63340474fe58119d0ef95bdc4b1f41df0aa689659b3d13b
 
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /opt/node_app/build /usr/share/nginx/html
 
 HEALTHCHECK CMD wget -q -O /dev/null http://localhost || exit 1
