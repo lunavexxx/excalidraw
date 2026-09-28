@@ -105,7 +105,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
               onSelect={() =>
                 setIsTemporarilyUnredacted(!isTemporarilyUnredacted)
               }
-              style={{ border: 0, userSelect: "none" }}
+              style={{ border: 0, userSelect: "none", background: "transparent" }}
             >
               {isTemporarilyUnredacted ? eyeClosedIcon : eyeIcon}
             </Button>

@@ -118,6 +118,15 @@
           color: var(--ExcTextField--readonly--color);
         }
       }
+
+      // 密码可见性切换按钮:上方通用 svg 规则是给前置 icon 的,
+      // 会把这里的眼睛图标错位到字段左侧,恢复文档流由 flex 居中
+      .excalidraw-button svg {
+        position: static;
+        left: auto;
+        transform: none;
+        flex: none;
+      }
     }
 
     &--hasIcon .ExcTextField__input {

@@ -148,6 +148,8 @@ import "./index.scss";
 
 import { AppSidebar } from "./components/AppSidebar";
 import { PresentationMode } from "./components/PresentationMode";
+import { refreshSession } from "./auth/api";
+import { currentUserAtom } from "./auth/atoms";
 
 import type { CollabAPI } from "./collab/Collab";
 
@@ -403,6 +405,17 @@ const ExcalidrawWrapper = () => {
     setTimeout(() => {
       trackEvent("load", "version", getVersion());
     }, VERSION_TIMEOUT);
+  }, []);
+
+  // 静默会话引导:有 refresh cookie 则恢复登录态,否则保持匿名。
+  useEffect(() => {
+    refreshSession()
+      .then((user) => {
+        if (user) {
+          appJotaiStore.set(currentUserAtom, user);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const [, setShareDialogState] = useAtom(shareDialogStateAtom);

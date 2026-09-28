@@ -10,8 +10,23 @@ window.__EXCALIDRAW_SHA__ = import.meta.env.VITE_APP_GIT_SHA;
 const rootElement = document.getElementById("root")!;
 const root = createRoot(rootElement);
 registerSW();
-root.render(
-  <StrictMode>
-    <ExcalidrawApp />
-  </StrictMode>,
-);
+
+// 路由分流:主站(/)为白板编辑器;/login /signup 为独立登录页(不含编辑器)。
+// 登录页(含 ~400KB 装饰 SVG)动态加载,避免编辑器主包超出 PWA 预缓存上限。
+const isLoginRoute = /^\/(login|signup)\/?$/.test(window.location.pathname);
+
+if (isLoginRoute) {
+  void import("./components/LoginPage").then(({ LoginApp }) => {
+    root.render(
+      <StrictMode>
+        <LoginApp />
+      </StrictMode>,
+    );
+  });
+} else {
+  root.render(
+    <StrictMode>
+      <ExcalidrawApp />
+    </StrictMode>,
+  );
+}

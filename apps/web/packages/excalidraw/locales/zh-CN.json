@@ -761,5 +761,43 @@
     "prevSlide": "上一页",
     "nextSlide": "下一页",
     "slideCounter": "{{current}} / {{total}}"
+  },
+  "loginPage": {
+    "getStarted": "开始使用",
+    "welcomeBack": "欢迎回来",
+    "signInTitle": "你好!",
+    "signInSubtitle": "登录后继续你的白板。",
+    "signUpTitle": "创建账号",
+    "signUpSubtitle": "几秒完成注册,马上开始画图。",
+    "phone": "手机号",
+    "phonePlaceholder": "11 位手机号",
+    "password": "密码",
+    "passwordPlaceholder": "至少 8 个字符",
+    "confirmPassword": "确认密码",
+    "nickname": "昵称",
+    "nicknamePlaceholder": "选填,留空自动生成",
+    "signIn": "登录",
+    "signUp": "注册",
+    "signingIn": "请稍候…",
+    "hasAccount": "已有账号?",
+    "noAccount": "还没有账号?",
+    "switchToSignIn": "去登录",
+    "switchToSignUp": "立即注册",
+    "orContinueWith": "或使用以下方式",
+    "wechatLogin": "微信扫码",
+    "smsLogin": "短信验证码",
+    "comingSoon": "即将上线",
+    "forgotPassword": "忘记密码?",
+    "close": "关闭",
+    "tryAgainLater": "出了点问题,请稍后再试。",
+    "invalidPhone": "请输入有效的 11 位手机号。",
+    "passwordTooShort": "密码至少需要 8 个字符。",
+    "passwordMismatch": "两次输入的密码不一致。",
+    "phoneTaken": "该手机号已注册。",
+    "invalidCredentials": "手机号或密码错误。"
+  },
+  "userArea": {
+    "signInPrompt": "登录 / 注册",
+    "logout": "退出登录"
   }
 }

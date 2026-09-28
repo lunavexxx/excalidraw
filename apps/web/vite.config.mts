@@ -24,6 +24,13 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       // open the browser
       open: true,
+      // 本地开发:api 相对路径 /api/v1 代理到本地 Go 服务(同源免 CORS)
+      proxy: {
+        "/api": {
+          target: envVars.VITE_APP_API_PROXY_TARGET || "http://localhost:8080",
+          changeOrigin: true,
+        },
+      },
     },
     resolve: {
       alias: [

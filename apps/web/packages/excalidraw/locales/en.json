@@ -769,5 +769,43 @@
     "prevSlide": "Previous slide",
     "nextSlide": "Next slide",
     "slideCounter": "{{current}} / {{total}}"
+  },
+  "loginPage": {
+    "getStarted": "Get started",
+    "welcomeBack": "Welcome back",
+    "signInTitle": "Hi there!",
+    "signInSubtitle": "Sign in to continue to your boards.",
+    "signUpTitle": "Create your account",
+    "signUpSubtitle": "Sign up in seconds, sketch right away.",
+    "phone": "Phone number",
+    "phonePlaceholder": "11-digit mobile number",
+    "password": "Password",
+    "passwordPlaceholder": "At least 8 characters",
+    "confirmPassword": "Confirm password",
+    "nickname": "Nickname",
+    "nicknamePlaceholder": "Optional — auto-generated if left blank",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signingIn": "Just a moment…",
+    "hasAccount": "Already have an account?",
+    "noAccount": "New here?",
+    "switchToSignIn": "Sign in",
+    "switchToSignUp": "Create one",
+    "orContinueWith": "or continue with",
+    "wechatLogin": "WeChat",
+    "smsLogin": "SMS code",
+    "comingSoon": "Soon",
+    "forgotPassword": "Forgot password?",
+    "close": "Close",
+    "tryAgainLater": "Something went wrong — please try again later.",
+    "invalidPhone": "Please enter a valid 11-digit mobile number.",
+    "passwordTooShort": "Password must be at least 8 characters.",
+    "passwordMismatch": "Passwords do not match.",
+    "phoneTaken": "This number is already registered.",
+    "invalidCredentials": "Wrong phone number or password."
+  },
+  "userArea": {
+    "signInPrompt": "Sign in / Sign up",
+    "logout": "Sign out"
   }
 }

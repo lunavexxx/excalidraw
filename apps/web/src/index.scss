@@ -70,3 +70,9 @@
     display: none;
   }
 }
+
+// 主菜单自定义项(用户头像行/语言列表):去掉包默认的 0.5rem 上边距,
+// 头像行紧随分隔线,由菜单容器 1px gap 控制间距
+.excalidraw .dropdown-menu .dropdown-menu-item-custom {
+  margin-top: 0em;
+}

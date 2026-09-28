@@ -8,9 +8,20 @@ import { isDevEnv } from "@excalidraw/common";
 import type { Theme } from "@excalidraw/element/types";
 
 import { LanguageList } from "../app-language/LanguageList";
-import { isExcalidrawPlusSignedUser } from "../app_constants";
+import { useAtomValue, useSetAtom } from "../app-jotai";
+import { logout } from "../auth/api";
+import { currentUserAtom } from "../auth/atoms";
 
 import { saveDebugState } from "./DebugCanvas";
+
+// 由用户 ID 决定头像底色,同一用户恒定(与登录页/后续协作场景共用规则)
+const avatarColor = (id: string) => {
+  let hash = 5381;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash * 33) ^ id.charCodeAt(i);
+  }
+  return `hsl(${Math.abs(hash) % 360}, 55%, 45%)`;
+};
 
 export const AppMainMenu: React.FC<{
   onCollabDialogOpen: () => any;
@@ -20,6 +31,8 @@ export const AppMainMenu: React.FC<{
   refresh: () => void;
 }> = React.memo((props) => {
   const { t } = useI18n();
+  const currentUser = useAtomValue(currentUserAtom);
+  const setCurrentUser = useSetAtom(currentUserAtom);
   return (
     <MainMenu>
       <MainMenu.DefaultItems.LoadScene />
@@ -37,15 +50,80 @@ export const AppMainMenu: React.FC<{
       <MainMenu.DefaultItems.Help />
       <MainMenu.DefaultItems.ClearCanvas />
       <MainMenu.Separator />
-      <MainMenu.ItemLink
-        icon={loginIcon}
-        href={`${import.meta.env.VITE_APP_PLUS_APP}${
-          isExcalidrawPlusSignedUser ? "" : "/sign-up"
-        }?utm_source=signin&utm_medium=app&utm_content=hamburger`}
-        className="highlighted"
-      >
-        {isExcalidrawPlusSignedUser ? t("labels.signIn") : t("labels.signUp")}
-      </MainMenu.ItemLink>
+      {currentUser ? (
+        <>
+          <MainMenu.ItemCustom>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.85em",
+                width: "100%",
+                padding: "0.25rem 0rem",
+              }}
+            >
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  width: "2rem",
+                  height: "2rem",
+                  borderRadius: "50%",
+                  color: "#fff",
+                  fontSize: "0.875rem",
+                  fontWeight: 700,
+                  background: avatarColor(currentUser.id),
+                }}
+              >
+                {currentUser.nickname.slice(0, 1).toUpperCase()}
+              </span>
+              <div style={{ minWidth: 0 }}>
+                <div
+                  style={{
+                    fontWeight: 700,
+                    fontSize: "0.875rem",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {currentUser.nickname}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    opacity: 0.7,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {currentUser.phone_masked}
+                </div>
+              </div>
+            </div>
+          </MainMenu.ItemCustom>
+          <MainMenu.Item
+            icon={loginIcon}
+            onSelect={async () => {
+              await logout();
+              setCurrentUser(null);
+            }}
+          >
+            {t("userArea.logout")}
+          </MainMenu.Item>
+        </>
+      ) : (
+        <MainMenu.Item
+          icon={loginIcon}
+          onSelect={() => {
+            window.location.assign("/signup");
+          }}
+          className="highlighted"
+        >
+          {t("userArea.signInPrompt")}
+        </MainMenu.Item>
+      )}
       {isDevEnv() && (
         <MainMenu.Item
           icon={eyeIcon}
