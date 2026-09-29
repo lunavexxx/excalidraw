@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/lunavexxx/excalidraw/apps/api/internal/auth"
+	"github.com/lunavexxx/excalidraw/apps/api/internal/canvas"
 	"github.com/lunavexxx/excalidraw/apps/api/internal/config"
 	"github.com/lunavexxx/excalidraw/apps/api/internal/migrate"
 	"github.com/lunavexxx/excalidraw/apps/api/internal/store"
@@ -69,7 +70,8 @@ func main() {
 	if len(cfg.CORSOrigins) > 0 {
 		apiGroup.Use(cors.New(cors.Config{
 			AllowOrigins: cfg.CORSOrigins,
-			AllowMethods: []string{"GET", "POST", "OPTIONS"},
+			// canvas 场景/文件用 PUT、重命名/删除用 PATCH/DELETE。
+			AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 			AllowHeaders: []string{"Authorization", "Content-Type"},
 			MaxAge:       12 * time.Hour,
 		}))
@@ -82,6 +84,15 @@ func main() {
 			log.Fatalf("phone crypto: %v", err)
 		}
 		auth.RegisterRoutes(apiGroup, db, cfg.JWTSecret, phoneCrypto)
+
+		limits := canvas.DefaultLimits()
+		if cfg.MaxSceneBytes > 0 {
+			limits.MaxSceneBytes = cfg.MaxSceneBytes
+		}
+		if cfg.MaxFileBytes > 0 {
+			limits.MaxFileBytes = cfg.MaxFileBytes
+		}
+		canvas.RegisterRoutes(apiGroup, db, cfg.JWTSecret, limits)
 	}
 
 	srv := &http.Server{

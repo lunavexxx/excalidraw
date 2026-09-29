@@ -37,3 +37,8 @@ func userIDFrom(c *gin.Context) string {
 	s, _ := v.(string)
 	return s
 }
+
+// UserIDFrom 供其他模块(如 canvas)在 AuthRequired 之后取当前用户。
+func UserIDFrom(c *gin.Context) string {
+	return userIDFrom(c)
+}

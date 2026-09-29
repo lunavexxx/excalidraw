@@ -38,6 +38,9 @@ type Config struct {
 	// 手机号 AES-GCM 加密与 HMAC 查找哈希两组子密钥;为空则不注册 auth 路由。
 	PhoneCryptoKey string
 	CORSOrigins    []string
+	// canvas 请求体限额(字节);非正值回落到 canvas.DefaultLimits。
+	MaxSceneBytes int
+	MaxFileBytes  int
 }
 
 type nacosOptions struct {
@@ -81,6 +84,8 @@ func loadFromEnv() Config {
 		JWTSecret:      os.Getenv("JWT_SECRET"),
 		PhoneCryptoKey: os.Getenv("PHONE_CRYPTO_KEY"),
 		CORSOrigins:    splitOrigins(os.Getenv("CORS_ORIGINS")),
+		MaxSceneBytes:  getIntEnv("CANVAS_SCENE_MAX_BYTES", 0),
+		MaxFileBytes:   getIntEnv("CANVAS_FILE_MAX_BYTES", 0),
 	}
 }
 
@@ -161,6 +166,8 @@ type yamlConfig struct {
 	JWTSecret      string `yaml:"jwt_secret"`
 	PhoneCryptoKey string `yaml:"phone_crypto_key"`
 	CORSOrigins    string `yaml:"cors_origins"`
+	MaxSceneBytes  int    `yaml:"canvas_scene_max_bytes"`
+	MaxFileBytes   int    `yaml:"canvas_file_max_bytes"`
 }
 
 func parseConfigYAML(content string) (Config, error) {
@@ -174,6 +181,8 @@ func parseConfigYAML(content string) (Config, error) {
 		JWTSecret:      raw.JWTSecret,
 		PhoneCryptoKey: raw.PhoneCryptoKey,
 		CORSOrigins:    splitOrigins(raw.CORSOrigins),
+		MaxSceneBytes:  raw.MaxSceneBytes,
+		MaxFileBytes:   raw.MaxFileBytes,
 	}
 	if cfg.Port == "" {
 		cfg.Port = "8080"
@@ -200,4 +209,17 @@ func getenv(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+// getIntEnv 读整型环境变量;缺省或非法时返回 fallback。
+func getIntEnv(key string, fallback int) int {
+	raw := strings.TrimSpace(os.Getenv(key))
+	if raw == "" {
+		return fallback
+	}
+	n, err := strconv.Atoi(raw)
+	if err != nil {
+		return fallback
+	}
+	return n
 }

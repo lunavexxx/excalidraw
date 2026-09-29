@@ -53,6 +53,7 @@ publish() {
   ns=$1
   db_url=$2
   cors=$3
+  # 可选键(有代码默认值,按需追加):canvas_scene_max_bytes / canvas_file_max_bytes
   content=$(printf 'port: "8080"\ndatabase_url: "%s"\njwt_secret: "%s"\nphone_crypto_key: "%s"\ncors_origins: "%s"\n' \
     "$db_url" "$JWT_SECRET" "$PHONE_CRYPTO_KEY" "$cors")
   echo "==> publish ${DATA_ID} -> namespace ${ns}"

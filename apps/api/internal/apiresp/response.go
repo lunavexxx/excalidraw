@@ -13,12 +13,18 @@ import (
 // 业务错误码分段:400xx 参数/校验,401xx 鉴权,409xx 冲突,500xx 内部。
 // 后续模块按前缀扩展(如文档 410xx)。
 const (
-	CodeOK                = 0
-	CodeInvalidRequest    = 40000
-	CodeUnauthorized      = 40100
+	CodeOK                 = 0
+	CodeInvalidRequest     = 40000
+	CodeUnauthorized       = 40100
 	CodeInvalidCredentials = 40101
-	CodePhoneTaken        = 40900
-	CodeInternal          = 50000
+	CodePhoneTaken         = 40900
+	CodeInternal           = 50000
+
+	// 41xxx: canvas 模块。
+	CodeCanvasInvalid  = 41000
+	CodeCanvasNotFound = 41001
+	CodeCanvasConflict = 41002
+	CodeCanvasTooLarge = 41003
 )
 
 type Body struct {
