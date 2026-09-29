@@ -807,5 +807,28 @@
   "userArea": {
     "signInPrompt": "Sign in / Sign up",
     "logout": "Sign out"
+  },
+  "canvasPanel": {
+    "loginPrompt": "Log in to save canvases to the cloud and open them from any device.",
+    "loginAction": "Log in / Sign up",
+    "newCanvas": "New canvas",
+    "importLocal": "Import local draft",
+    "importing": "Importing…",
+    "empty": "No cloud canvases yet",
+    "loadMore": "Load more",
+    "untitled": "Untitled canvas",
+    "current": "current",
+    "deleteConfirm": "Click again to confirm delete",
+    "loadFailed": "Couldn't load the canvas. It may be temporarily unavailable.",
+    "notFound": "Canvas not found or you don't have access to it.",
+    "saveFailed": "Couldn't save to the cloud. Your work is kept locally and will retry.",
+    "conflict": "This canvas changed on the server. Reload the page to get the latest version.",
+    "saving": "Saving…",
+    "localDraft": "Local draft",
+    "draftLastEdited": "Last edited {{time}}",
+    "discardLocal": "Discard",
+    "discardConfirm": "Click again to confirm discard",
+    "newCanvasConfirm": "This clears the local draft — click again to confirm",
+    "unsavedDraft": "Unsaved draft — it will be saved to the cloud automatically"
   }
 }

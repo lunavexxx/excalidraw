@@ -8,7 +8,7 @@ import {
 import type { ApiBody, AuthErrorCode, User } from "./types";
 
 // 生产同源(经 Caddy /api 转发);默认相对路径,本地 docker 经 build arg 覆盖。
-const API_URL: string = import.meta.env.VITE_APP_API_URL || "/api/v1";
+export const API_URL: string = import.meta.env.VITE_APP_API_URL || "/api/v1";
 
 export class ApiError extends Error {
   code: AuthErrorCode;
@@ -76,8 +76,11 @@ export const refreshSession = (): Promise<User | null> => {
   return refreshInFlight;
 };
 
-const fetchJson = async (path: string, init: RequestInit): Promise<ApiBody> => {
-  const token = getAccessToken();
+// 供其他资源模块(canvas 等)复用:自动附带 Bearer 并在 40100 时静默续期重试。
+export const fetchJson = async (
+  path: string,
+  init: RequestInit,
+): Promise<ApiBody> => {
   const doFetch = () =>
     fetch(`${API_URL}${path}`, {
       ...init,
@@ -90,8 +93,9 @@ const fetchJson = async (path: string, init: RequestInit): Promise<ApiBody> => {
     });
 
   let body = await parseBody(await doFetch());
-  if (token && body.code === 40100) {
-    // access 过期:静默续期后重试一次
+  if (body.code === 40100) {
+    // access 过期或缺失(刷新页面后内存 token 为空):静默续期后重试一次。
+    // 无 refresh token 时 refreshSession 立即返回 null,匿名请求不多打一枪。
     if (await refreshSession()) {
       body = await parseBody(await doFetch());
     }

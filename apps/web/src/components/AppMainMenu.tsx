@@ -11,6 +11,7 @@ import { LanguageList } from "../app-language/LanguageList";
 import { useAtomValue, useSetAtom } from "../app-jotai";
 import { logout } from "../auth/api";
 import { currentUserAtom } from "../auth/atoms";
+import { parseCanvasIdFromPath } from "../canvas/load";
 
 import { saveDebugState } from "./DebugCanvas";
 
@@ -108,6 +109,11 @@ export const AppMainMenu: React.FC<{
             onSelect={async () => {
               await logout();
               setCurrentUser(null);
+              // 登出时若停留在云端画布:回首页恢复本地草稿,
+              // 避免停留在不可保存的编辑态
+              if (parseCanvasIdFromPath()) {
+                window.location.assign("/");
+              }
             }}
           >
             {t("userArea.logout")}

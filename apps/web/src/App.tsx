@@ -115,6 +115,15 @@ import {
   importUsernameFromLocalStorage,
 } from "./data/localStorage";
 
+import { canvasSaver } from "./canvas/saver";
+import {
+  CanvasApiError,
+  isRootPath,
+  openServerCanvas,
+  parseCanvasIdFromPath,
+} from "./canvas/load";
+import { getLastOpenedCanvas, loadCanvasFiles } from "./canvas/api";
+
 import { loadFilesFromFirebase } from "./data/firebase";
 import {
   LibraryIndexedDBAdapter,
@@ -143,6 +152,8 @@ import { AppSidebar } from "./components/AppSidebar";
 import { PresentationMode } from "./components/PresentationMode";
 import { refreshSession } from "./auth/api";
 import { currentUserAtom } from "./auth/atoms";
+import { getRefreshToken } from "./auth/tokens";
+import { canvasIdAtom } from "./canvas/atoms";
 
 import type { CollabAPI } from "./collab/Collab";
 
@@ -215,6 +226,13 @@ const initializeScene = async (opts: {
 }): Promise<
   { scene: ExcalidrawInitialDataState | null } & (
     | { isExternalScene: true; id: string; key: string }
+    | {
+        isExternalScene: false;
+        isServerCanvas: true;
+        canvasId: string;
+        id?: null;
+        key?: null;
+      }
     | { isExternalScene: false; id?: null; key?: null }
   )
 > => {
@@ -226,6 +244,63 @@ const initializeScene = async (opts: {
   const externalUrlMatch = window.location.hash.match(/^#url=(.*)$/);
 
   const localDataState = importFromLocalStorage();
+
+  // 打开 /c/:id:服务端画布为权威,失败则回首页提示(本地草稿不参与)
+  const pathCanvasId = parseCanvasIdFromPath();
+  if (pathCanvasId) {
+    // 先恢复会话(与挂载静默恢复单飞合流),避免首请求 40100 → refresh → 重试
+    await refreshSession();
+    try {
+      const result = await openServerCanvas(
+        pathCanvasId,
+        localDataState?.appState ?? null,
+        opts.excalidrawAPI,
+      );
+      return {
+        scene: result.scene,
+        isExternalScene: false,
+        isServerCanvas: true,
+        canvasId: result.canvasId,
+      };
+    } catch (error: any) {
+      const msg =
+        error instanceof CanvasApiError && error.code === 41001
+          ? t("canvasPanel.notFound")
+          : t("canvasPanel.loadFailed");
+      window.history.replaceState({}, APP_NAME, window.location.origin);
+      return {
+        scene: { appState: { errorMessage: msg } },
+        isExternalScene: false,
+      };
+    }
+  }
+
+  // 默认页:登录用户打开 / 时跳最近打开的画布;匿名/无画布保持本地草稿。
+  // refreshSession 单飞,与挂载时的静默恢复合流,不会重复请求。
+  if (isRootPath()) {
+    const user = await refreshSession();
+    if (user) {
+      try {
+        const last = await getLastOpenedCanvas();
+        if (last) {
+          window.history.replaceState({}, APP_NAME, `/c/${last.id}`);
+          const result = await openServerCanvas(
+            last.id,
+            localDataState?.appState ?? null,
+            opts.excalidrawAPI,
+          );
+          return {
+            scene: result.scene,
+            isExternalScene: false,
+            isServerCanvas: true,
+            canvasId: result.canvasId,
+          };
+        }
+      } catch {
+        // 服务端不可达:退回本地草稿
+      }
+    }
+  }
 
   let scene: Omit<
     RestoredDataState,
@@ -535,6 +610,33 @@ const ExcalidrawWrapper = () => {
               ),
             ]);
           });
+        } else if ("isServerCanvas" in data && data.isServerCanvas) {
+          if (fileIds.length) {
+            // 服务端画布:图片二进制从 canvas API 拉取,不走 IndexedDB
+            FileStatusStore.updateStatuses(
+              fileIds.map(
+                (fileId) => [fileId, "loading"] as [FileId, "loading"],
+              ),
+            );
+            loadCanvasFiles(data.canvasId, fileIds).then(
+              ({ loadedFiles, erroredFiles }) => {
+                excalidrawAPI.addFiles(loadedFiles);
+                updateStaleImageStatuses({
+                  excalidrawAPI,
+                  erroredFiles: erroredFiles as Map<FileId, true>,
+                  elements: excalidrawAPI.getSceneElementsIncludingDeleted(),
+                });
+                FileStatusStore.updateStatuses([
+                  ...loadedFiles.map(
+                    (f) => [f.id, "loaded"] as [FileId, "loaded"],
+                  ),
+                  ...[...erroredFiles.keys()].map(
+                    (fileId) => [fileId, "error"] as [FileId, "error"],
+                  ),
+                ]);
+              },
+            );
+          }
         } else if (isInitialLoad) {
           if (fileIds.length) {
             LocalData.fileStorage
@@ -565,6 +667,7 @@ const ExcalidrawWrapper = () => {
     if (!excalidrawAPI || (!isCollabDisabled && !collabAPI)) {
       return;
     }
+    canvasSaver.init(excalidrawAPI);
 
     initializeScene({ collabAPI, excalidrawAPI }).then(async (data) => {
       loadImages(data, /* isInitialLoad */ true);
@@ -607,7 +710,12 @@ const ExcalidrawWrapper = () => {
         ((collabAPI && !collabAPI.isCollaborating()) || isCollabDisabled)
       ) {
         // don't sync if local state is newer or identical to browser state
-        if (isBrowserStorageStateNewer(STORAGE_KEYS.VERSION_DATA_STATE)) {
+        // 服务端画布模式下场景权威在云端,本地草稿(可能为空/陈旧)
+        // 一旦导入会清空当前场景并触发空场景上送,故跳过
+        if (
+          !appJotaiStore.get(canvasIdAtom) &&
+          isBrowserStorageStateNewer(STORAGE_KEYS.VERSION_DATA_STATE)
+        ) {
           const localDataState = importFromLocalStorage();
           const username = importUsernameFromLocalStorage();
           setLangCode(getPreferredLanguage());
@@ -659,11 +767,13 @@ const ExcalidrawWrapper = () => {
 
     const onUnload = () => {
       LocalData.flushSave();
+      canvasSaver.flush();
     };
 
     const visibilityChange = (event: FocusEvent | Event) => {
       if (event.type === EVENT.BLUR || document.hidden) {
         LocalData.flushSave();
+        canvasSaver.flush();
       }
       if (
         event.type === EVENT.VISIBILITY_CHANGE ||
@@ -697,11 +807,14 @@ const ExcalidrawWrapper = () => {
 
       if (
         excalidrawAPI &&
-        LocalData.fileStorage.shouldPreventUnload(
+        (LocalData.fileStorage.shouldPreventUnload(
           excalidrawAPI.getSceneElements(),
-        )
+        ) ||
+          canvasSaver.hasPendingWork())
       ) {
         if (import.meta.env.VITE_APP_DISABLE_PREVENT_UNLOAD !== "true") {
+          // 尽力补发服务端保存(fetch 可能不完整,由防抖兜底)
+          canvasSaver.flush();
           preventUnload(event);
         } else {
           console.warn(
@@ -723,38 +836,55 @@ const ExcalidrawWrapper = () => {
   ) => {
     if (collabAPI?.isCollaborating()) {
       collabAPI.syncElements(elements);
+    } else {
+      // 服务端自动保存(登录后):与 LocalData 并行
+      canvasSaver.queueSave(elements, appState, files);
     }
 
     // this check is redundant, but since this is a hot path, it's best
     // not to evaludate the nested expression every time
     if (!LocalData.isSavePaused()) {
-      LocalData.save(elements, appState, files, () => {
-        if (excalidrawAPI) {
-          let didChange = false;
+      // 登录态场景数据由服务端画布接管,本地草稿冻结在匿名时代;
+      // user 未恢复但 refresh token 已存在的窗口同样算登录态,
+      // 否则挂载早期的空场景 onChange 会把草稿覆写成空;
+      // 图片文件缓存与状态回调保留
+      const skipDataState =
+        !!appJotaiStore.get(currentUserAtom) || !!getRefreshToken();
+      LocalData.save(
+        elements,
+        appState,
+        files,
+        () => {
+          if (excalidrawAPI) {
+            let didChange = false;
 
-          const elements = excalidrawAPI
-            .getSceneElementsIncludingDeleted()
-            .map((element) => {
-              if (
-                LocalData.fileStorage.shouldUpdateImageElementStatus(element)
-              ) {
-                const newElement = newElementWith(element, { status: "saved" });
-                if (newElement !== element) {
-                  didChange = true;
+            const elements = excalidrawAPI
+              .getSceneElementsIncludingDeleted()
+              .map((element) => {
+                if (
+                  LocalData.fileStorage.shouldUpdateImageElementStatus(element)
+                ) {
+                  const newElement = newElementWith(element, {
+                    status: "saved",
+                  });
+                  if (newElement !== element) {
+                    didChange = true;
+                  }
+                  return newElement;
                 }
-                return newElement;
-              }
-              return element;
-            });
+                return element;
+              });
 
-          if (didChange) {
-            excalidrawAPI.updateScene({
-              elements,
-              captureUpdate: CaptureUpdateAction.NEVER,
-            });
+            if (didChange) {
+              excalidrawAPI.updateScene({
+                elements,
+                captureUpdate: CaptureUpdateAction.NEVER,
+              });
+            }
           }
-        }
-      });
+        },
+        { skipDataState },
+      );
     }
 
     // Render the debug scene if the debug canvas is available

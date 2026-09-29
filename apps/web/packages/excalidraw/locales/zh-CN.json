@@ -799,5 +799,28 @@
   "userArea": {
     "signInPrompt": "登录 / 注册",
     "logout": "退出登录"
+  },
+  "canvasPanel": {
+    "loginPrompt": "登录后可把画布保存到云端,随时随地打开继续编辑。",
+    "loginAction": "登录 / 注册",
+    "newCanvas": "新建画布",
+    "importLocal": "导入本地草稿",
+    "importing": "导入中…",
+    "empty": "还没有云端画布",
+    "loadMore": "加载更多",
+    "untitled": "未命名画布",
+    "current": "当前",
+    "deleteConfirm": "再次点击确认删除",
+    "loadFailed": "画布加载失败,可能暂时不可用。",
+    "notFound": "画布不存在或你没有访问权限。",
+    "saveFailed": "云端保存失败,内容已保留在本地,会自动重试。",
+    "conflict": "画布已在服务端发生变化,请刷新页面获取最新内容。",
+    "saving": "保存中…",
+    "localDraft": "本地草稿",
+    "draftLastEdited": "最后编辑于 {{time}}",
+    "discardLocal": "丢弃",
+    "discardConfirm": "再次点击确认丢弃",
+    "newCanvasConfirm": "将清空当前本地草稿,再次点击确认",
+    "unsavedDraft": "未保存草稿,开画后自动保存到云端"
   }
 }

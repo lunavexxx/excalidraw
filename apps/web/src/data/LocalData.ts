@@ -95,6 +95,10 @@ const saveDataStateToLocalStorage = (
       STORAGE_KEYS.LOCAL_STORAGE_APP_STATE,
       JSON.stringify(_appState),
     );
+    localStorage.setItem(
+      STORAGE_KEYS.LOCAL_STORAGE_DRAFT_UPDATED_AT,
+      String(Date.now()),
+    );
     updateBrowserStateVersion(STORAGE_KEYS.VERSION_DATA_STATE);
     if (localStorageQuotaExceeded) {
       appJotaiStore.set(localStorageQuotaExceededAtom, false);
@@ -114,6 +118,14 @@ const isQuotaExceededError = (error: any) => {
 
 type SavingLockTypes = "collaboration";
 
+type SaveOpts = {
+  /**
+   * 跳过 elements/appState 草稿写入(含版本号广播),仅保留图片文件缓存与
+   * 回调。登录态由服务端画布接管场景数据,本地草稿冻结在匿名时代。
+   */
+  skipDataState?: boolean;
+};
+
 export class LocalData {
   private static _save = debounce(
     async (
@@ -121,8 +133,11 @@ export class LocalData {
       appState: AppState,
       files: BinaryFiles,
       onFilesSaved: () => void,
+      opts?: SaveOpts,
     ) => {
-      saveDataStateToLocalStorage(elements, appState);
+      if (!opts?.skipDataState) {
+        saveDataStateToLocalStorage(elements, appState);
+      }
 
       await this.fileStorage.saveFiles({
         elements,
@@ -139,10 +154,11 @@ export class LocalData {
     appState: AppState,
     files: BinaryFiles,
     onFilesSaved: () => void,
+    opts?: SaveOpts,
   ) => {
     // we need to make the `isSavePaused` check synchronously (undebounced)
     if (!this.isSavePaused()) {
-      this._save(elements, appState, files, onFilesSaved);
+      this._save(elements, appState, files, onFilesSaved, opts);
     }
   };
 
