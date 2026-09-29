@@ -5,6 +5,7 @@ import { clearAppStateForLocalStorage } from "@excalidraw/excalidraw/appState";
 import { useExcalidrawAPI } from "@excalidraw/excalidraw/components/App";
 import { FilledButton } from "@excalidraw/excalidraw/components/FilledButton";
 import { PlusIcon } from "@excalidraw/excalidraw/components/icons";
+import Spinner from "@excalidraw/excalidraw/components/Spinner";
 import { useI18n } from "@excalidraw/excalidraw/i18n";
 
 import { useAtomValue } from "../app-jotai";
@@ -17,6 +18,7 @@ import {
 } from "../canvas/atoms";
 import {
   createCanvas,
+  CanvasApiError,
   deleteCanvas,
   listCanvases,
   putCanvasFiles,
@@ -28,6 +30,7 @@ import {
   localDraftNonEmpty,
   localDraftUpdatedAt,
 } from "../canvas/localDraft";
+import { switchToBlankCanvas, switchToCanvas } from "../canvas/load";
 import { canvasSaver, normalizeSentName } from "../canvas/saver";
 
 import { LocalData } from "../data/LocalData";
@@ -66,6 +69,8 @@ export const CanvasPanel = () => {
   );
   const [newCanvasArmed, setNewCanvasArmed] = React.useState(false);
   const [discardArmed, setDiscardArmed] = React.useState(false);
+  const [switchingId, setSwitchingId] = React.useState<string | null>(null);
+  const [switchError, setSwitchError] = React.useState<string | null>(null);
 
   const refresh = React.useCallback(async (append = false, cursor = "") => {
     setLoading(true);
@@ -138,15 +143,6 @@ export const CanvasPanel = () => {
       .some((el) => !el.isDeleted);
   };
 
-  const resetToBlankDraft = () => {
-    if (!excalidrawAPI) {
-      return;
-    }
-    excalidrawAPI.resetScene();
-    canvasSaver.detach();
-    window.history.replaceState({}, document.title, "/");
-  };
-
   const handleNewCanvas = async () => {
     if (!excalidrawAPI) {
       return;
@@ -158,14 +154,41 @@ export const CanvasPanel = () => {
         return;
       }
       setNewCanvasArmed(false);
-      resetToBlankDraft();
+      await switchToBlankCanvas({ excalidrawAPI, historyMode: "replace" });
       return;
     }
-    // 登录态:先落库待保存改动,避免 detach 丢弃 2s 防抖窗口内的内容
-    await canvasSaver.flushAsync();
+    // 登录态:切换函数内部先 flush,防 detach 丢弃 2s 防抖窗口内的内容
     setNewCanvasArmed(false);
-    resetToBlankDraft();
+    await switchToBlankCanvas({ excalidrawAPI, historyMode: "replace" });
     void refresh();
+  };
+
+  const handleSwitch = async (canvas: CanvasMeta) => {
+    if (!excalidrawAPI || switchingId || canvas.id === canvasId) {
+      return;
+    }
+    setSwitchingId(canvas.id);
+    setSwitchError(null);
+    excalidrawAPI.updateScene({
+      appState: { isLoading: true },
+      captureUpdate: CaptureUpdateAction.NEVER,
+    });
+    try {
+      await switchToCanvas({ canvasId: canvas.id, excalidrawAPI });
+      void refresh();
+    } catch (error: any) {
+      setSwitchError(
+        error instanceof CanvasApiError && error.code === 41001
+          ? t("canvasPanel.notFound")
+          : t("canvasPanel.loadFailed"),
+      );
+    } finally {
+      setSwitchingId(null);
+      excalidrawAPI.updateScene({
+        appState: { isLoading: false },
+        captureUpdate: CaptureUpdateAction.NEVER,
+      });
+    }
   };
 
   const handleDiscardLocal = () => {
@@ -272,12 +295,14 @@ export const CanvasPanel = () => {
     }
     setConfirmDeleteId(null);
     try {
-      await deleteCanvas(canvas.id);
       if (canvas.id === canvasId) {
-        // 删除当前画布:回首页空白草稿
-        excalidrawAPI?.resetScene();
-        canvasSaver.detach();
-        window.history.replaceState({}, document.title, "/");
+        // 删除当前画布前先落待保存改动,防删除后残留 pending 重试
+        await canvasSaver.flushAsync();
+      }
+      await deleteCanvas(canvas.id);
+      if (canvas.id === canvasId && excalidrawAPI) {
+        // 删除当前画布:页内回首页空白草稿
+        await switchToBlankCanvas({ excalidrawAPI, historyMode: "replace" });
       }
       setItems((prev) => prev.filter((item) => item.id !== canvas.id));
     } catch {
@@ -331,6 +356,12 @@ export const CanvasPanel = () => {
           <div style={unsavedStyle}>{t("canvasPanel.unsavedDraft")}</div>
         ) : null}
 
+        {switchError ? (
+          <div style={{ ...unsavedStyle, color: "var(--color-danger)" }}>
+            {switchError}
+          </div>
+        ) : null}
+
         {items.length === 0 && !loading ? (
           <div style={emptyStyle}>{t("canvasPanel.empty")}</div>
         ) : null}
@@ -340,6 +371,8 @@ export const CanvasPanel = () => {
             key={canvas.id}
             style={{
               ...itemStyle,
+              opacity: switchingId === canvas.id ? 0.5 : 1,
+              pointerEvents: switchingId === canvas.id ? "none" : undefined,
               borderColor:
                 canvas.id === canvasId ? "var(--color-primary)" : "transparent",
             }}
@@ -347,9 +380,7 @@ export const CanvasPanel = () => {
             <div
               style={itemMainStyle}
               onClick={() => {
-                if (canvas.id !== canvasId) {
-                  window.location.assign(`/c/${canvas.id}`);
-                }
+                void handleSwitch(canvas);
               }}
             >
               {canvas.thumbnail ? (
@@ -394,26 +425,36 @@ export const CanvasPanel = () => {
                   </span>
                 )}
                 <span style={timeStyle}>
-                  {formatTime(canvas.last_opened_at)}
-                  {canvas.id === canvasId
-                    ? ` · ${t("canvasPanel.current")}`
-                    : ""}
+                  {switchingId === canvas.id ? (
+                    <Spinner size={11} circleWidth={10} />
+                  ) : (
+                    <>
+                      {formatTime(canvas.last_opened_at)}
+                      {canvas.id === canvasId
+                        ? ` · ${t("canvasPanel.current")}`
+                        : ""}
+                    </>
+                  )}
                 </span>
               </div>
             </div>
-            <button
-              style={{
-                ...actionBtnStyle,
-                ...(confirmDeleteId === canvas.id ? deleteArmedStyle : {}),
-              }}
-              title={t("canvasPanel.deleteConfirm")}
-              onClick={(e) => {
-                e.stopPropagation();
-                void handleDelete(canvas);
-              }}
-            >
-              ✕
-            </button>
+            {switchingId === canvas.id ? (
+              <span style={actionBtnStyle} />
+            ) : (
+              <button
+                style={{
+                  ...actionBtnStyle,
+                  ...(confirmDeleteId === canvas.id ? deleteArmedStyle : {}),
+                }}
+                title={t("canvasPanel.deleteConfirm")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  void handleDelete(canvas);
+                }}
+              >
+                ✕
+              </button>
+            )}
           </div>
         ))}
 

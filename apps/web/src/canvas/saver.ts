@@ -28,6 +28,7 @@ import {
 } from "./atoms";
 import {
   createCanvas,
+  deleteCanvas,
   getCanvas,
   putCanvasFiles,
   saveCanvasScene,
@@ -91,6 +92,12 @@ class CanvasSaver {
   private conflictRetries = 0;
   private disposed = false;
   private lastThumbnailAt = 0;
+  /**
+   * adopt/detach 递增;在途保存跨越代次后作废,防止页内切换画布时
+   * 旧场景数据 PUT 到新 canvasId(或孤儿懒创建覆盖 URL/atom)。
+   */
+  private generation = 0;
+  private pendingThumbnail: string | undefined;
 
   init(excalidrawAPI: ExcalidrawImperativeAPI) {
     if (!this.excalidrawAPI) {
@@ -105,6 +112,7 @@ class CanvasSaver {
     name: string;
     fileIds: Iterable<string>;
   }) {
+    this.generation++;
     this.canvasId = params.canvasId;
     this.serverVersion = params.version;
     this.savedName = params.name;
@@ -112,9 +120,12 @@ class CanvasSaver {
     this.conflictRetries = 0;
     this.retryAttempt = 0;
     this.pending = null;
+    this.firstPendingAt = 0;
+    this.pendingThumbnail = undefined;
     this.seenContent = false;
     appJotaiStore.set(canvasIdAtom, params.canvasId);
     appJotaiStore.set(draftDirtyAtom, false);
+    this.setState("idle");
   }
 
   /** 面板等外部途径完成重命名后同步基准,避免保存器重复 PATCH。 */
@@ -126,16 +137,20 @@ class CanvasSaver {
 
   /** 回到未落库的本地草稿状态(新建画布/回到首页)。 */
   detach() {
+    this.generation++;
     this.canvasId = null;
     this.serverVersion = 0;
     this.savedName = null;
     this.syncedFileIds = new Set();
     this.pending = null;
+    this.firstPendingAt = 0;
+    this.pendingThumbnail = undefined;
     this.conflictRetries = 0;
     this.retryAttempt = 0;
     this.seenContent = false;
     appJotaiStore.set(canvasIdAtom, null);
     appJotaiStore.set(draftDirtyAtom, false);
+    this.setState("idle");
   }
 
   /**
@@ -249,6 +264,7 @@ class CanvasSaver {
   }
 
   private async doRunSave(): Promise<void> {
+    const generation = this.generation;
     const payload = this.pending;
     if (!payload || !this.excalidrawAPI || this.saveInFlight || this.disposed) {
       return;
@@ -268,6 +284,11 @@ class CanvasSaver {
         const canvas = await createCanvas(
           normalizeSentName(payload.appState.name),
         );
+        if (generation !== this.generation) {
+          // 保存中途切走:删掉孤儿画布,旧内容不写入任何画布
+          void deleteCanvas(canvas.id).catch(() => {});
+          return;
+        }
         this.canvasId = canvas.id;
         this.serverVersion = 0;
         this.savedName = canvas.name;
@@ -293,12 +314,18 @@ class CanvasSaver {
       const newFiles = this.collectNewFiles(payload.files);
       if (newFiles.length) {
         await putCanvasFiles(this.canvasId, newFiles);
+        if (generation !== this.generation) {
+          return;
+        }
         for (const f of newFiles) {
           this.syncedFileIds.add(f.file_id);
         }
       }
 
       const version = await this.putScene(payload);
+      if (generation !== this.generation) {
+        return;
+      }
       this.serverVersion = version;
       this.savedName =
         normalizeSentName(payload.appState.name) ?? this.savedName;
@@ -308,13 +335,14 @@ class CanvasSaver {
       this.retryAttempt = 0;
       this.setState("idle");
     } catch (error: any) {
+      if (generation !== this.generation) {
+        return;
+      }
       this.handleSaveError(error);
     } finally {
       this.saveInFlight = false;
     }
   }
-
-  private pendingThumbnail: string | undefined;
 
   private async putScene(payload: SavePayload): Promise<number> {
     this.queueThumbnail();
@@ -384,8 +412,12 @@ class CanvasSaver {
     if (!this.excalidrawAPI || !this.canvasId) {
       return;
     }
+    const generation = this.generation;
     try {
       const remote = await getCanvas(this.canvasId);
+      if (generation !== this.generation) {
+        return;
+      }
       const remoteData = remote.scene?.data as
         | { elements: RemoteExcalidrawElement[] }
         | undefined;
@@ -434,6 +466,7 @@ class CanvasSaver {
     ) {
       return;
     }
+    const generation = this.generation;
     this.lastThumbnailAt = Date.now();
     try {
       const elements = this.excalidrawAPI
@@ -455,7 +488,7 @@ class CanvasSaver {
       )
         .then((canvas) => {
           const thumbnail = canvas.toDataURL("image/jpeg", 0.6);
-          if (thumbnail.length < 61440) {
+          if (thumbnail.length < 61440 && generation === this.generation) {
             this.pendingThumbnail = thumbnail;
           }
         })

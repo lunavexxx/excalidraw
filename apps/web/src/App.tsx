@@ -119,10 +119,13 @@ import { canvasSaver } from "./canvas/saver";
 import {
   CanvasApiError,
   isRootPath,
+  loadServerCanvasFiles,
   openServerCanvas,
   parseCanvasIdFromPath,
+  switchToBlankCanvas,
+  switchToCanvas,
 } from "./canvas/load";
-import { getLastOpenedCanvas, loadCanvasFiles } from "./canvas/api";
+import { getLastOpenedCanvas } from "./canvas/api";
 
 import { loadFilesFromFirebase } from "./data/firebase";
 import {
@@ -611,32 +614,12 @@ const ExcalidrawWrapper = () => {
             ]);
           });
         } else if ("isServerCanvas" in data && data.isServerCanvas) {
-          if (fileIds.length) {
-            // 服务端画布:图片二进制从 canvas API 拉取,不走 IndexedDB
-            FileStatusStore.updateStatuses(
-              fileIds.map(
-                (fileId) => [fileId, "loading"] as [FileId, "loading"],
-              ),
-            );
-            loadCanvasFiles(data.canvasId, fileIds).then(
-              ({ loadedFiles, erroredFiles }) => {
-                excalidrawAPI.addFiles(loadedFiles);
-                updateStaleImageStatuses({
-                  excalidrawAPI,
-                  erroredFiles: erroredFiles as Map<FileId, true>,
-                  elements: excalidrawAPI.getSceneElementsIncludingDeleted(),
-                });
-                FileStatusStore.updateStatuses([
-                  ...loadedFiles.map(
-                    (f) => [f.id, "loaded"] as [FileId, "loaded"],
-                  ),
-                  ...[...erroredFiles.keys()].map(
-                    (fileId) => [fileId, "error"] as [FileId, "error"],
-                  ),
-                ]);
-              },
-            );
-          }
+          // 服务端画布:图片二进制从 canvas API 拉取,不走 IndexedDB
+          loadServerCanvasFiles(
+            data.canvasId,
+            data.scene.elements,
+            excalidrawAPI,
+          );
         } else if (isInitialLoad) {
           if (fileIds.length) {
             LocalData.fileStorage
@@ -826,6 +809,44 @@ const ExcalidrawWrapper = () => {
     window.addEventListener(EVENT.BEFORE_UNLOAD, unloadHandler);
     return () => {
       window.removeEventListener(EVENT.BEFORE_UNLOAD, unloadHandler);
+    };
+  }, [excalidrawAPI]);
+
+  // 页内画布切换(pushState)后,浏览器前进/后退也应页内切换场景
+  useEffect(() => {
+    if (!excalidrawAPI) {
+      return;
+    }
+    const onPopState = () => {
+      const targetId = parseCanvasIdFromPath();
+      const currentId = appJotaiStore.get(canvasIdAtom);
+      if (targetId === currentId) {
+        return;
+      }
+      if (targetId) {
+        switchToCanvas({
+          canvasId: targetId,
+          excalidrawAPI,
+          historyMode: "replace",
+        }).catch(() => {
+          // 打开失败:URL 校正回当前实际所在画布,场景保持不动
+          window.history.replaceState(
+            {},
+            APP_NAME,
+            currentId ? `/c/${currentId}` : "/",
+          );
+        });
+      } else if (currentId) {
+        switchToBlankCanvas({ excalidrawAPI, historyMode: "replace" }).catch(
+          () => {
+            window.history.replaceState({}, APP_NAME, `/c/${currentId}`);
+          },
+        );
+      }
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
     };
   }, [excalidrawAPI]);
 
