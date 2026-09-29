@@ -13,6 +13,7 @@ import {
   useExcalidrawElements,
 } from "@excalidraw/excalidraw/components/App";
 import { FilledButton } from "@excalidraw/excalidraw/components/FilledButton";
+import { playerPlayIcon } from "@excalidraw/excalidraw/components/icons";
 import { useI18n } from "@excalidraw/excalidraw/i18n";
 import { useUIAppState } from "@excalidraw/excalidraw/context/ui-appState";
 import { exportToCanvas } from "@excalidraw/utils";
@@ -24,7 +25,7 @@ import type {
 
 import { useAtom } from "../app-jotai";
 
-import { playFilledIcon, presentationModeAtom } from "./PresentationMode";
+import { presentationModeAtom } from "./PresentationMode";
 
 const THUMBNAIL_MAX_SIZE = 560;
 const THUMBNAIL_EXPORT_SCALE = 2;
@@ -232,7 +233,7 @@ export const PresentationPanel = () => {
               color="primary"
               size="medium"
               fullWidth
-              icon={playFilledIcon}
+              icon={playerPlayIcon}
               onClick={() => setPresentationMode(true)}
             >
               {t("presentationPanel.start")}

@@ -12,7 +12,6 @@ import {
   chevronLeftIcon,
   chevronRight,
   CloseIcon,
-  createIcon,
 } from "@excalidraw/excalidraw/components/icons";
 import { useI18n } from "@excalidraw/excalidraw/i18n";
 
@@ -28,9 +27,6 @@ import { atom, useAtom } from "../app-jotai";
 import "./PresentationMode.scss";
 
 export const presentationModeAtom = atom(false);
-
-// solid ▶ — the package's playerPlayIcon is stroke-only
-export const playFilledIcon = createIcon("M7 4.5v15l13-7.5z", 24);
 
 const SLIDE_NAV_DURATION = 400;
 // keep in sync with the control-bar footprint in PresentationMode.scss
