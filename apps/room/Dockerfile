@@ -1,18 +1,19 @@
-FROM node:24-alpine AS build
-WORKDIR /app
-COPY package.json ./
-# 单项目无 lockfile 时退化为 npm install;CI/本地可提交 package-lock.json 后换 npm ci
-RUN npm install --omit=dev --ignore-scripts || npm install --ignore-scripts
-COPY tsconfig.json ./
-COPY src ./src
-RUN npm install typescript@5.6.2 --no-save --ignore-scripts && npx tsc
+FROM golang:1.26-alpine AS build
+WORKDIR /src
+ENV CGO_ENABLED=0
+# 服务器(中国机房)直连 proxy.golang.org 超时,默认走国内镜像
+ARG GOPROXY=https://goproxy.cn,direct
+ENV GOPROXY=${GOPROXY}
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -trimpath -ldflags "-s -w" -o /out/room .
 
-FROM node:24-alpine
+FROM alpine:3.20
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY package.json ./
+RUN adduser -D -H room && apk add --no-cache ca-certificates
+COPY --from=build /out/room /app/room
+USER room
 EXPOSE 3002
 HEALTHCHECK --interval=10s --timeout=3s --retries=5 CMD wget -qO- http://127.0.0.1:3002/healthz || exit 1
-CMD ["node", "dist/index.js"]
+ENTRYPOINT ["/app/room"]
