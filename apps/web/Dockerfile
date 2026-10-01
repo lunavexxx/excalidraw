@@ -28,4 +28,6 @@ FROM nginx:stable-alpine-slim@sha256:2c605dbeab79a6b2a63340474fe58119d0ef95bdc4b
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /opt/node_app/build /usr/share/nginx/html
 
-HEALTHCHECK CMD wget -q -O /dev/null http://localhost || exit 1
+# 探测目标必须显式 127.0.0.1:alpine 的 musl 把 localhost 排序为 ::1 优先,
+# 而 nginx 只监听 IPv4,用 localhost 会永远 connection refused
+HEALTHCHECK CMD wget -q -O /dev/null http://127.0.0.1 || exit 1
