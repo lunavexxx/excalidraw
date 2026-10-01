@@ -6,6 +6,7 @@
 !.prettierrc
 !index.html
 !package.json
+!nginx.conf
 !public/
 !packages/
 !scripts/
