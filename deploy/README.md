@@ -137,9 +137,28 @@ docker compose -f test.yml up -d --build
 3. **验证**:
    ```bash
    curl https://api.<域名>/healthz    # 200
-   curl https://api.<域名>/readyz     # 200(Nacos 配置 + pg + 自动迁移全链路)
+   curl https://api.<域名>/readyz     # 200(Nacos 配置 + pg 连通)
    # 浏览器打开 https://<域名> 见白板
    ```
+
+## 数据库迁移(手动)
+
+api 启动**不做任何 DDL**;schema 变更以 SQL 文件形式提供在 `apps/api/migrations/`(0001 起、按序号递增,`.up.sql` 应用 / `.down.sql` 回退)。**新迁移需要手动应用**,两种方式任选:
+
+```bash
+# 方式 A:在服务器上(已 git pull,经 pg 容器执行)
+docker compose -f test.yml exec -T pg \
+  psql -U excalidraw -d excalidraw < apps/api/migrations/<NNNN_xxx>.up.sql
+
+# 方式 B:从本机直连公网 5432(安全组已放行时)
+psql "postgres://excalidraw:${PG_PASSWORD}@<服务器IP>:5432/excalidraw" \
+  -f apps/api/migrations/<NNNN_xxx>.up.sql
+```
+
+- 全新环境从 0001 开始按序执行;只加新迁移时执行对应文件即可
+- 判断迁移是否已应用以库内对象为准(`\dt` 看表);库里的 `schema_migrations`
+  是早期 golang-migrate 的遗留,可忽略
+- 也可用 golang-migrate CLI(见 `apps/api/Makefile` 的 `migrate-up/down`)
 
 ## 日常更新(服务器)
 
@@ -147,7 +166,7 @@ docker compose -f test.yml up -d --build
 git pull && docker compose -f test.yml up -d --build
 ```
 
-api 启动时自动跑数据库迁移,无需手动步骤。磁盘吃紧时 `docker system prune -f` 清 dangling 层。
+涉及 schema 变更的版本需先按上一节手动应用迁移,再更新容器。磁盘吃紧时 `docker system prune -f` 清 dangling 层。
 
 ## 本地环境(local.yml)
 
@@ -194,4 +213,4 @@ curl http://localhost:8080/readyz     # 200 = 连通服务器 Nacos(local namesp
 
 - 账号体系已自建(`/api/v1/auth/*`,手机号+密码,web 经 Caddy 同源访问);在线保存/文档 API/图片上传随 M1 余项落地,此前 web 前端的历史云功能仍指向上游后端
 - MinIO / room / admin / 备份脚本分别随 M1 / M3 / M7 落地
-- api 自动迁移以单副本为前提,compose 不要 `--scale api`
+- 数据库迁移为手动步骤(schema 与 api 启动解耦),见「数据库迁移」一节

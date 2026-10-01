@@ -12,9 +12,17 @@ www.{$WEB_DOMAIN} {
 
 {$WEB_DOMAIN} {
 	# api 与 web 同站:前端请求相对路径 /api/v1/*,由这里转发到 Go api,
-	# 生产全程同源(无 CORS,refresh cookie 为一方 cookie)。
+	# 生产全程同源(无 CORS,认证走 Authorization 头)。
+	# 内部端点仅供容器内网(room → api ACL 回调),公网显式拒绝。
+	handle /api/v1/internal/* {
+		respond 403
+	}
 	handle /api/* {
 		reverse_proxy api:8080
+	}
+	# 协作 WebSocket(socket.io);Caddy 自动处理 Upgrade。
+	handle /socket.io/* {
+		reverse_proxy room:3002
 	}
 	handle {
 		reverse_proxy web:80
