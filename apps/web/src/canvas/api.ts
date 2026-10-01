@@ -2,7 +2,12 @@ import type { BinaryFileData, DataURL } from "@excalidraw/excalidraw/types";
 
 import type { FileId } from "@excalidraw/element/types";
 
-import { API_URL, fetchJson, refreshSession } from "../auth/api";
+import {
+  API_URL,
+  fetchJson,
+  fetchJsonWithToken,
+  refreshSession,
+} from "../auth/api";
 import { getAccessToken } from "../auth/tokens";
 
 import type { ApiBody } from "../auth/types";
@@ -12,6 +17,9 @@ import type {
   CanvasErrorCode,
   CanvasFilePayload,
   CanvasMeta,
+  CollaboratorPayload,
+  GuestAccessPayload,
+  ShareLinkPayload,
 } from "./types";
 
 export class CanvasApiError extends Error {
@@ -33,8 +41,9 @@ const assertOK = <T>(body: ApiBody): T => {
 export const listCanvases = async (
   cursor?: string,
   limit = 20,
+  scope: "mine" | "shared" = "mine",
 ): Promise<{ items: CanvasMeta[]; next_cursor: string }> => {
-  const query = new URLSearchParams({ limit: String(limit) });
+  const query = new URLSearchParams({ limit: String(limit), scope });
   if (cursor) {
     query.set("cursor", cursor);
   }
@@ -57,8 +66,18 @@ export const createCanvas = async (name?: string): Promise<CanvasMeta> => {
   return data.canvas;
 };
 
-export const getCanvas = async (canvasId: string): Promise<CanvasDetail> =>
-  assertOK(await fetchJson(`/canvases/${canvasId}`, { method: "GET" }));
+// opts.token:guest(分享链接)以 guest JWT 读取画布;登录用户省略。
+export const getCanvas = async (
+  canvasId: string,
+  opts?: { token?: string | null },
+): Promise<CanvasDetail> => {
+  const init = { method: "GET" };
+  const body =
+    opts?.token != null
+      ? await fetchJsonWithToken(`/canvases/${canvasId}`, init, opts.token)
+      : await fetchJson(`/canvases/${canvasId}`, init);
+  return assertOK(body);
+};
 
 export const saveCanvasScene = async (
   canvasId: string,
@@ -111,12 +130,16 @@ export const putCanvasFiles = async (
 const fetchCanvasFileBlob = async (
   canvasId: string,
   fileId: string,
+  token?: string | null,
 ): Promise<Blob> => {
+  const authHeader = token
+    ? { Authorization: `Bearer ${token}` }
+    : getAccessToken()
+    ? { Authorization: `Bearer ${getAccessToken()}` }
+    : null;
   const doFetch = () =>
     fetch(`${API_URL}/canvases/${canvasId}/files/${fileId}`, {
-      ...(getAccessToken()
-        ? { headers: { Authorization: `Bearer ${getAccessToken()}` } }
-        : null),
+      ...(authHeader ? { headers: authHeader } : null),
     });
 
   const isJson = (res: Response) =>
@@ -153,16 +176,17 @@ const blobToDataURL = (blob: Blob): Promise<string> =>
 export const loadCanvasFiles = async (
   canvasId: string,
   fileIds: string[],
+  opts?: { token?: string | null },
 ): Promise<{
   loadedFiles: BinaryFileData[];
-  erroredFiles: Map<string, true>;
+  erroredFiles: Map<FileId, true>;
 }> => {
   const loadedFiles: BinaryFileData[] = [];
-  const erroredFiles = new Map<string, true>();
+  const erroredFiles = new Map<FileId, true>();
   await Promise.all(
     fileIds.map(async (fileId) => {
       try {
-        const blob = await fetchCanvasFileBlob(canvasId, fileId);
+        const blob = await fetchCanvasFileBlob(canvasId, fileId, opts?.token);
         loadedFiles.push({
           id: fileId as FileId,
           mimeType: (blob.type || "image/png") as BinaryFileData["mimeType"],
@@ -171,9 +195,98 @@ export const loadCanvasFiles = async (
           lastRetrieved: Date.now(),
         });
       } catch {
-        erroredFiles.set(fileId, true);
+        erroredFiles.set(fileId as FileId, true);
       }
     }),
   );
   return { loadedFiles, erroredFiles };
+};
+
+// ---- 协作者 / 分享链接 / guest 换票(信息类管理一律 owner 专属)----
+
+export const listCollaborators = async (
+  canvasId: string,
+): Promise<CollaboratorPayload[]> => {
+  const data = assertOK<{ items: CollaboratorPayload[] }>(
+    await fetchJson(`/canvases/${canvasId}/collaborators`, { method: "GET" }),
+  );
+  return data.items;
+};
+
+/** 按手机号邀请/变更协作者(owner;upsert 语义)。 */
+export const putCollaborator = async (
+  canvasId: string,
+  phone: string,
+  role: "editor" | "viewer",
+): Promise<CollaboratorPayload> => {
+  const data = assertOK<{ collaborator: CollaboratorPayload }>(
+    await fetchJson(`/canvases/${canvasId}/collaborators`, {
+      method: "PUT",
+      body: JSON.stringify({ phone, role }),
+    }),
+  );
+  return data.collaborator;
+};
+
+export const removeCollaborator = async (
+  canvasId: string,
+  userId: string,
+): Promise<void> => {
+  assertOK(
+    await fetchJson(`/canvases/${canvasId}/collaborators/${userId}`, {
+      method: "DELETE",
+    }),
+  );
+};
+
+export const listShareLinks = async (
+  canvasId: string,
+): Promise<ShareLinkPayload[]> => {
+  const data = assertOK<{ items: ShareLinkPayload[] }>(
+    await fetchJson(`/canvases/${canvasId}/share-links`, { method: "GET" }),
+  );
+  return data.items;
+};
+
+/** 创建分享链接;明文 token 仅在本次响应返回(前端拼 /c/:id?share=)。 */
+export const createShareLink = async (
+  canvasId: string,
+  role: "editor" | "viewer",
+  expiresInDays?: number,
+): Promise<ShareLinkPayload> => {
+  const data = assertOK<{ share_link: ShareLinkPayload }>(
+    await fetchJson(`/canvases/${canvasId}/share-links`, {
+      method: "POST",
+      body: JSON.stringify({
+        role,
+        ...(expiresInDays ? { expires_in_days: expiresInDays } : null),
+      }),
+    }),
+  );
+  return data.share_link;
+};
+
+export const revokeShareLink = async (
+  canvasId: string,
+  linkId: string,
+): Promise<void> => {
+  assertOK(
+    await fetchJson(`/canvases/${canvasId}/share-links/${linkId}`, {
+      method: "DELETE",
+    }),
+  );
+};
+
+/** 匿名持 share token 换 guest JWT(唯一的无鉴权画布端点)。 */
+export const exchangeShareToken = async (
+  canvasId: string,
+  shareToken: string,
+): Promise<GuestAccessPayload> => {
+  return assertOK(
+    await fetch(`${API_URL}/canvases/${canvasId}/access`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ share_token: shareToken }),
+    }).then((res) => res.json()),
+  );
 };

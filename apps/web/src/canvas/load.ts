@@ -18,9 +18,12 @@ import type { FileId } from "@excalidraw/element/types";
 import { appJotaiStore } from "../app-jotai";
 import { FileStatusStore } from "../data/fileStatusStore";
 import { updateStaleImageStatuses } from "../data/FileManager";
+import { clearGuestSession, getGuestToken } from "../auth/guestSession";
+import { collabAPIAtom } from "../collab/Collab";
+import { currentUserAtom } from "../auth/atoms";
 
 import { canvasSaver } from "./saver";
-import { canvasIdAtom } from "./atoms";
+import { canvasIdAtom, canvasRoleAtom, type CanvasAccessRole } from "./atoms";
 import { getCanvas, loadCanvasFiles } from "./api";
 import { CanvasApiError } from "./api";
 
@@ -39,17 +42,57 @@ export type ServerCanvasResult = {
   canvasId: string;
 };
 
+export type OpenServerCanvasOpts = {
+  /** guest(分享链接)以 guest JWT 读取 */
+  token?: string | null;
+  /** guest 链接角色(editor/viewer);缺省从 my_role 推断 */
+  role?: "editor" | "viewer";
+};
+
+// 协作与画布切换互斥(两套持久化);协作中 viewer/guest 打开画布自动进房围观。
+const stopCollabIfActive = (): Promise<void> => {
+  const collab = appJotaiStore.get(collabAPIAtom);
+  if (collab?.isCollaborating()) {
+    return collab.stopCollaboration(false);
+  }
+  return Promise.resolve();
+};
+
+// viewer/guest 打开服务端画布后自动进入实时房间(只读围观);
+// editor/owner 的协作由分享对话框显式发起。
+const autoJoinCollabIfReadOnly = (canvasId: string): Promise<void> => {
+  const role = appJotaiStore.get(canvasRoleAtom);
+  if (role !== "viewer" && role !== "guest") {
+    return Promise.resolve();
+  }
+  const collab = appJotaiStore.get(collabAPIAtom);
+  if (!collab || collab.isCollaborating()) {
+    return Promise.resolve();
+  }
+  const username = appJotaiStore.get(currentUserAtom)?.nickname;
+  return collab
+    .startCollaboration({ canvasId, username: username || undefined })
+    .then(() => undefined)
+    .catch((error) => {
+      // 进房失败不阻断画布浏览(仍以静态快照展示)
+      console.error("collab auto-join failed:", error);
+    });
+};
+
 /**
  * 拉取服务端画布并 restore 成 initialData;成功后让 saver 以服务端
  * 版本为基准接管。appState 以服务端为准,仅沿用本地主题等 UI 偏好
  * (与协作场景同策略)。抛出 CanvasApiError 由调用方决定降级表现。
+ * viewer/guest 打开:只读(viewModeEnabled),saver 静默。
  */
 export const openServerCanvas = async (
   canvasId: string,
   localAppState: Partial<AppState> | null,
   excalidrawAPI: ExcalidrawImperativeAPI,
+  opts?: OpenServerCanvasOpts,
 ): Promise<ServerCanvasResult> => {
-  const detail = await getCanvas(canvasId);
+  const token = opts?.token ?? getGuestToken(canvasId) ?? undefined;
+  const detail = await getCanvas(canvasId, { token });
   const data = detail.scene?.data as
     | { elements?: unknown[]; appState?: Partial<AppState> }
     | undefined;
@@ -63,13 +106,24 @@ export const openServerCanvas = async (
     repairBindings: true,
     deleteInvisibleElements: true,
   });
-  // 打开即接管:本地草稿不再作为该画布的持久层
+
+  const role: CanvasAccessRole = token ? "guest" : detail.my_role ?? "owner";
+  appJotaiStore.set(canvasRoleAtom, role);
+  const readOnly = role === "viewer" || role === "guest";
+
+  // 协议 v2:冷启动同步游标注入(协作进房后的 sync-request 以此为起点)
+  appJotaiStore
+    .get(collabAPIAtom)
+    ?.setServerSeqCursor(canvasId, detail.scene?.cursor ?? 0);
+
+  // 打开即接管:本地草稿不再作为该画布的持久层;viewer/guest 静默
   canvasSaver.init(excalidrawAPI);
   canvasSaver.adopt({
     canvasId,
     version: detail.scene?.version ?? 0,
     name: detail.canvas.name,
     fileIds: detail.files.map((f) => f.file_id),
+    role: readOnly ? "viewer" : "editor",
   });
 
   return {
@@ -80,6 +134,8 @@ export const openServerCanvas = async (
         ...restoredAppState,
         name: detail.canvas.name,
         theme: localAppState?.theme || restoredAppState.theme,
+        // 只读访问(guest 链接 / viewer 协作者):禁编辑,保留平移缩放
+        ...(readOnly ? { viewModeEnabled: true } : null),
       },
       scrollToContent: true,
     },
@@ -148,6 +204,7 @@ const doSwitchToCanvas = async (params: {
     return;
   }
 
+  await stopCollabIfActive();
   await canvasSaver.flushAsync();
   const prevAppState = excalidrawAPI.getAppState();
   const result = await openServerCanvas(canvasId, prevAppState, excalidrawAPI);
@@ -171,6 +228,7 @@ const doSwitchToCanvas = async (params: {
     captureUpdate: CaptureUpdateAction.NEVER,
   });
   loadServerCanvasFiles(canvasId, elements, excalidrawAPI);
+  await autoJoinCollabIfReadOnly(canvasId);
 
   const url = `/c/${canvasId}`;
   if (historyMode === "replace") {
@@ -193,15 +251,22 @@ const doSwitchToBlankCanvas = async (params: {
   historyMode?: "push" | "replace";
 }): Promise<void> => {
   const { excalidrawAPI, historyMode = "push" } = params;
+  await stopCollabIfActive();
   await canvasSaver.flushAsync();
   // resetScene 会把 openSidebar 重置为 null(收起侧边栏),先保留
   const openSidebar = excalidrawAPI.getAppState().openSidebar;
+  // 离开服务端画布:重置内容角色并清理 guest 会话(如为分享链接访问)
+  const prevCanvasId = appJotaiStore.get(canvasIdAtom);
+  if (prevCanvasId) {
+    clearGuestSession(prevCanvasId);
+  }
+  appJotaiStore.set(canvasRoleAtom, null);
   // detach 必须先于 resetScene:否则空场景 onChange 会以旧画布身份
   // 通过 seenContent 兜底,2s 后把空快照 PUT 上去清空云端画布
   canvasSaver.detach();
   excalidrawAPI.resetScene();
   excalidrawAPI.updateScene({
-    appState: { openSidebar, isLoading: false },
+    appState: { openSidebar, isLoading: false, viewModeEnabled: false },
     captureUpdate: CaptureUpdateAction.NEVER,
   });
 

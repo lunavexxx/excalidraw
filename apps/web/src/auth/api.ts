@@ -103,6 +103,23 @@ export const fetchJson = async (
   return body;
 };
 
+// 显式 token 版本:guest(分享链接)请求用 guest JWT 替代登录态;
+// token 过期/失效时由调用方决定如何重新换票,这里不做自动续期。
+export const fetchJsonWithToken = async (
+  path: string,
+  init: RequestInit,
+  token: string,
+): Promise<ApiBody> => {
+  const res = await fetch(`${API_URL}${path}`, {
+    ...init,
+    headers: {
+      ...(init.body ? { "Content-Type": "application/json" } : null),
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return parseBody(res);
+};
+
 const authRequest = async (path: string, body: unknown): Promise<User> => {
   const data = await parseBody(
     await fetch(`${API_URL}${path}`, {

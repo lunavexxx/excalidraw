@@ -1,6 +1,5 @@
 import { CaptureUpdateAction } from "@excalidraw/excalidraw";
 import { trackEvent } from "@excalidraw/excalidraw/analytics";
-import { encryptData } from "@excalidraw/excalidraw/data/encryption";
 import { newElementWith } from "@excalidraw/element";
 import throttle from "lodash.throttle";
 
@@ -27,34 +26,43 @@ class Portal {
   socket: Socket | null = null;
   socketInitialized: boolean = false; // we don't want the socket to emit any updates until it is fully initialized
   roomId: string | null = null;
-  roomKey: string | null = null;
   broadcastedElementVersions: Map<string, number> = new Map();
 
   constructor(collab: TCollabClass) {
     this.collab = collab;
   }
 
-  open(socket: Socket, id: string, key: string) {
+  open(socket: Socket, id: string) {
     this.socket = socket;
     this.roomId = id;
-    this.roomKey = key;
 
     // Initialize socket listeners
     this.socket.on("init-room", () => {
       if (this.socket) {
-        this.socket.emit("join-room", this.roomId);
+        // join-room ack 触发游标同步(协议 v2);旧 room 无 ack,由
+        // first-in-room / 超时兜底计时器触发,行为等价。
+        this.socket.emit(
+          "join-room",
+          this.roomId,
+          (res?: { error?: string } | null) => {
+            if (this.socket && !res?.error) {
+              this.collab.onRoomJoined();
+            }
+          },
+        );
         trackEvent("share", "room joined");
       }
     });
-    this.socket.on("new-user", async (_socketId: string) => {
-      this.broadcastScene(
-        WS_SUBTYPES.INIT,
-        this.collab.getSceneElementsIncludingDeleted(),
-        /* syncAll */ true,
-      );
-    });
     this.socket.on("room-user-change", (clients: SocketId[]) => {
       this.collab.setCollaborators(clients);
+    });
+    // 重连补拉:socket.io 自动重连后 init-room → join-room 会重放,
+    // 但 first-in-room 是 .once、SCENE_INIT 消费 guard 也已失效;
+    // 断线窗口的场景变化由服务端持久层补齐(绝不盲覆盖)。
+    this.socket.on("connect", () => {
+      if (this.roomId) {
+        this.collab.onSocketReconnected();
+      }
     });
 
     return socket;
@@ -68,18 +76,12 @@ class Portal {
     this.socket.close();
     this.socket = null;
     this.roomId = null;
-    this.roomKey = null;
     this.socketInitialized = false;
     this.broadcastedElementVersions = new Map();
   }
 
   isOpen() {
-    return !!(
-      this.socketInitialized &&
-      this.socket &&
-      this.roomId &&
-      this.roomKey
-    );
+    return !!(this.socketInitialized && this.socket && this.roomId);
   }
 
   async _broadcastSocketData(
@@ -88,15 +90,31 @@ class Portal {
     roomId?: string,
   ) {
     if (this.isOpen()) {
+      // 明文 JSON 广播(传输由 TLS 保护;房间内容由 ACL 把关)。
       const json = JSON.stringify(data);
       const encoded = new TextEncoder().encode(json);
-      const { encryptedBuffer, iv } = await encryptData(this.roomKey!, encoded);
+      const target = roomId ?? this.roomId;
 
+      if (volatile) {
+        this.socket?.emit(WS_EVENTS.SERVER_VOLATILE, target, encoded);
+        return;
+      }
+      // 非 volatile 帧要求落库确认(协议 v2):ack 携带 seq 表示已
+      // 持久化并转发;persist_failed 表示该帧既未落库也未转发。
       this.socket?.emit(
-        volatile ? WS_EVENTS.SERVER_VOLATILE : WS_EVENTS.SERVER,
-        roomId ?? this.roomId,
-        encryptedBuffer,
-        iv,
+        WS_EVENTS.SERVER,
+        target,
+        encoded,
+        (res?: { seq?: number; error?: string } | null) => {
+          if (!this.roomId) {
+            return;
+          }
+          if (typeof res?.seq === "number") {
+            this.collab.onOwnPersistedSeq(this.roomId, res.seq);
+          } else if (res?.error) {
+            this.collab.onOwnPersistFailed(this.roomId);
+          }
+        },
       );
     }
   }

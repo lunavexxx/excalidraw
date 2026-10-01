@@ -5,8 +5,9 @@ import {
   zoomToFitBounds,
   reconcileElements,
 } from "@excalidraw/excalidraw";
+import { clearAppStateForLocalStorage } from "@excalidraw/excalidraw/appState";
 import { ErrorDialog } from "@excalidraw/excalidraw/components/ErrorDialog";
-import { APP_NAME, cloneJSON, EVENT, toBrandedType } from "@excalidraw/common";
+import { cloneJSON, EVENT, toBrandedType } from "@excalidraw/common";
 import {
   IDLE_THRESHOLD,
   ACTIVE_THRESHOLD,
@@ -18,10 +19,8 @@ import {
   resolvablePromise,
   throttleRAF,
 } from "@excalidraw/common";
-import { decryptData } from "@excalidraw/excalidraw/data/encryption";
 import { getVisibleSceneBounds } from "@excalidraw/element";
-import { newElementWith } from "@excalidraw/element";
-import { isImageElement, isInitializedImageElement } from "@excalidraw/element";
+import { isInitializedImageElement } from "@excalidraw/element";
 import { AbortError } from "@excalidraw/excalidraw/errors";
 import { t } from "@excalidraw/excalidraw/i18n";
 import { withBatchedUpdates } from "@excalidraw/excalidraw/reactUtils";
@@ -55,50 +54,48 @@ import type { Mutable, ValueOf } from "@excalidraw/common/utility-types";
 import { appJotaiStore, atom } from "../app-jotai";
 import {
   CURSOR_SYNC_TIMEOUT,
-  FILE_UPLOAD_MAX_BYTES,
-  FIREBASE_STORAGE_PREFIXES,
   INITIAL_SCENE_UPDATE_TIMEOUT,
   LOAD_IMAGES_TIMEOUT,
+  SCENE_SEQ_PATROL_MS,
+  SCENE_SYNC_MAX_ROUNDS,
+  SCENE_SYNC_TIMEOUT,
   WS_SUBTYPES,
-  SYNC_FULL_SCENE_INTERVAL_MS,
   WS_EVENTS,
 } from "../app_constants";
-import {
-  generateCollaborationLinkData,
-  getCollaborationLink,
-  getSyncableElements,
-} from "../data";
-import {
-  encodeFilesForUpload,
-  FileManager,
-  updateStaleImageStatuses,
-} from "../data/FileManager";
+import { getSyncableElements } from "../data";
+import { FileManager, updateStaleImageStatuses } from "../data/FileManager";
 import { FileStatusStore } from "../data/fileStatusStore";
 import { LocalData } from "../data/LocalData";
-import {
-  isSavedToFirebase,
-  loadFilesFromFirebase,
-  loadFromFirebase,
-  saveFilesToFirebase,
-  saveToFirebase,
-} from "../data/firebase";
 import {
   importUsernameFromLocalStorage,
   saveUsernameToLocalStorage,
 } from "../data/localStorage";
-import { resetBrowserStateVersions } from "../data/tabSync";
+
+import { getGuestToken } from "../auth/guestSession";
+import { getAccessToken } from "../auth/tokens";
+import {
+  getCanvas,
+  loadCanvasFiles,
+  putCanvasFiles,
+  saveCanvasScene,
+} from "../canvas/api";
+import { canvasSaver } from "../canvas/saver";
 
 import { collabErrorIndicatorAtom } from "./CollabError";
 import Portal from "./Portal";
 
-import type {
-  SocketUpdateDataSource,
-  SyncableExcalidrawElement,
-} from "../data";
+import type { SceneSyncAck, SocketUpdateDataSource } from "../data";
 
 export const collabAPIAtom = atom<CollabAPI | null>(null);
 export const isCollaboratingAtom = atom(false);
 export const isOfflineAtom = atom(false);
+
+// 协议 v2 同步游标:cursor = 已连续应用的最大事件 seq;
+// 乱序到达的帧暂存 gaps,补齐即推进(跨 pod 事件交错时保证补丁不漏)。
+interface SeqCursorState {
+  cursor: number;
+  gaps: Set<number>;
+}
 
 interface CollabState {
   errorMessage: string | null;
@@ -126,6 +123,8 @@ export interface CollabAPI {
   getActiveRoomLink: CollabInstance["getActiveRoomLink"];
   setCollabError: CollabInstance["setErrorDialog"];
   setUserToFollow: CollabInstance["setUserToFollow"];
+  /** 协议 v2:冷启动同步游标注入(画布页打开时) */
+  setServerSeqCursor: CollabInstance["setServerSeqCursor"];
 }
 
 interface CollabProps {
@@ -145,6 +144,11 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   /** the socket ids of the users following the current user */
   private followedBy = new Set<SocketId>();
 
+  // 协议 v2:每画布同步游标 + 补丁巡检(取代周期全量重播)
+  private seqStates = new Map<string, SeqCursorState>();
+  private seqPatrolTimer: number | null = null;
+  private syncInFlight = false;
+
   constructor(props: CollabProps) {
     super(props);
     this.state = {
@@ -156,50 +160,41 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     this.portal = new Portal(this);
     this.fileManager = new FileManager({
       onFileStatusChange: FileStatusStore.updateStatuses.bind(FileStatusStore),
+      // 文件(内嵌图片)二进制从不过 room:上传/下载走画布文件 API
+      // (与 M2 单人保存同一存储),内容 hash 寻址、幂等 upsert。
       getFiles: async (fileIds) => {
-        const { roomId, roomKey } = this.portal;
-        if (!roomId || !roomKey) {
+        const canvasId = this.portal.roomId;
+        if (!canvasId) {
           throw new AbortError();
         }
-
-        return loadFilesFromFirebase(`files/rooms/${roomId}`, roomKey, fileIds);
+        return loadCanvasFiles(canvasId, fileIds, {
+          token: getGuestToken(canvasId),
+        });
       },
       saveFiles: async ({ addedFiles }) => {
-        const { roomId, roomKey } = this.portal;
-        if (!roomId || !roomKey) {
+        const canvasId = this.portal.roomId;
+        if (!canvasId || getGuestToken(canvasId)) {
+          // guest 无 PUT 凭证:文件经房间广播保持在线,不落库
           throw new AbortError();
         }
-
-        const { savedFiles, erroredFiles } = await saveFilesToFirebase({
-          prefix: `${FIREBASE_STORAGE_PREFIXES.collabFiles}/${roomId}`,
-          files: await encodeFilesForUpload({
-            files: addedFiles,
-            encryptionKey: roomKey,
-            maxBytes: FILE_UPLOAD_MAX_BYTES,
-          }),
+        const files = [...addedFiles.values()].map((file) => {
+          const base64 = file.dataURL.slice(file.dataURL.indexOf(",") + 1);
+          return {
+            file_id: file.id,
+            mime_type: file.mimeType,
+            data: base64,
+          };
         });
-
+        if (files.length === 0) {
+          return {
+            savedFiles: new Map<FileId, BinaryFileData>(),
+            erroredFiles: new Map<FileId, BinaryFileData>(),
+          };
+        }
+        await putCanvasFiles(canvasId, files);
         return {
-          savedFiles: savedFiles.reduce(
-            (acc: Map<FileId, BinaryFileData>, id) => {
-              const fileData = addedFiles.get(id);
-              if (fileData) {
-                acc.set(id, fileData);
-              }
-              return acc;
-            },
-            new Map(),
-          ),
-          erroredFiles: erroredFiles.reduce(
-            (acc: Map<FileId, BinaryFileData>, id) => {
-              const fileData = addedFiles.get(id);
-              if (fileData) {
-                acc.set(id, fileData);
-              }
-              return acc;
-            },
-            new Map(),
-          ),
+          savedFiles: new Map(addedFiles),
+          erroredFiles: new Map<FileId, BinaryFileData>(),
         };
       },
     });
@@ -244,6 +239,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       setUsername: this.setUsername,
       getUsername: this.getUsername,
       getActiveRoomLink: this.getActiveRoomLink,
+      setServerSeqCursor: this.setServerSeqCursor,
       setCollabError: this.setErrorDialog,
       setUserToFollow: this.setUserToFollow,
     };
@@ -301,15 +297,12 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       this.getSceneElementsIncludingDeleted(),
     );
 
+    // 场景尾部已"到达即落库"(room 捕获广播),无需客户端兜底保存;
+    // 仅图片文件仍在途时提示(文件二进制不经 room,需客户端上传)。
     if (
       this.isCollaborating() &&
-      (this.fileManager.shouldPreventUnload(syncableElements) ||
-        !isSavedToFirebase(this.portal, syncableElements))
+      this.fileManager.shouldPreventUnload(syncableElements)
     ) {
-      // this won't run in time if user decides to leave the site, but
-      //  the purpose is to run in immediately after user decides to stay
-      this.saveCollabRoomToFirebase(syncableElements);
-
       if (import.meta.env.VITE_APP_DISABLE_PREVENT_UNLOAD !== "true") {
         preventUnload(event);
       } else {
@@ -320,22 +313,30 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     }
   });
 
-  saveCollabRoomToFirebase = async (
-    syncableElements: readonly SyncableExcalidrawElement[],
-  ) => {
-    syncableElements = cloneJSON(syncableElements);
+  // syncToServer 是协作会话的兜底整场景 PUT(折叠语义,幂等安全):
+  // stopCollaboration 时调用,保证最终状态经 HTTP 通道落库一次
+  // (即使 room 事件链路出现过缺口)。场景持久化主路径是 room 的事件流。
+  private syncToServer = async (): Promise<void> => {
+    const canvasId = this.portal.roomId;
+    if (!canvasId || getGuestToken(canvasId)) {
+      return;
+    }
     try {
-      const storedElements = await saveToFirebase(
-        this.portal,
-        syncableElements,
-        this.excalidrawAPI.getAppState(),
+      const elements = getSyncableElements(
+        this.getSceneElementsIncludingDeleted(),
       );
-
+      // base_version 不再作为闸门(服务端折叠语义),传 0 即可。
+      await saveCanvasScene(
+        canvasId,
+        {
+          elements: cloneJSON(elements),
+          appState: clearAppStateForLocalStorage(
+            this.excalidrawAPI.getAppState(),
+          ),
+        },
+        0,
+      );
       this.resetErrorIndicator();
-
-      if (this.isCollaborating() && storedElements) {
-        this.handleRemoteSceneUpdate(this._reconcileElements(storedElements));
-      }
     } catch (error: any) {
       const errorMessage = /is longer than.*?bytes/.test(error.message)
         ? t("errors.collabSaveFailed_sizeExceeded")
@@ -362,17 +363,15 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     }
   };
 
-  stopCollaboration = (keepRemoteState = true) => {
-    this.queueBroadcastAllElements.cancel();
-    this.queueSaveToFirebase.cancel();
+  stopCollaboration = async (keepRemoteState = true) => {
+    if (this.seqPatrolTimer !== null) {
+      window.clearInterval(this.seqPatrolTimer);
+      this.seqPatrolTimer = null;
+    }
     this.loadImageFiles.cancel();
     this.resetErrorIndicator(true);
 
-    this.saveCollabRoomToFirebase(
-      getSyncableElements(
-        this.excalidrawAPI.getSceneElementsIncludingDeleted(),
-      ),
-    );
+    const canvasId = this.portal.roomId;
 
     if (this.portal.socket && this.fallbackInitializationHandler) {
       this.portal.socket.off(
@@ -384,29 +383,29 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     if (!keepRemoteState) {
       LocalData.fileStorage.reset();
       this.destroySocketClient();
-    } else if (window.confirm(t("alerts.collabStopOverridePrompt"))) {
-      // hack to ensure that we prefer we disregard any new browser state
-      // that could have been saved in other tabs while we were collaborating
-      resetBrowserStateVersions();
+      return;
+    }
 
-      window.history.pushState({}, APP_NAME, window.location.origin);
-      this.destroySocketClient();
+    // 兜底整场景 PUT(折叠语义,幂等):即使 room 事件链路有缺口,
+    // 最终状态也经 HTTP 通道落库一次。
+    await this.syncToServer();
+    this.destroySocketClient();
 
-      LocalData.fileStorage.reset();
-
-      const elements = this.excalidrawAPI
-        .getSceneElementsIncludingDeleted()
-        .map((element) => {
-          if (isImageElement(element) && element.status === "saved") {
-            return newElementWith(element, { status: "pending" });
-          }
-          return element;
+    if (canvasId && !getGuestToken(canvasId)) {
+      // 协作期间 saver 静默(serverVersion 已陈旧),用服务端最新版本
+      // 重新 adopt,恢复单人自动保存。
+      try {
+        const detail = await getCanvas(canvasId);
+        canvasSaver.adopt({
+          canvasId,
+          version: detail.scene?.version ?? 0,
+          name: detail.canvas.name,
+          fileIds: detail.files.map((f) => f.file_id),
         });
-
-      this.excalidrawAPI.updateScene({
-        elements,
-        captureUpdate: CaptureUpdateAction.NEVER,
-      });
+      } catch (error) {
+        // adopt 失败时下一次保存的冲突处理路径兜底
+        console.error(error);
+      }
     }
   };
 
@@ -455,20 +454,14 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     return await this.fileManager.getFiles(unfetchedImages);
   };
 
-  private decryptPayload = async (
-    iv: Uint8Array<ArrayBuffer>,
-    encryptedData: ArrayBuffer,
-    decryptionKey: string,
-  ): Promise<ValueOf<SocketUpdateDataSource>> => {
+  // 明文广播:JSON 解码即可(传输由 TLS 保护)。
+  private decodePayload = (
+    data: ArrayBuffer,
+  ): ValueOf<SocketUpdateDataSource> => {
     try {
-      const decrypted = await decryptData(iv, encryptedData, decryptionKey);
-
-      const decodedData = new TextDecoder("utf-8").decode(
-        new Uint8Array(decrypted),
-      );
+      const decodedData = new TextDecoder("utf-8").decode(new Uint8Array(data));
       return JSON.parse(decodedData);
     } catch (error) {
-      window.alert(t("alerts.decryptFailed"));
       console.error(error);
       return {
         type: WS_SUBTYPES.INVALID_RESPONSE,
@@ -478,9 +471,17 @@ class Collab extends PureComponent<CollabProps, CollabState> {
 
   private fallbackInitializationHandler: null | (() => any) = null;
 
-  startCollaboration = async (
-    existingRoomLinkData: null | { roomId: string; roomKey: string },
-  ) => {
+  // 协作房间 = 画布本身(/c/:id),无独立房间链接;入口为画布页分享对话框。
+  // 场景初始同步不靠房间:画布页加载时已从服务端载入同源场景,这里只需
+  // 连接 + 加入房间;首进房/重连时用服务端持久层快照做反熵补拉。
+  startCollaboration = async (opts: {
+    canvasId: string;
+    /** presence 昵称(登录用户传账号昵称;guest 由调用方生成) */
+    username?: string;
+  }) => {
+    if (opts.username && opts.username !== this.state.username) {
+      this.setUsername(opts.username);
+    }
     if (!this.state.username) {
       import("@excalidraw/random-username").then(({ getRandomUsername }) => {
         const username = getRandomUsername();
@@ -492,21 +493,8 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       return null;
     }
 
-    let roomId;
-    let roomKey;
+    const roomId = opts.canvasId;
 
-    if (existingRoomLinkData) {
-      ({ roomId, roomKey } = existingRoomLinkData);
-    } else {
-      ({ roomId, roomKey } = await generateCollaborationLinkData());
-      window.history.pushState(
-        {},
-        APP_NAME,
-        getCollaborationLink({ roomId, roomKey }),
-      );
-    }
-
-    // TODO: `ImportedDataState` type here seems abused
     const scenePromise = resolvablePromise<
       | (ImportedDataState & { elements: readonly OrderedExcalidrawElement[] })
       | null
@@ -520,10 +508,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     );
 
     const fallbackInitializationHandler = () => {
-      this.initializeRoom({
-        roomLinkData: existingRoomLinkData,
-        fetchScene: true,
-      }).then((scene) => {
+      this.initializeRoom({ fetchScene: true }).then((scene) => {
         scenePromise.resolve(scene);
       });
     };
@@ -531,11 +516,16 @@ class Collab extends PureComponent<CollabProps, CollabState> {
 
     try {
       this.portal.socket = this.portal.open(
-        socketIOClient(import.meta.env.VITE_APP_WS_SERVER_URL, {
-          transports: ["websocket", "polling"],
+        socketIOClient(import.meta.env.VITE_APP_WS_SERVER_URL || "/", {
+          // 生产同源(经 Caddy /socket.io);websocket-only 免粘性会话
+          transports: ["websocket"],
+          // 回调形式:每次(重)连接取当前 token,access 过期后重连自动续
+          auth: (cb: (data: object) => void) =>
+            cb({
+              token: getGuestToken(roomId) ?? (getAccessToken() || undefined),
+            }),
         }),
         roomId,
-        roomKey,
       );
 
       this.portal.socket.once("connect_error", fallbackInitializationHandler);
@@ -545,27 +535,11 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       return null;
     }
 
-    if (existingRoomLinkData) {
-      // when joining existing room, don't merge it with current scene data
-      this.excalidrawAPI.resetScene();
-    } else {
-      const elements = this.excalidrawAPI.getSceneElements().map((element) => {
-        if (isImageElement(element) && element.status === "saved") {
-          return newElementWith(element, { status: "pending" });
-        }
-        return element;
-      });
-      // remove deleted elements from elements array to ensure we don't
-      // expose potentially sensitive user data in case user manually deletes
-      // existing elements (or clears scene), which would otherwise be persisted
-      // to database even if deleted before creating the room.
-      this.excalidrawAPI.updateScene({
-        elements,
-        captureUpdate: CaptureUpdateAction.NEVER,
-      });
-
-      this.saveCollabRoomToFirebase(getSyncableElements(elements));
-    }
+    // 服务端拒绝进房(fail-closed):报错并退出协作
+    this.portal.socket.on("join-room-error", (_payload: { reason: string }) => {
+      this.setErrorDialog(t("errors.collabJoinForbidden"));
+      void this.stopCollaboration(false);
+    });
 
     // fallback in case you're not alone in the room but still don't receive
     // initial SCENE_INIT message
@@ -575,123 +549,108 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     );
 
     // All socket listeners are moving to Portal
-    this.portal.socket.on(
-      "client-broadcast",
-      async (encryptedData: ArrayBuffer, iv: Uint8Array<ArrayBuffer>) => {
-        if (!this.portal.roomKey) {
+    this.portal.socket.on("client-broadcast", async (data: ArrayBuffer) => {
+      const decodedData = this.decodePayload(data);
+
+      switch (decodedData.type) {
+        case WS_SUBTYPES.INVALID_RESPONSE:
           return;
-        }
-
-        const decryptedData = await this.decryptPayload(
-          iv,
-          encryptedData,
-          this.portal.roomKey,
-        );
-
-        switch (decryptedData.type) {
-          case WS_SUBTYPES.INVALID_RESPONSE:
-            return;
-          case WS_SUBTYPES.INIT: {
-            if (!this.portal.socketInitialized) {
-              this.initializeRoom({ fetchScene: false });
-              const remoteElements = toBrandedType<
-                readonly RemoteExcalidrawElement[]
-              >(decryptedData.payload.elements);
-              const reconciledElements =
-                this._reconcileElements(remoteElements);
-              this.handleRemoteSceneUpdate(reconciledElements);
-              // noop if already resolved via init from firebase
-              scenePromise.resolve({
-                elements: reconciledElements,
-                scrollToContent: true,
-              });
-            }
-            break;
+        case WS_SUBTYPES.INIT: {
+          if (!this.portal.socketInitialized) {
+            this.initializeRoom({ fetchScene: false });
+            const remoteElements = toBrandedType<
+              readonly RemoteExcalidrawElement[]
+            >(decodedData.payload.elements);
+            const reconciledElements = this._reconcileElements(remoteElements);
+            this.handleRemoteSceneUpdate(reconciledElements);
+            // noop if already resolved via first-in-room fetch
+            scenePromise.resolve({
+              elements: reconciledElements,
+              scrollToContent: true,
+            });
           }
-          case WS_SUBTYPES.UPDATE:
-            this.handleRemoteSceneUpdate(
-              this._reconcileElements(
-                toBrandedType<readonly RemoteExcalidrawElement[]>(
-                  decryptedData.payload.elements,
-                ),
+          break;
+        }
+        case WS_SUBTYPES.UPDATE:
+          if (typeof decodedData.seq === "number" && this.portal.roomId) {
+            this.observeSeq(this.portal.roomId, decodedData.seq);
+          }
+          this.handleRemoteSceneUpdate(
+            this._reconcileElements(
+              toBrandedType<readonly RemoteExcalidrawElement[]>(
+                decodedData.payload.elements,
               ),
-            );
-            break;
-          case WS_SUBTYPES.MOUSE_LOCATION: {
-            const { pointer, button, username, selectedElementIds } =
-              decryptedData.payload;
+            ),
+          );
+          break;
+        case WS_SUBTYPES.MOUSE_LOCATION: {
+          const { pointer, button, username, selectedElementIds } =
+            decodedData.payload;
 
-            const socketId: SocketUpdateDataSource["MOUSE_LOCATION"]["payload"]["socketId"] =
-              decryptedData.payload.socketId ||
-              // @ts-ignore legacy, see #2094 (#2097)
-              decryptedData.payload.socketID;
+          const socketId: SocketUpdateDataSource["MOUSE_LOCATION"]["payload"]["socketId"] =
+            decodedData.payload.socketId ||
+            // @ts-ignore legacy, see #2094 (#2097)
+            decodedData.payload.socketID;
 
-            this.updateCollaborator(socketId, {
-              pointer,
-              button,
-              selectedElementIds,
-              username,
-            });
+          this.updateCollaborator(socketId, {
+            pointer,
+            button,
+            selectedElementIds,
+            username,
+          });
 
-            break;
-          }
-
-          case WS_SUBTYPES.USER_VISIBLE_SCENE_BOUNDS: {
-            const { sceneBounds, socketId } = decryptedData.payload;
-
-            const userToFollow = appJotaiStore.get(userToFollowAtom);
-
-            // we're not following the user
-            // (shouldn't happen, but could be late message or bug upstream)
-            if (userToFollow?.socketId !== socketId) {
-              console.warn(
-                `receiving remote client's (from ${socketId}) viewport bounds even though we're not subscribed to it!`,
-              );
-              return;
-            }
-
-            // cross-follow case, ignore updates in this case
-            if (this.followedBy.has(userToFollow.socketId)) {
-              return;
-            }
-
-            const appState = this.excalidrawAPI.getAppState();
-
-            this.excalidrawAPI.updateScene({
-              appState: zoomToFitBounds({
-                appState,
-                bounds: sceneBounds,
-                fit: "contain",
-              }).appState,
-            });
-
-            break;
-          }
-
-          case WS_SUBTYPES.IDLE_STATUS: {
-            const { userState, socketId, username } = decryptedData.payload;
-            this.updateCollaborator(socketId, {
-              userState,
-              username,
-            });
-            break;
-          }
-
-          default: {
-            assertNever(decryptedData, null);
-          }
+          break;
         }
-      },
-    );
+
+        case WS_SUBTYPES.USER_VISIBLE_SCENE_BOUNDS: {
+          const { sceneBounds, socketId } = decodedData.payload;
+
+          const userToFollow = appJotaiStore.get(userToFollowAtom);
+
+          // we're not following the user
+          // (shouldn't happen, but could be late message or bug upstream)
+          if (userToFollow?.socketId !== socketId) {
+            console.warn(
+              `receiving remote client's (from ${socketId}) viewport bounds even though we're not subscribed to it!`,
+            );
+            return;
+          }
+
+          // cross-follow case, ignore updates in this case
+          if (this.followedBy.has(userToFollow.socketId)) {
+            return;
+          }
+
+          const appState = this.excalidrawAPI.getAppState();
+
+          this.excalidrawAPI.updateScene({
+            appState: zoomToFitBounds({
+              appState,
+              bounds: sceneBounds,
+              fit: "contain",
+            }).appState,
+          });
+
+          break;
+        }
+
+        case WS_SUBTYPES.IDLE_STATUS: {
+          const { userState, socketId, username } = decodedData.payload;
+          this.updateCollaborator(socketId, {
+            userState,
+            username,
+          });
+          break;
+        }
+
+        default: {
+          assertNever(decodedData, null);
+        }
+      }
+    });
 
     this.portal.socket.on("first-in-room", async () => {
-      if (this.portal.socket) {
-        this.portal.socket.off("first-in-room");
-      }
-      const sceneData = await this.initializeRoom({
-        fetchScene: true,
-        roomLinkData: existingRoomLinkData,
-      });
+      const sceneData = await this.initializeRoom({ fetchScene: true });
       scenePromise.resolve(sceneData);
     });
 
@@ -706,20 +665,24 @@ class Collab extends PureComponent<CollabProps, CollabState> {
 
     this.initializeIdleDetector();
 
+    // 游标巡检(协议 v2):低频探针,发现落后即拉补丁
+    if (this.seqPatrolTimer === null) {
+      this.seqPatrolTimer = window.setInterval(
+        this.patrolSeq,
+        SCENE_SEQ_PATROL_MS,
+      );
+    }
+
     this.setActiveRoomLink(window.location.href);
 
     return scenePromise;
   };
 
-  private initializeRoom = async ({
-    fetchScene,
-    roomLinkData,
-  }:
-    | {
-        fetchScene: true;
-        roomLinkData: { roomId: string; roomKey: string } | null;
-      }
-    | { fetchScene: false; roomLinkData?: null }) => {
+  // fetchScene:进房/重连/超时兜底的反熵补拉(协议 v2):
+  // 优先 seq 补丁(sync-request,精确增量),通道不可用再回退 HTTP
+  // 整场景(旧 room / API 不可达);两者都 reconcile,绝不盲覆盖,
+  // 本地未广播的编辑由 bumpElementVersions 保护。
+  private initializeRoom = async ({ fetchScene }: { fetchScene: boolean }) => {
     clearTimeout(this.socketInitializationTimer!);
     if (this.portal.socket && this.fallbackInitializationHandler) {
       this.portal.socket.off(
@@ -727,24 +690,12 @@ class Collab extends PureComponent<CollabProps, CollabState> {
         this.fallbackInitializationHandler,
       );
     }
-    if (fetchScene && roomLinkData && this.portal.socket) {
-      this.excalidrawAPI.resetScene();
-
+    const canvasId = this.portal.roomId;
+    if (fetchScene && canvasId && this.portal.socket) {
       try {
-        const elements = await loadFromFirebase(
-          roomLinkData.roomId,
-          roomLinkData.roomKey,
-          this.portal.socket,
-        );
-        if (elements) {
-          this.setLastBroadcastedOrReceivedSceneVersion(
-            getSceneVersion(elements),
-          );
-
-          return {
-            elements,
-            scrollToContent: true,
-          };
+        const synced = await this.syncFromServerSeq(canvasId);
+        if (!synced) {
+          await this.fetchAndAdoptServerScene(canvasId);
         }
       } catch (error: any) {
         // log the error and move on. other peers will sync us the scene.
@@ -756,6 +707,163 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       this.portal.socketInitialized = true;
     }
     return null;
+  };
+
+  // 冷启动 HTTP 装载(回退路径):整场景 + 冷启动游标
+  private fetchAndAdoptServerScene = async (
+    canvasId: string,
+  ): Promise<void> => {
+    const detail = await getCanvas(canvasId, {
+      token: getGuestToken(canvasId),
+    });
+    const remoteElements = detail.scene?.data?.elements;
+    if (remoteElements && remoteElements.length > 0) {
+      const restored = restoreElements(
+        toBrandedType<readonly RemoteExcalidrawElement[]>(
+          remoteElements as RemoteExcalidrawElement[],
+        ),
+        null,
+      );
+      this.handleRemoteSceneUpdate(this._reconcileElements(restored));
+    }
+    this.setServerSeqCursor(canvasId, detail.scene?.cursor ?? 0);
+  };
+
+  private seqState = (canvasId: string): SeqCursorState => {
+    let s = this.seqStates.get(canvasId);
+    if (!s) {
+      s = { cursor: 0, gaps: new Set() };
+      this.seqStates.set(canvasId, s);
+    }
+    return s;
+  };
+
+  /** 冷启动游标注入(画布页打开时由 openServerCanvas 调用) */
+  setServerSeqCursor = (canvasId: string, cursor: number): void => {
+    if (Number.isSafeInteger(cursor) && cursor >= 0) {
+      const s = this.seqState(canvasId);
+      s.cursor = Math.max(s.cursor, cursor);
+    }
+  };
+
+  // 收到带 seq 的增量帧:推进连续游标(乱序暂存,补齐即推进)
+  private observeSeq = (canvasId: string, seq: number): void => {
+    const s = this.seqState(canvasId);
+    if (seq <= s.cursor || s.gaps.has(seq)) {
+      return;
+    }
+    if (seq === s.cursor + 1) {
+      s.cursor = seq;
+      while (s.gaps.delete(s.cursor + 1)) {
+        s.cursor += 1;
+      }
+    } else {
+      s.gaps.add(seq);
+    }
+  };
+
+  // Sync Step 1/2:以游标请求补丁直到收敛;
+  // 返回 false = 补丁通道不可用(调用方回退 HTTP 整场景)
+  private syncFromServerSeq = async (canvasId: string): Promise<boolean> => {
+    const socket = this.portal.socket;
+    if (!socket || !socket.connected) {
+      return false;
+    }
+    if (this.syncInFlight) {
+      return true; // 同步已在途,其补丁覆盖本次需求
+    }
+    this.syncInFlight = true;
+    try {
+      for (let round = 0; round < SCENE_SYNC_MAX_ROUNDS; round++) {
+        const patch = await this.requestScenePatch(
+          canvasId,
+          this.seqState(canvasId).cursor,
+        );
+        if (!patch || "error" in patch) {
+          return false;
+        }
+        if (patch.elements.length > 0) {
+          const restored = restoreElements(
+            toBrandedType<readonly RemoteExcalidrawElement[]>(
+              patch.elements as RemoteExcalidrawElement[],
+            ),
+            null,
+          );
+          this.handleRemoteSceneUpdate(this._reconcileElements(restored));
+        }
+        const s = this.seqState(canvasId);
+        s.cursor = Math.max(s.cursor, patch.cursor);
+        if (!patch.has_more) {
+          return true;
+        }
+      }
+      // 超过分页上限:本轮放弃,下次巡检继续收敛
+      return true;
+    } finally {
+      this.syncInFlight = false;
+    }
+  };
+
+  private requestScenePatch = (
+    canvasId: string,
+    afterSeq: number,
+  ): Promise<SceneSyncAck | null> => {
+    return new Promise((resolve) => {
+      const socket = this.portal.socket;
+      if (!socket) {
+        resolve(null);
+        return;
+      }
+      socket
+        .timeout(SCENE_SYNC_TIMEOUT)
+        .emit(
+          "sync-request",
+          canvasId,
+          { after_seq: afterSeq },
+          (err: Error | null, res?: SceneSyncAck) => {
+            resolve(err || !res ? null : res);
+          },
+        );
+    });
+  };
+
+  // 巡检:低频探针,游标落后即拉补丁(远程完整性;断帧/乱序自愈)
+  private patrolSeq = (): void => {
+    const canvasId = this.portal.roomId;
+    if (this.isCollaborating() && canvasId && this.portal.socket?.connected) {
+      void this.syncFromServerSeq(canvasId).catch(() => undefined);
+    }
+  };
+
+  /** join-room 成功后的首次同步(join ack / first-in-room / 兜底共用) */
+  onRoomJoined = (): void => {
+    if (this.portal.roomId && !this.portal.socketInitialized) {
+      void this.initializeRoom({ fetchScene: true });
+    }
+  };
+
+  /** 自写帧落库确认:seq 参与游标推进(自编辑内容本地已应用,等价 gap 闭合),并清除降级提示 */
+  onOwnPersistedSeq = (canvasId: string, seq: number): void => {
+    if (canvasId === this.portal.roomId) {
+      this.observeSeq(canvasId, seq);
+      this.resetErrorIndicator();
+    }
+  };
+
+  /** 自写帧未落库(队列溢出/DB 故障):显式提示降级,巡检+兜底 PUT 自愈 */
+  onOwnPersistFailed = (canvasId: string): void => {
+    if (canvasId === this.portal.roomId && this.isCollaborating()) {
+      this.setErrorIndicator(t("errors.collabSyncDegraded"));
+    }
+  };
+
+  // 重连补拉:socket.io 自动重连后由 Portal 回调;断线窗口内的远端变更
+  // 已被 room 落库,从服务端快照 reconcile 收敛。
+  onSocketReconnected = () => {
+    if (!this.isCollaborating() || !this.portal.roomId) {
+      return;
+    }
+    void this.initializeRoom({ fetchScene: true });
   };
 
   private _reconcileElements = (
@@ -964,42 +1072,14 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     ) {
       this.portal.broadcastScene(WS_SUBTYPES.UPDATE, elements, false);
       this.lastBroadcastedOrReceivedSceneVersion = getSceneVersion(elements);
-      this.queueBroadcastAllElements();
+      // 协议 v2:不再周期全量重播,反熵由游标巡检 + 状态补丁承担
     }
   };
 
   syncElements = (elements: readonly OrderedExcalidrawElement[]) => {
+    // 场景持久化 = room 先落库后转发(帧携带 seq),客户端无保存循环
     this.broadcastElements(elements);
-    this.queueSaveToFirebase();
   };
-
-  queueBroadcastAllElements = throttle(() => {
-    this.portal.broadcastScene(
-      WS_SUBTYPES.UPDATE,
-      this.excalidrawAPI.getSceneElementsIncludingDeleted(),
-      true,
-    );
-    const currentVersion = this.getLastBroadcastedOrReceivedSceneVersion();
-    const newVersion = Math.max(
-      currentVersion,
-      getSceneVersion(this.getSceneElementsIncludingDeleted()),
-    );
-    this.setLastBroadcastedOrReceivedSceneVersion(newVersion);
-  }, SYNC_FULL_SCENE_INTERVAL_MS);
-
-  queueSaveToFirebase = throttle(
-    () => {
-      if (this.portal.socketInitialized) {
-        this.saveCollabRoomToFirebase(
-          getSyncableElements(
-            this.excalidrawAPI.getSceneElementsIncludingDeleted(),
-          ),
-        );
-      }
-    },
-    SYNC_FULL_SCENE_INTERVAL_MS,
-    { leading: false },
-  );
 
   setUserToFollow = (userToFollow: UserToFollow | null) => {
     const prev = appJotaiStore.get(userToFollowAtom) ?? null;

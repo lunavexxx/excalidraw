@@ -81,6 +81,8 @@ class CanvasSaver {
   private serverVersion = 0;
   private savedName: string | null = null;
   private syncedFileIds = new Set<string>();
+  /** 内容写权限;viewer/guest 打开时 saver 完全静默(PUT 会 403)。 */
+  private role: "editor" | "viewer" = "editor";
 
   private pending: SavePayload | null = null;
   private firstPendingAt = 0;
@@ -111,12 +113,14 @@ class CanvasSaver {
     version: number;
     name: string;
     fileIds: Iterable<string>;
+    role?: "editor" | "viewer";
   }) {
     this.generation++;
     this.canvasId = params.canvasId;
     this.serverVersion = params.version;
     this.savedName = params.name;
     this.syncedFileIds = new Set(params.fileIds);
+    this.role = params.role ?? "editor";
     this.conflictRetries = 0;
     this.retryAttempt = 0;
     this.pending = null;
@@ -142,6 +146,7 @@ class CanvasSaver {
     this.serverVersion = 0;
     this.savedName = null;
     this.syncedFileIds = new Set();
+    this.role = "editor";
     this.pending = null;
     this.firstPendingAt = 0;
     this.pendingThumbnail = undefined;
@@ -188,6 +193,10 @@ class CanvasSaver {
     files: BinaryFiles,
   ) {
     if (!this.excalidrawAPI || !appJotaiStore.get(currentUserAtom)) {
+      return;
+    }
+    // viewer/guest 打开的画布只读:不排队、不上送(服务端会 42002)
+    if (this.role === "viewer") {
       return;
     }
     this.pending = { elements, appState, files };

@@ -2,7 +2,6 @@ import {
   Excalidraw,
   TTDDialogTrigger,
   CaptureUpdateAction,
-  reconcileElements,
   ExcalidrawAPIProvider,
   useExcalidrawAPI,
 } from "@excalidraw/excalidraw";
@@ -55,7 +54,6 @@ import {
   useHandleLibrary,
 } from "@excalidraw/excalidraw/data/library";
 
-import type { RemoteExcalidrawElement } from "@excalidraw/excalidraw/data/reconcile";
 import type { RestoredDataState } from "@excalidraw/excalidraw/data/restore";
 import type {
   FileId,
@@ -74,13 +72,7 @@ import type { ResolutionType } from "@excalidraw/common/utility-types";
 import type { ResolvablePromise } from "@excalidraw/common/utils";
 
 import CustomStats from "./CustomStats";
-import {
-  Provider,
-  useAtom,
-  useAtomValue,
-  useAtomWithInitialValue,
-  appJotaiStore,
-} from "./app-jotai";
+import { Provider, useAtom, useAtomValue, appJotaiStore } from "./app-jotai";
 import {
   FIREBASE_STORAGE_PREFIXES,
   STORAGE_KEYS,
@@ -101,12 +93,7 @@ import {
 } from "./components/ExportToExcalidrawPlus";
 import { TopErrorBoundary } from "./components/TopErrorBoundary";
 
-import {
-  exportToBackend,
-  getCollaborationLinkData,
-  importFromBackend,
-  isCollaborationLink,
-} from "./data";
+import { exportToBackend, importFromBackend } from "./data";
 
 import { updateStaleImageStatuses } from "./data/FileManager";
 import { FileStatusStore } from "./data/fileStatusStore";
@@ -125,7 +112,15 @@ import {
   switchToBlankCanvas,
   switchToCanvas,
 } from "./canvas/load";
-import { getLastOpenedCanvas } from "./canvas/api";
+import { exchangeShareToken, getLastOpenedCanvas } from "./canvas/api";
+import { canvasIdAtom, canvasRoleAtom } from "./canvas/atoms";
+import {
+  clearGuestSession,
+  getGuestShareToken,
+  getGuestToken,
+  setGuestShareToken,
+  setGuestToken,
+} from "./auth/guestSession";
 
 import { loadFilesFromFirebase } from "./data/firebase";
 import {
@@ -156,7 +151,6 @@ import { PresentationMode } from "./components/PresentationMode";
 import { refreshSession } from "./auth/api";
 import { currentUserAtom } from "./auth/atoms";
 import { getRefreshToken } from "./auth/tokens";
-import { canvasIdAtom } from "./canvas/atoms";
 
 import type { CollabAPI } from "./collab/Collab";
 
@@ -248,17 +242,75 @@ const initializeScene = async (opts: {
 
   const localDataState = importFromLocalStorage();
 
-  // 打开 /c/:id:服务端画布为权威,失败则回首页提示(本地草稿不参与)
+  // 打开 /c/:id:服务端画布为权威,失败则回首页提示(本地草稿不参与)。
+  // ?share=<token>:匿名分享链接——换 guest JWT 后以只读(或链接角色)打开。
   const pathCanvasId = parseCanvasIdFromPath();
   if (pathCanvasId) {
+    // guest 链接:URL ?share= 优先;之后(刷新)用 sessionStorage 存的
+    // share token 重新换票(JWT 短期,share token 才是访问凭证)。
+    const shareParam = new URLSearchParams(window.location.search).get("share");
+    const shareToken = shareParam ?? getGuestShareToken(pathCanvasId);
+    let guestToken: string | null = shareParam
+      ? null
+      : getGuestToken(pathCanvasId);
+    let guestRole: "editor" | "viewer" | null = null;
+    if (shareToken) {
+      try {
+        const access = await exchangeShareToken(pathCanvasId, shareToken);
+        setGuestToken(pathCanvasId, access.access_token);
+        setGuestShareToken(pathCanvasId, shareToken);
+        guestToken = access.access_token;
+        guestRole = access.role;
+      } catch (error: any) {
+        if (shareParam) {
+          // 仅在显式带 ?share= 时报链接失效;存量过期会话回退匿名首页
+          const msg =
+            error instanceof CanvasApiError && error.code === 42004
+              ? t("guestAccess.linkInvalid")
+              : t("canvasPanel.loadFailed");
+          window.history.replaceState({}, APP_NAME, window.location.pathname);
+          return {
+            scene: { appState: { errorMessage: msg } },
+            isExternalScene: false,
+          };
+        }
+        clearGuestSession(pathCanvasId);
+        guestToken = null;
+      }
+      // token 已进 sessionStorage:从 URL 移除避免分享/截图泄露
+      if (shareParam) {
+        window.history.replaceState({}, APP_NAME, window.location.pathname);
+      }
+    }
     // 先恢复会话(与挂载静默恢复单飞合流),避免首请求 40100 → refresh → 重试
-    await refreshSession();
+    if (!guestToken) {
+      await refreshSession();
+    }
     try {
       const result = await openServerCanvas(
         pathCanvasId,
         localDataState?.appState ?? null,
         opts.excalidrawAPI,
+        guestToken
+          ? { token: guestToken, role: guestRole ?? "viewer" }
+          : undefined,
       );
+      // viewer/guest 打开即自动进房围观(只读);editor/owner 由分享对话框发起
+      const role = appJotaiStore.get(canvasRoleAtom);
+      if (
+        opts.collabAPI &&
+        (role === "viewer" || role === "guest") &&
+        !opts.collabAPI.isCollaborating()
+      ) {
+        try {
+          await opts.collabAPI.startCollaboration({
+            canvasId: result.canvasId,
+            username: appJotaiStore.get(currentUserAtom)?.nickname,
+          });
+        } catch {
+          // 进房失败不阻断画布浏览
+        }
+      }
       return {
         scene: result.scene,
         isExternalScene: false,
@@ -267,7 +319,9 @@ const initializeScene = async (opts: {
       };
     } catch (error: any) {
       const msg =
-        error instanceof CanvasApiError && error.code === 41001
+        error instanceof CanvasApiError && error.code === 42004
+          ? t("guestAccess.linkInvalid")
+          : error instanceof CanvasApiError && error.code === 41001
           ? t("canvasPanel.notFound")
           : t("canvasPanel.loadFailed");
       window.history.replaceState({}, APP_NAME, window.location.origin);
@@ -320,15 +374,11 @@ const initializeScene = async (opts: {
     appState: restoreAppState(localDataState?.appState, null),
   };
 
-  let roomLinkData = getCollaborationLinkData(window.location.href);
-  const isExternalScene = !!(id || jsonBackendMatch || roomLinkData);
+  const isExternalScene = !!(id || jsonBackendMatch);
   if (isExternalScene) {
     if (
       // don't prompt if scene is empty
       !scene.elements.length ||
-      // don't prompt for collab scenes because we don't override local storage
-      roomLinkData ||
-      // otherwise, prompt whether user wants to override current scene
       (await openConfirmModal(shareableLinkConfirmDialog))
     ) {
       if (jsonBackendMatch) {
@@ -354,9 +404,7 @@ const initializeScene = async (opts: {
         };
       }
       scene.scrollToContent = true;
-      if (!roomLinkData) {
-        window.history.replaceState({}, APP_NAME, window.location.origin);
-      }
+      window.history.replaceState({}, APP_NAME, window.location.origin);
     } else {
       // https://github.com/excalidraw/excalidraw/issues/1919
       if (document.hidden) {
@@ -371,7 +419,6 @@ const initializeScene = async (opts: {
         });
       }
 
-      roomLinkData = null;
       window.history.replaceState({}, APP_NAME, window.location.origin);
     }
   } else if (externalUrlMatch) {
@@ -399,40 +446,7 @@ const initializeScene = async (opts: {
     }
   }
 
-  if (roomLinkData && opts.collabAPI) {
-    const { excalidrawAPI } = opts;
-
-    const scene = await opts.collabAPI.startCollaboration(roomLinkData);
-
-    return {
-      // when collaborating, the state may have already been updated at this
-      // point (we may have received updates from other clients), so reconcile
-      // elements and appState with existing state
-      scene: {
-        ...scene,
-        appState: {
-          ...restoreAppState(
-            {
-              ...scene?.appState,
-              theme: localDataState?.appState?.theme || scene?.appState?.theme,
-            },
-            excalidrawAPI.getAppState(),
-          ),
-          // necessary if we're invoking from a hashchange handler which doesn't
-          // go through App.initializeScene() that resets this flag
-          isLoading: false,
-        },
-        elements: reconcileElements(
-          scene?.elements || [],
-          excalidrawAPI.getSceneElementsIncludingDeleted() as RemoteExcalidrawElement[],
-          excalidrawAPI.getAppState(),
-        ),
-      },
-      isExternalScene: true,
-      id: roomLinkData.roomId,
-      key: roomLinkData.roomKey,
-    };
-  } else if (scene) {
+  if (scene) {
     return isExternalScene && jsonBackendMatch
       ? {
           scene,
@@ -489,11 +503,19 @@ const ExcalidrawWrapper = () => {
 
   const [, setShareDialogState] = useAtom(shareDialogStateAtom);
   const [collabAPI] = useAtom(collabAPIAtom);
-  const [isCollaborating] = useAtomWithInitialValue(isCollaboratingAtom, () => {
-    return isCollaborationLink(window.location.href);
-  });
+  const [isCollaborating] = useAtom(isCollaboratingAtom);
+  const canvasRole = useAtomValue(canvasRoleAtom);
+  const currentUser = useAtomValue(currentUserAtom);
+  const canvasId = useAtomValue(canvasIdAtom);
   const collabError = useAtomValue(collabErrorIndicatorAtom);
   const userToFollow = useAtomValue(userToFollowAtom);
+
+  // 协作入口:登录 + 已打开服务端画布 + 内容角色非只读
+  // (viewer/guest 打开画布时只读;本地草稿需先保存成画布才能协作)。
+  const isCollabEnabled =
+    !!currentUser &&
+    !!canvasId &&
+    (canvasRole === "owner" || canvasRole === "editor");
 
   const viewportStatusFrame = useMemo(
     () =>
@@ -661,11 +683,9 @@ const ExcalidrawWrapper = () => {
       event.preventDefault();
       const libraryUrlTokens = parseLibraryTokensFromUrl();
       if (!libraryUrlTokens) {
-        if (
-          collabAPI?.isCollaborating() &&
-          !isCollaborationLink(window.location.href)
-        ) {
-          collabAPI.stopCollaboration(false);
+        const collab = appJotaiStore.get(collabAPIAtom);
+        if (collab?.isCollaborating()) {
+          collab.stopCollaboration(false);
         }
         excalidrawAPI.updateScene({ appState: { isLoading: true } });
 
@@ -818,6 +838,11 @@ const ExcalidrawWrapper = () => {
       return;
     }
     const onPopState = () => {
+      // 协作中切走画布:先停协作(两套持久化互斥),再页内切换
+      const collab = appJotaiStore.get(collabAPIAtom);
+      if (collab?.isCollaborating()) {
+        collab.stopCollaboration(false);
+      }
       const targetId = parseCanvasIdFromPath();
       const currentId = appJotaiStore.get(canvasIdAtom);
       if (targetId === currentId) {
@@ -1133,13 +1158,13 @@ const ExcalidrawWrapper = () => {
         <AppMainMenu
           onCollabDialogOpen={onCollabDialogOpen}
           isCollaborating={isCollaborating}
-          isCollabEnabled={false}
+          isCollabEnabled={isCollabEnabled}
           theme={appTheme}
           refresh={() => forceRefresh((prev) => !prev)}
         />
         <AppWelcomeScreen
           onCollabDialogOpen={onCollabDialogOpen}
-          isCollabEnabled={false}
+          isCollabEnabled={isCollabEnabled}
         />
         <OverwriteConfirmDialog>
           <OverwriteConfirmDialog.Actions.ExportToImage />

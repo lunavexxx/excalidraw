@@ -16,6 +16,11 @@ ARG NODE_ENV=production
 ARG VITE_APP_API_URL=/api/v1
 ENV VITE_APP_API_URL=${VITE_APP_API_URL}
 
+# 协作 WS:默认空=同源(经 Caddy /socket.io 反代 room);不设即不会
+# 指向任何外部服务器。local.yml 跨端口时由 compose 传 http://localhost:3002。
+ARG VITE_APP_WS_SERVER_URL=
+ENV VITE_APP_WS_SERVER_URL=${VITE_APP_WS_SERVER_URL}
+
 RUN npm_config_target_arch=${TARGETARCH} yarn build:app:docker
 
 FROM nginx:stable-alpine-slim@sha256:2c605dbeab79a6b2a63340474fe58119d0ef95bdc4b1f41df0aa689659b3d13b

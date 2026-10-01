@@ -298,6 +298,8 @@
     "saveLibraryError": "无法将库保存至存储。请将库保存为本地文件，以确保您的更改不被丢失。",
     "collabSaveFailed": "无法保存到后端数据库。如果问题持续存在，您应该保存文件到本地，以确保您的工作不会丢失。",
     "collabSaveFailed_sizeExceeded": "无法保存到后端数据库，画布似乎过大。您应该保存文件到本地，以确保您的工作不会丢失。",
+    "collabSyncDegraded": "实时同步已降级：部分最近的编辑未能送达协作服务器。系统会自动重试；你也可以退出并重新进入协作以强制完整保存。",
+    "collabJoinForbidden": "你没有该画布的访问权限，或协作会话已结束。",
     "imageToolNotSupported": "图片已被禁用。",
     "brave_measure_text_error": {
       "line1": "您似乎正在使用 Brave 浏览器并启用了<bold>积极阻止指纹识别</bold>的设置。",
@@ -799,6 +801,42 @@
   "userArea": {
     "signInPrompt": "登录 / 注册",
     "logout": "退出登录"
+  },
+  "guestAccess": {
+    "linkInvalid": "该分享链接无效或已过期。"
+  },
+  "sharePanel": {
+    "liveTitle": "实时协作",
+    "liveIntro": "所有有权限的人打开此画布即进入同一实时房间,改动在到达服务端时即被保存。",
+    "startSession": "开始实时协作",
+    "stopSession": "停止协作",
+    "canvasLink": "画布链接",
+    "liveHint": "拥有编辑权限的人打开此画布即可实时看到彼此的改动。",
+    "yourName": "你的昵称",
+    "or": "或",
+    "viewerHint": "你对该画布为只读权限。",
+    "guestHint": "你正通过分享链接以只读身份访问。",
+    "localDraftHint": "请先把画布保存到云端(从画布面板打开),才能协作与分享。",
+    "collaborators": "协作者",
+    "collaboratorsHint": "按手机号邀请已注册用户。仅画布所有者可管理协作者与分享链接。",
+    "phonePlaceholder": "手机号",
+    "roleEditor": "可编辑",
+    "roleViewer": "可查看",
+    "invite": "邀请",
+    "remove": "移除",
+    "links": "分享链接",
+    "linksHint": "匿名访问链接。令牌仅在创建时展示一次,并已复制到剪贴板。",
+    "createEditorLink": "创建可编辑链接",
+    "createViewerLink": "创建只读链接",
+    "revoked": "已撤销",
+    "expiresAt": "有效期至",
+    "noExpiry": "永久有效",
+    "revoke": "撤销",
+    "errAlreadyMember": "该用户已是成员或协作者。",
+    "errLinkInvalid": "该分享链接无效或已过期。",
+    "errUserNotFound": "该手机号尚未注册。",
+    "errForbidden": "你没有执行此操作的权限。",
+    "errGeneric": "操作失败,请重试。"
   },
   "canvasPanel": {
     "loginPrompt": "登录后可把画布保存到云端,随时随地打开继续编辑。",

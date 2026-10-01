@@ -302,6 +302,8 @@
     "saveLibraryError": "Couldn't save library to storage. Please save your library to a file locally to make sure you don't lose changes.",
     "collabSaveFailed": "Couldn't save to the backend database. If problems persist, you should save your file locally to ensure you don't lose your work.",
     "collabSaveFailed_sizeExceeded": "Couldn't save to the backend database, the canvas seems to be too big. You should save the file locally to ensure you don't lose your work.",
+    "collabSyncDegraded": "Live sync is degraded: some recent edits could not reach the collaboration server. They will be retried automatically; you can also exit and re-enter collaboration to force a full save.",
+    "collabJoinForbidden": "You don't have access to this canvas, or the session has ended.",
     "imageToolNotSupported": "Images are disabled.",
     "brave_measure_text_error": {
       "line1": "Looks like you are using Brave browser with the <bold>Aggressively Block Fingerprinting</bold> setting enabled.",
@@ -807,6 +809,42 @@
   "userArea": {
     "signInPrompt": "Sign in / Sign up",
     "logout": "Sign out"
+  },
+  "guestAccess": {
+    "linkInvalid": "This share link is invalid or has expired."
+  },
+  "sharePanel": {
+    "liveTitle": "Live collaboration",
+    "liveIntro": "Everyone with access to this canvas joins the same live room. Changes are captured by the server as they arrive.",
+    "startSession": "Start live collaboration",
+    "stopSession": "Stop collaboration",
+    "canvasLink": "Canvas link",
+    "liveHint": "Anyone opening this canvas with edit access sees your changes in real time.",
+    "yourName": "Your name",
+    "or": "or",
+    "viewerHint": "You have read-only access to this canvas.",
+    "guestHint": "You are visiting via a share link with read-only access.",
+    "localDraftHint": "Save this canvas to the cloud first (open it from the canvas panel) to collaborate and share it.",
+    "collaborators": "Collaborators",
+    "collaboratorsHint": "Invite registered users by phone number. Only the canvas owner can manage collaborators and links.",
+    "phonePlaceholder": "Phone number",
+    "roleEditor": "Editor",
+    "roleViewer": "Viewer",
+    "invite": "Invite",
+    "remove": "Remove",
+    "links": "Share links",
+    "linksHint": "Anonymous access links. The token is shown once when created and copied to your clipboard.",
+    "createEditorLink": "Create editor link",
+    "createViewerLink": "Create viewer link",
+    "revoked": "revoked",
+    "expiresAt": "expires",
+    "noExpiry": "no expiry",
+    "revoke": "Revoke",
+    "errAlreadyMember": "This user is already a member or collaborator.",
+    "errLinkInvalid": "This share link is invalid or has expired.",
+    "errUserNotFound": "No registered user with this phone number.",
+    "errForbidden": "You don't have permission for this action.",
+    "errGeneric": "Something went wrong. Please try again."
   },
   "canvasPanel": {
     "loginPrompt": "Log in to save canvases to the cloud and open them from any device.",

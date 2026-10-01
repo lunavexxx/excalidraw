@@ -189,3 +189,33 @@
     }
   }
 }
+
+.ShareDialog__collabList {
+  list-style: none;
+  margin: 0.5em 0 0;
+  padding: 0;
+  max-height: 220px;
+  overflow-y: auto;
+
+  & li {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.35em 0;
+    font-size: 0.875rem;
+
+    & > span:first-child {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  &__role {
+    color: var(--text-primary-color);
+    opacity: 0.7;
+    font-size: 0.75rem;
+  }
+}

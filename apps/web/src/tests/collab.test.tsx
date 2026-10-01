@@ -186,8 +186,12 @@ describe("collaboration", () => {
       ]);
     });
 
-    // one form of force deletion happens when starting the collab, not to sync potentially sensitive data into the server
-    window.collab.startCollaboration(null);
+    // collab no longer force-deletes elements on start: the canvas itself is
+    // the server document, deleted elements stay as tombstones (24h sync
+    // window) and are stripped by restoreElements on next load.
+    window.collab.startCollaboration({
+      canvasId: "01234567-89ab-cdef-0123-456789abcdef",
+    });
 
     await waitFor(() => {
       expect(API.getUndoStack().length).toBe(2);
@@ -196,7 +200,10 @@ describe("collaboration", () => {
         expect.objectContaining(rect1Props),
         expect.objectContaining({ ...rect2Props, isDeleted: true }),
       ]);
-      expect(h.elements).toEqual([expect.objectContaining(rect1Props)]);
+      expect(h.elements).toEqual([
+        expect.objectContaining(rect1Props),
+        expect.objectContaining({ ...rect2Props, isDeleted: true }),
+      ]);
     });
 
     const undoAction = createUndoAction(h.history);

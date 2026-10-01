@@ -11,7 +11,6 @@ import { serializeAsJSON } from "@excalidraw/excalidraw/data/json";
 import { isInvisiblySmallElement } from "@excalidraw/element";
 import { isInitializedImageElement } from "@excalidraw/element";
 import { t } from "@excalidraw/excalidraw/i18n";
-import { bytesToHexString } from "@excalidraw/common";
 
 import type { UserIdleState } from "@excalidraw/common";
 import type { ImportedDataState } from "@excalidraw/excalidraw/data/types";
@@ -32,7 +31,6 @@ import type { MakeBrand } from "@excalidraw/common/utility-types";
 import {
   DELETED_ELEMENT_TIMEOUT,
   FILE_UPLOAD_MAX_BYTES,
-  ROOM_ID_BYTES,
 } from "../app_constants";
 
 import { encodeFilesForUpload } from "./FileManager";
@@ -65,12 +63,6 @@ export const getSyncableElements = (
 const BACKEND_V2_GET = import.meta.env.VITE_APP_BACKEND_V2_GET_URL;
 const BACKEND_V2_POST = import.meta.env.VITE_APP_BACKEND_V2_POST_URL;
 
-const generateRoomId = async () => {
-  const buffer = new Uint8Array(ROOM_ID_BYTES);
-  window.crypto.getRandomValues(buffer);
-  return bytesToHexString(buffer);
-};
-
 export type EncryptedData = {
   data: ArrayBuffer;
   iv: Uint8Array;
@@ -91,6 +83,8 @@ export type SocketUpdateDataSource = {
     payload: {
       elements: readonly OrderedExcalidrawElement[];
     };
+    /** 落库 seq(room persist-then-relay 注入);客户端游标据此推进 */
+    seq?: number;
   };
   MOUSE_LOCATION: {
     type: WS_SUBTYPES.MOUSE_LOCATION;
@@ -128,40 +122,18 @@ export type SocketUpdateData =
     _brand: "socketUpdateData";
   };
 
-const RE_COLLAB_LINK = /^#room=([a-zA-Z0-9_-]+),([a-zA-Z0-9_-]+)$/;
-
-export const isCollaborationLink = (link: string) => {
-  const hash = new URL(link).hash;
-  return RE_COLLAB_LINK.test(hash);
+// sync-request ack(协议 v2,Semantic 对应 CRDT 的 Sync Step 2 载荷):
+// room 回调 Go API scene-diff,返回游标之后的事件折叠差异。
+export type SceneSyncPatch = {
+  elements: readonly OrderedExcalidrawElement[];
+  cursor: number;
+  has_more: boolean;
 };
 
-export const getCollaborationLinkData = (link: string) => {
-  const hash = new URL(link).hash;
-  const match = hash.match(RE_COLLAB_LINK);
-  if (match && match[2].length !== 22) {
-    window.alert(t("alerts.invalidEncryptionKey"));
-    return null;
-  }
-  return match ? { roomId: match[1], roomKey: match[2] } : null;
-};
+export type SceneSyncAck = SceneSyncPatch | { error: string };
 
-export const generateCollaborationLinkData = async () => {
-  const roomId = await generateRoomId();
-  const roomKey = await generateEncryptionKey();
-
-  if (!roomKey) {
-    throw new Error("Couldn't generate room key");
-  }
-
-  return { roomId, roomKey };
-};
-
-export const getCollaborationLink = (data: {
-  roomId: string;
-  roomKey: string;
-}) => {
-  return `${window.location.origin}${window.location.pathname}#room=${data.roomId},${data.roomKey}`;
-};
+// 协作房间标识 = 画布 id(/c/:id),不再使用 #room=<id>,<key> hash 链接
+// (上游"链接即钥匙"模式已由服务端 ACL + 明文广播取代)。
 
 /**
  * Decodes shareLink data using the legacy buffer format.
