@@ -11,11 +11,9 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// ErrCanvasNotFound 表示画布不存在、不属于该用户或已软删——三者对调用方等价。
+// ErrCanvasNotFound 表示画布不存在、调用者无任何授权关系或已软删——
+// 三者对调用方等价(防枚举);归属校验由 AuthorizeCanvas 前置完成。
 var ErrCanvasNotFound = errors.New("store: canvas not found")
-
-// ErrCanvasVersionConflict 表示乐观锁不匹配(base_version 落后于服务端)。
-var ErrCanvasVersionConflict = errors.New("store: canvas version conflict")
 
 const (
 	defaultCanvasName = "未命名画布"
@@ -25,6 +23,7 @@ const (
 type Canvas struct {
 	ID            string
 	OwnerID       string
+	WorkspaceID   string
 	Name          string
 	LatestVersion int64
 	Thumbnail     *string
@@ -42,10 +41,12 @@ type CanvasSummary struct {
 	LastOpenedAt  time.Time
 }
 
-// CanvasScene 是场景快照;Data 为服务端原样透传的 JSONB 字节。
+// CanvasScene 是场景快照;Data 为服务端原样透传的 JSONB 字节,
+// FoldedUpto 为已折叠进该快照的最大事件 id(事件流折叠游标)。
 type CanvasScene struct {
-	Version int64
-	Data    []byte
+	Version    int64
+	Data       []byte
+	FoldedUpto int64
 }
 
 type CanvasFileMeta struct {
@@ -59,7 +60,7 @@ type CanvasFile struct {
 	Data     []byte
 }
 
-const canvasColumns = `id, owner_id, name, latest_version, thumbnail, last_opened_at, created_at, updated_at`
+const canvasColumns = `id, owner_id, workspace_id, name, latest_version, thumbnail, last_opened_at, created_at, updated_at`
 
 // EncodeCanvasCursor / DecodeCanvasCursor 把 keyset 游标
 // (last_opened_at + id)编码成不透明字符串,顺序与列表查询一致。
@@ -83,33 +84,32 @@ func DecodeCanvasCursor(cursor string) (time.Time, string, error) {
 	return t, id, nil
 }
 
+// CreateCanvas 在用户 personal 工作区创建画布(团队工作区创建是
+// PR-102 的 CreateCanvasInWorkspace,仅 ws owner)。
 func (db *DB) CreateCanvas(ctx context.Context, ownerID, name string) (Canvas, error) {
 	if strings.TrimSpace(name) == "" {
 		name = defaultCanvasName
 	}
-	row := db.pool.QueryRow(ctx, `
-		INSERT INTO canvases (owner_id, name)
-		VALUES ($1, $2)
-		RETURNING `+canvasColumns, ownerID, name)
-	return scanCanvas(row)
-}
-
-func (db *DB) GetCanvas(ctx context.Context, ownerID, id string) (Canvas, error) {
-	row := db.pool.QueryRow(ctx, `
-		SELECT `+canvasColumns+` FROM canvases
-		WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`, id, ownerID)
-	canvas, err := scanCanvas(row)
+	wsID, err := db.EnsurePersonalWorkspace(ctx, ownerID)
 	if err != nil {
 		return Canvas{}, err
 	}
-	// 打开即读取:读详情同时刷新 last_opened_at(默认页"上次打开"依赖此字段)。
-	_, err = db.pool.Exec(ctx,
-		`UPDATE canvases SET last_opened_at = now() WHERE id = $1`, id)
+	row := db.pool.QueryRow(ctx, `
+		INSERT INTO canvases (owner_id, workspace_id, name)
+		VALUES ($1, $2, $3)
+		RETURNING `+canvasColumns, ownerID, wsID, name)
+	return scanCanvas(row)
+}
+
+// TouchLastOpened 刷新 last_opened_at(默认页"上次打开"依赖此字段);
+// 由读详情 handler 在授权通过后调用。
+func (db *DB) TouchLastOpened(ctx context.Context, canvasID string) (bool, error) {
+	tag, err := db.pool.Exec(ctx,
+		`UPDATE canvases SET last_opened_at = now() WHERE id = $1 AND deleted_at IS NULL`, canvasID)
 	if err != nil {
-		return canvas, err
+		return false, err
 	}
-	canvas.LastOpenedAt = time.Now()
-	return canvas, nil
+	return tag.RowsAffected() > 0, nil
 }
 
 func (db *DB) ListCanvases(ctx context.Context, ownerID string, cursor string, limit int) ([]CanvasSummary, string, error) {
@@ -127,84 +127,40 @@ func (db *DB) ListCanvases(ctx context.Context, ownerID string, cursor string, l
 		args = append(args, t, id)
 	}
 	listQuery += ` ORDER BY last_opened_at DESC, id DESC LIMIT $2`
+	return db.scanCanvasSummaries(ctx, limit, listQuery, args...)
+}
 
-	rows, err := db.pool.Query(ctx, listQuery, args...)
-	if err != nil {
-		return nil, "", err
-	}
-	defer rows.Close()
-
-	items := []CanvasSummary{}
-	for rows.Next() {
-		var s CanvasSummary
-		if err := rows.Scan(&s.ID, &s.Name, &s.Thumbnail, &s.LatestVersion, &s.LastOpenedAt); err != nil {
+// ListSharedCanvases 列出"与我共享":非本人拥有、但通过画布协作者或
+// 工作区成员身份可及的画布(内容角色细分在打开时由 ACL 解析)。
+func (db *DB) ListSharedCanvases(ctx context.Context, userID, cursor string, limit int) ([]CanvasSummary, string, error) {
+	args := []any{userID, limit + 1}
+	query := `
+		SELECT c.id, c.name, c.thumbnail, c.latest_version, c.last_opened_at
+		FROM canvases c
+		WHERE c.owner_id <> $1 AND c.deleted_at IS NULL
+		  AND (
+		    EXISTS (SELECT 1 FROM canvas_collaborators cc
+		            WHERE cc.canvas_id = c.id AND cc.user_id = $1)
+		    OR EXISTS (SELECT 1 FROM workspace_members wm
+		            WHERE wm.workspace_id = c.workspace_id AND wm.user_id = $1)
+		  )`
+	if cursor != "" {
+		t, id, err := DecodeCanvasCursor(cursor)
+		if err != nil {
 			return nil, "", err
 		}
-		items = append(items, s)
+		query += ` AND (c.last_opened_at, c.id) < ($3, $4)`
+		args = append(args, t, id)
 	}
-	if err := rows.Err(); err != nil {
-		return nil, "", err
-	}
-	next := ""
-	if len(items) > limit {
-		last := items[limit-1]
-		next = EncodeCanvasCursor(last.LastOpenedAt, last.ID)
-		items = items[:limit]
-	}
-	return items, next, nil
+	query += ` ORDER BY c.last_opened_at DESC, c.id DESC LIMIT $2`
+	return db.scanCanvasSummaries(ctx, limit, query, args...)
 }
 
-// SaveCanvasScene 以 base_version 为乐观锁推进场景版本:
-// 先推进 canvases.latest_version(顺带落缩略图),再写 canvas_scenes 新版本行;
-// 两步在事务内,场景行版本对不上则整体回滚并返回 ErrCanvasVersionConflict。
-func (db *DB) SaveCanvasScene(ctx context.Context, ownerID, canvasID string, baseVersion int64, data []byte, thumbnail *string) (int64, error) {
-	tx, err := db.pool.Begin(ctx)
-	if err != nil {
-		return 0, err
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
-
-	var newVersion int64
-	err = tx.QueryRow(ctx, `
-		UPDATE canvases SET latest_version = latest_version + 1, updated_at = now(),
-		                   thumbnail = COALESCE($3, thumbnail)
-		WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL
-		RETURNING latest_version`, canvasID, ownerID, thumbnail).Scan(&newVersion)
-	if errors.Is(err, pgx.ErrNoRows) {
-		return 0, ErrCanvasNotFound
-	}
-	if err != nil {
-		return 0, err
-	}
-
-	tag, err := tx.Exec(ctx, `
-		INSERT INTO canvas_scenes (canvas_id, version, data)
-		VALUES ($1, $2, $3)
-		ON CONFLICT (canvas_id) DO UPDATE
-		SET version = EXCLUDED.version, data = EXCLUDED.data, updated_at = now()
-		WHERE canvas_scenes.version = $4`,
-		canvasID, newVersion, data, baseVersion)
-	if err != nil {
-		return 0, err
-	}
-	if tag.RowsAffected() == 0 {
-		return 0, ErrCanvasVersionConflict
-	}
-	if err := tx.Commit(ctx); err != nil {
-		return 0, err
-	}
-	return newVersion, nil
-}
-
-func (db *DB) GetCanvasScene(ctx context.Context, ownerID, canvasID string) (CanvasScene, error) {
+func (db *DB) GetCanvasScene(ctx context.Context, canvasID string) (CanvasScene, error) {
 	row := db.pool.QueryRow(ctx, `
-		SELECT cs.version, cs.data
-		FROM canvas_scenes cs
-		JOIN canvases c ON c.id = cs.canvas_id
-		WHERE cs.canvas_id = $1 AND c.owner_id = $2 AND c.deleted_at IS NULL`,
-		canvasID, ownerID)
+		SELECT version, data, folded_upto FROM canvas_scenes WHERE canvas_id = $1`, canvasID)
 	var s CanvasScene
-	err := row.Scan(&s.Version, &s.Data)
+	err := row.Scan(&s.Version, &s.Data, &s.FoldedUpto)
 	if errors.Is(err, pgx.ErrNoRows) {
 		// 画布存在但还没写过场景(懒创建后未保存)按"无场景"处理。
 		return CanvasScene{}, nil
@@ -215,14 +171,15 @@ func (db *DB) GetCanvasScene(ctx context.Context, ownerID, canvasID string) (Can
 	return s, nil
 }
 
-func (db *DB) RenameCanvas(ctx context.Context, ownerID, canvasID, name string) (Canvas, error) {
+// RenameCanvas 改名;仅 canvas owner 可调(handler 以 RoleOwner 门控)。
+func (db *DB) RenameCanvas(ctx context.Context, canvasID, name string) (Canvas, error) {
 	if strings.TrimSpace(name) == "" {
 		name = defaultCanvasName
 	}
 	row := db.pool.QueryRow(ctx, `
-		UPDATE canvases SET name = $3, updated_at = now()
-		WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL
-		RETURNING `+canvasColumns, canvasID, ownerID, name)
+		UPDATE canvases SET name = $2, updated_at = now()
+		WHERE id = $1 AND deleted_at IS NULL
+		RETURNING `+canvasColumns, canvasID, name)
 	canvas, err := scanCanvas(row)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return Canvas{}, ErrCanvasNotFound
@@ -230,10 +187,11 @@ func (db *DB) RenameCanvas(ctx context.Context, ownerID, canvasID, name string) 
 	return canvas, err
 }
 
-func (db *DB) SoftDeleteCanvas(ctx context.Context, ownerID, canvasID string) error {
+// SoftDeleteCanvas 软删;仅 canvas owner 可调(handler 以 RoleOwner 门控)。
+func (db *DB) SoftDeleteCanvas(ctx context.Context, canvasID string) error {
 	tag, err := db.pool.Exec(ctx, `
 		UPDATE canvases SET deleted_at = now(), updated_at = now()
-		WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`, canvasID, ownerID)
+		WHERE id = $1 AND deleted_at IS NULL`, canvasID)
 	if err != nil {
 		return err
 	}
@@ -243,10 +201,7 @@ func (db *DB) SoftDeleteCanvas(ctx context.Context, ownerID, canvasID string) er
 	return nil
 }
 
-func (db *DB) ListCanvasFiles(ctx context.Context, ownerID, canvasID string) ([]CanvasFileMeta, error) {
-	if _, err := db.GetCanvasMetaOnly(ctx, ownerID, canvasID); err != nil {
-		return nil, err
-	}
+func (db *DB) ListCanvasFiles(ctx context.Context, canvasID string) ([]CanvasFileMeta, error) {
 	rows, err := db.pool.Query(ctx, `
 		SELECT file_id, mime_type FROM canvas_files
 		WHERE canvas_id = $1 ORDER BY file_id`, canvasID)
@@ -265,13 +220,10 @@ func (db *DB) ListCanvasFiles(ctx context.Context, ownerID, canvasID string) ([]
 	return metas, rows.Err()
 }
 
-func (db *DB) GetCanvasFile(ctx context.Context, ownerID, canvasID, fileID string) (CanvasFile, error) {
+func (db *DB) GetCanvasFile(ctx context.Context, canvasID, fileID string) (CanvasFile, error) {
 	row := db.pool.QueryRow(ctx, `
-		SELECT f.file_id, f.mime_type, f.data
-		FROM canvas_files f
-		JOIN canvases c ON c.id = f.canvas_id
-		WHERE f.canvas_id = $1 AND f.file_id = $2 AND c.owner_id = $3 AND c.deleted_at IS NULL`,
-		canvasID, fileID, ownerID)
+		SELECT file_id, mime_type, data FROM canvas_files
+		WHERE canvas_id = $1 AND file_id = $2`, canvasID, fileID)
 	var f CanvasFile
 	err := row.Scan(&f.FileID, &f.MimeType, &f.Data)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -280,11 +232,8 @@ func (db *DB) GetCanvasFile(ctx context.Context, ownerID, canvasID, fileID strin
 	return f, err
 }
 
-// UpsertCanvasFiles 幂等写入文件字节;归属校验复用 GetCanvasMetaOnly。
-func (db *DB) UpsertCanvasFiles(ctx context.Context, ownerID, canvasID string, files []CanvasFile) error {
-	if _, err := db.GetCanvasMetaOnly(ctx, ownerID, canvasID); err != nil {
-		return err
-	}
+// UpsertCanvasFiles 幂等写入文件字节;归属校验已由 AuthorizeCanvas 前置。
+func (db *DB) UpsertCanvasFiles(ctx context.Context, canvasID string, files []CanvasFile) error {
 	tx, err := db.pool.Begin(ctx)
 	if err != nil {
 		return err
@@ -303,12 +252,12 @@ func (db *DB) UpsertCanvasFiles(ctx context.Context, ownerID, canvasID string, f
 	return tx.Commit(ctx)
 }
 
-// GetCanvasMetaOnly 只做存在性/归属校验,不刷新 last_opened_at
+// GetCanvasMetaOnly 只做存在性校验,不刷新 last_opened_at
 // (文件上传等伴随请求不应改变"上次打开"语义)。
-func (db *DB) GetCanvasMetaOnly(ctx context.Context, ownerID, canvasID string) (Canvas, error) {
+func (db *DB) GetCanvasMetaOnly(ctx context.Context, canvasID string) (Canvas, error) {
 	row := db.pool.QueryRow(ctx, `
 		SELECT `+canvasColumns+` FROM canvases
-		WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`, canvasID, ownerID)
+		WHERE id = $1 AND deleted_at IS NULL`, canvasID)
 	canvas, err := scanCanvas(row)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return Canvas{}, ErrCanvasNotFound
@@ -318,7 +267,7 @@ func (db *DB) GetCanvasMetaOnly(ctx context.Context, ownerID, canvasID string) (
 
 func scanCanvas(row rowScanner) (Canvas, error) {
 	var c Canvas
-	err := row.Scan(&c.ID, &c.OwnerID, &c.Name, &c.LatestVersion, &c.Thumbnail, &c.LastOpenedAt, &c.CreatedAt, &c.UpdatedAt)
+	err := row.Scan(&c.ID, &c.OwnerID, &c.WorkspaceID, &c.Name, &c.LatestVersion, &c.Thumbnail, &c.LastOpenedAt, &c.CreatedAt, &c.UpdatedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return Canvas{}, ErrCanvasNotFound
 	}

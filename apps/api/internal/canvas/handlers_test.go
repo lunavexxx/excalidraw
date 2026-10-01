@@ -67,7 +67,7 @@ func TestParsePositiveInt(t *testing.T) {
 func TestRegisterRoutesRequiresAuth(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
-	RegisterRoutes(router.Group("/api/v1"), nil, "test-secret", DefaultLimits())
+	RegisterRoutes(router.Group("/api/v1"), nil, "test-secret", DefaultLimits(), nil)
 
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/api/v1/canvases", nil))

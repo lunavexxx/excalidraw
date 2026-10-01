@@ -1,6 +1,6 @@
 # api
 
-协作平台后端(Go + Gin + pgx + golang-migrate)。当前为 M0 脚手架:健康检查 + PG 连接 + 迁移骨架,业务接口随 M1(账号体系 + 在线保存)落地。
+协作平台后端(Go + Gin + pgx)。健康检查 + PG 连接 + 账号/画布/工作区/协作 ACL 等 API;数据库 schema 变更以 SQL 文件提供、由部署侧手动应用(见下)。
 
 ## 配置来源
 
@@ -46,13 +46,13 @@ go run ./cmd/api            # http://localhost:8080
 
 ## 数据库迁移
 
-迁移文件在 [internal/migrate/migrations/](./internal/migrate/migrations/),使用 [golang-migrate](https://github.com/golang-migrate/migrate) 纯 SQL 格式,**内嵌进二进制、api 启动时自动执行**(部署时 DATABASE_URL 来自 Nacos,独立迁移容器拿不到)。单副本运行前提下安全;未来多副本需加锁或改为外置执行。
+迁移文件在 [migrations/](./migrations/)(golang-migrate 纯 SQL 格式:`0001_init` → `0005_canvas_events`,`.up.sql` 应用 / `.down.sql` 回退)。**api 启动不做任何 DDL**——schema 由部署侧按序手动应用,流程与命令见 [deploy/README.md](../deploy/README.md)「数据库迁移」一节。
 
-本地手动跑(CLI,可选):
+本机装了 golang-migrate CLI 时可用 make 快捷方式(可选):
 
 ```bash
 go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-make migrate-up
+make migrate-up   # DATABASE_URL 默认指向 localhost,可覆盖
 ```
 
 ## 构建

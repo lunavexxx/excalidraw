@@ -38,6 +38,9 @@ type Config struct {
 	// 手机号 AES-GCM 加密与 HMAC 查找哈希两组子密钥;为空则不注册 auth 路由。
 	PhoneCryptoKey string
 	CORSOrigins    []string
+	// InternalToken 供 room 服务回调内部端点(X-Internal-Token);
+	// 与 deploy/.env 同源,为空则不注册内部路由。
+	InternalToken string
 	// canvas 请求体限额(字节);非正值回落到 canvas.DefaultLimits。
 	MaxSceneBytes int
 	MaxFileBytes  int
@@ -84,6 +87,7 @@ func loadFromEnv() Config {
 		JWTSecret:      os.Getenv("JWT_SECRET"),
 		PhoneCryptoKey: os.Getenv("PHONE_CRYPTO_KEY"),
 		CORSOrigins:    splitOrigins(os.Getenv("CORS_ORIGINS")),
+		InternalToken:  os.Getenv("INTERNAL_TOKEN"),
 		MaxSceneBytes:  getIntEnv("CANVAS_SCENE_MAX_BYTES", 0),
 		MaxFileBytes:   getIntEnv("CANVAS_FILE_MAX_BYTES", 0),
 	}
@@ -166,6 +170,7 @@ type yamlConfig struct {
 	JWTSecret      string `yaml:"jwt_secret"`
 	PhoneCryptoKey string `yaml:"phone_crypto_key"`
 	CORSOrigins    string `yaml:"cors_origins"`
+	InternalToken  string `yaml:"internal_token"`
 	MaxSceneBytes  int    `yaml:"canvas_scene_max_bytes"`
 	MaxFileBytes   int    `yaml:"canvas_file_max_bytes"`
 }
@@ -181,6 +186,7 @@ func parseConfigYAML(content string) (Config, error) {
 		JWTSecret:      raw.JWTSecret,
 		PhoneCryptoKey: raw.PhoneCryptoKey,
 		CORSOrigins:    splitOrigins(raw.CORSOrigins),
+		InternalToken:  raw.InternalToken,
 		MaxSceneBytes:  raw.MaxSceneBytes,
 		MaxFileBytes:   raw.MaxFileBytes,
 	}

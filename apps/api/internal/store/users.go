@@ -6,11 +6,15 @@ import (
 	"time"
 
 	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // ErrPhoneTaken 表示注册手机号已存在(phone_hash 唯一冲突)。
 var ErrPhoneTaken = errors.New("store: phone already registered")
+
+// ErrUserNotFound 用户不存在(手机号未注册 / ID 无效)。
+var ErrUserNotFound = errors.New("store: user not found")
 
 // User 是 users 行的应用层视图。PasswordHash 仅服务端登录校验使用,
 // 永不出现在 API 响应里(响应字段由 handler 手工构造)。
@@ -63,6 +67,9 @@ type rowScanner interface {
 func scanUser(row rowScanner) (User, error) {
 	var u User
 	err := row.Scan(&u.ID, &u.PhoneMasked, &u.CountryCode, &u.Nickname, &u.PasswordHash, &u.AvatarURL, &u.CreatedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return User{}, ErrUserNotFound
+	}
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {

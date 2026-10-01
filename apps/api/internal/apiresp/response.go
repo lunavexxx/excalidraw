@@ -25,6 +25,15 @@ const (
 	CodeCanvasNotFound = 41001
 	CodeCanvasConflict = 41002
 	CodeCanvasTooLarge = 41003
+
+	// 42xxx: workspace/权限模块。42002 用于"画布存在但角色不足"
+	// (区别于 41001 的存在性歧义,防枚举:无任何关系一律 41001)。
+	CodeWorkspaceInvalid    = 42000
+	CodeWorkspaceNotFound   = 42001
+	CodeForbidden           = 42002
+	CodeAlreadyMember       = 42003
+	CodeShareLinkInvalid    = 42004
+	CodeInviteTargetMissing = 42005
 )
 
 type Body struct {

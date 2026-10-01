@@ -14,8 +14,10 @@ test:
 vet:
 	go vet ./...
 
+# 需要本机安装 golang-migrate CLI(brew install golang-migrate);
+# 不装 CLI 也可以直接用 psql 依次执行 migrations/*.up.sql(见 deploy/README.md)。
 migrate-up:
-	migrate -path internal/migrate/migrations -database "$(DATABASE_URL)" up
+	migrate -path migrations -database "$(DATABASE_URL)" up
 
 migrate-down:
-	migrate -path internal/migrate/migrations -database "$(DATABASE_URL)" down 1
+	migrate -path migrations -database "$(DATABASE_URL)" down 1

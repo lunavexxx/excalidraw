@@ -114,6 +114,9 @@ func (h *authHandlers) register(c *gin.Context) {
 		apiresp.Fail(c, apiresp.CodeInternal, "create user failed")
 		return
 	}
+	// 注册即建 personal 工作区(owner 成员);失败不阻塞注册
+	// (CreateCanvas 时会再次惰性兜底)。
+	_, _ = h.db.EnsurePersonalWorkspace(c.Request.Context(), user.ID)
 	h.issueSession(c, user)
 }
 

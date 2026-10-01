@@ -1,9 +1,16 @@
 // Package canvas 实现画布管理 API(41xxx 错误码段)。
 // 全部业务响应遵循 apiresp 契约(HTTP 200 + {code,message,data,timestamp});
 // 唯一例外是文件内容 GET 返回原始二进制(immutable 缓存,内容 hash 寻址)。
+//
+// 权限模型(授权前置到 authorize 中间件):
+//   - 内容操作按解析角色门控(viewer 读 / editor 写 / owner 全部);
+//   - 信息类操作(改名/删除)一律 canvas owner;
+//   - guest(分享链接)仅只读,任何写角色都被 42002 拒绝;
+//   - 画布不存在或与身份无任何授权关系一律 41001(防枚举)。
 package canvas
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -15,6 +22,7 @@ import (
 
 	"github.com/lunavexxx/excalidraw/apps/api/internal/apiresp"
 	"github.com/lunavexxx/excalidraw/apps/api/internal/auth"
+	scenepkg "github.com/lunavexxx/excalidraw/apps/api/internal/scene"
 	"github.com/lunavexxx/excalidraw/apps/api/internal/store"
 )
 
@@ -37,23 +45,93 @@ func DefaultLimits() Limits {
 
 const maxNameRunes = 100
 
+// maxReadFoldEvents 读路径折叠窗口上限:pending 超限时宁可返回部分
+// (cursor 如实反映实际折叠位置,余量由客户端 scene-diff 补齐)。
+const maxReadFoldEvents = 2000
+
+const (
+	ctxKeyCanvas = "authzCanvas"
+	ctxKeyRole   = "authzRole"
+)
+
 type canvasHandlers struct {
-	db     *store.DB
-	limits Limits
+	db           *store.DB
+	limits       Limits
+	jwtSecret    string
+	phoneCrypto  *auth.PhoneCrypto
+	guestLimiter *ipRateLimiter
 }
 
 // RegisterRoutes 注册 /canvases 路由;需要 db 与 jwtSecret 已就绪。
-func RegisterRoutes(rg *gin.RouterGroup, db *store.DB, jwtSecret string, limits Limits) {
-	h := &canvasHandlers{db: db, limits: limits}
-	g := rg.Group("/canvases", auth.AuthRequired(jwtSecret))
-	g.POST("", h.create)
-	g.GET("", h.list)
-	g.GET("/:id", h.get)
-	g.PUT("/:id/scene", h.saveScene)
-	g.PATCH("/:id", h.rename)
-	g.DELETE("/:id", h.remove)
-	g.PUT("/:id/files", h.putFiles)
-	g.GET("/:id/files/:fileId", h.getFile)
+// phoneCrypto 可为 nil(此时按手机号邀请协作者的端点回 50000)。
+func RegisterRoutes(rg *gin.RouterGroup, db *store.DB, jwtSecret string, limits Limits, pc *auth.PhoneCrypto) {
+	h := &canvasHandlers{
+		db:           db,
+		limits:       limits,
+		jwtSecret:    jwtSecret,
+		phoneCrypto:  pc,
+		guestLimiter: newIPRateLimiter(10, time.Minute),
+	}
+	// 组级接受双身份(access/guest),用户专属端点再叠 RequireUser。
+	g := rg.Group("/canvases", auth.AuthAnyRequired(jwtSecret))
+	g.POST("", auth.RequireUser(), h.create)
+	g.GET("", auth.RequireUser(), h.list)
+	g.GET("/:id", h.authorize(store.RoleViewer), h.get)
+	g.PUT("/:id/scene", h.authorize(store.RoleEditor), h.saveScene)
+	g.PATCH("/:id", h.authorize(store.RoleOwner), h.rename)
+	g.DELETE("/:id", h.authorize(store.RoleOwner), h.remove)
+	g.PUT("/:id/files", h.authorize(store.RoleEditor), h.putFiles)
+	g.GET("/:id/files/:fileId", h.authorize(store.RoleViewer), h.getFile)
+	registerShareRoutes(g, h)
+
+	// 匿名 guest 换票:唯一的无鉴权画布端点(持 URL 中的 share token)。
+	rg.POST("/canvases/:id/access", h.guestAccess)
+}
+
+// authorize 解析当前身份对 :id 画布的角色并注入 context;
+// minRole 为该路由要求的最低内容角色。
+func (h *canvasHandlers) authorize(minRole store.CanvasRole) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ident := auth.IdentityFrom(c)
+		canvasID := c.Param("id")
+		role, canvas, err := h.db.AuthorizeCanvas(c.Request.Context(), ident, canvasID)
+		if errors.Is(err, store.ErrCanvasNotFound) || role == store.RoleNone {
+			apiresp.Fail(c, apiresp.CodeCanvasNotFound, "canvas not found")
+			c.Abort()
+			return
+		}
+		if err != nil {
+			apiresp.Fail(c, apiresp.CodeInternal, "authorize failed")
+			c.Abort()
+			return
+		}
+		// 共享编辑仅及内容:guest 一律只读(HTTP 面;其房间内编辑经 room 落库)。
+		if ident.Guest != nil && minRole != store.RoleViewer {
+			apiresp.Fail(c, apiresp.CodeForbidden, "guest is read-only")
+			c.Abort()
+			return
+		}
+		if !role.AtLeast(minRole) {
+			apiresp.Fail(c, apiresp.CodeForbidden, "insufficient role")
+			c.Abort()
+			return
+		}
+		c.Set(ctxKeyCanvas, canvas)
+		c.Set(ctxKeyRole, string(role))
+		c.Next()
+	}
+}
+
+func canvasFrom(c *gin.Context) store.Canvas {
+	v, _ := c.Get(ctxKeyCanvas)
+	canvas, _ := v.(store.Canvas)
+	return canvas
+}
+
+func roleFrom(c *gin.Context) string {
+	v, _ := c.Get(ctxKeyRole)
+	s, _ := v.(string)
+	return s
 }
 
 type canvasResponse struct {
@@ -103,6 +181,11 @@ func (h *canvasHandlers) create(c *gin.Context) {
 }
 
 func (h *canvasHandlers) list(c *gin.Context) {
+	scope := c.Query("scope")
+	if scope != "" && scope != "mine" && scope != "shared" {
+		apiresp.Fail(c, apiresp.CodeCanvasInvalid, "scope must be mine or shared")
+		return
+	}
 	limit := 20
 	if raw := c.Query("limit"); raw != "" {
 		n, err := parsePositiveInt(raw)
@@ -119,7 +202,13 @@ func (h *canvasHandlers) list(c *gin.Context) {
 			return
 		}
 	}
-	items, next, err := h.db.ListCanvases(c.Request.Context(), auth.UserIDFrom(c), cursor, limit)
+	listFn := h.db.ListCanvases
+	if scope == "shared" {
+		listFn = func(ctx context.Context, userID string, cursor string, limit int) ([]store.CanvasSummary, string, error) {
+			return h.db.ListSharedCanvases(ctx, userID, cursor, limit)
+		}
+	}
+	items, next, err := listFn(c.Request.Context(), auth.UserIDFrom(c), cursor, limit)
 	if err != nil {
 		apiresp.Fail(c, apiresp.CodeInternal, "list canvases failed")
 		return
@@ -138,40 +227,79 @@ func (h *canvasHandlers) list(c *gin.Context) {
 }
 
 func (h *canvasHandlers) get(c *gin.Context) {
-	userID := auth.UserIDFrom(c)
-	canvasID := c.Param("id")
-	canvas, err := h.db.GetCanvas(c.Request.Context(), userID, canvasID)
-	if errors.Is(err, store.ErrCanvasNotFound) {
-		apiresp.Fail(c, apiresp.CodeCanvasNotFound, "canvas not found")
-		return
-	}
-	if err != nil {
+	canvas := canvasFrom(c)
+	canvasID := canvas.ID
+	// 读详情即"打开":刷新 last_opened_at(默认页"上次打开"依赖此字段)。
+	if _, err := h.db.TouchLastOpened(c.Request.Context(), canvasID); err != nil {
 		apiresp.Fail(c, apiresp.CodeInternal, "load canvas failed")
 		return
 	}
-	scene, err := h.db.GetCanvasScene(c.Request.Context(), userID, canvasID)
+	scene, err := h.db.GetCanvasScene(c.Request.Context(), canvasID)
 	if err != nil {
 		apiresp.Fail(c, apiresp.CodeInternal, "load scene failed")
 		return
 	}
-	files, err := h.db.ListCanvasFiles(c.Request.Context(), userID, canvasID)
+	files, err := h.db.ListCanvasFiles(c.Request.Context(), canvasID)
 	if err != nil {
 		apiresp.Fail(c, apiresp.CodeInternal, "load file metas failed")
 		return
 	}
 	var scenePayload any
-	if len(scene.Data) > 0 {
-		scenePayload = gin.H{"version": scene.Version, "data": json.RawMessage(scene.Data)}
+	if len(scene.Data) > 0 || scene.FoldedUpto > 0 {
+		data, cursor, err := h.effectiveSceneData(c.Request.Context(), canvasID, scene)
+		if err != nil {
+			apiresp.Fail(c, apiresp.CodeInternal, "load scene failed")
+			return
+		}
+		if data != nil {
+			// cursor = 读视图实际折叠到的最大事件 id(协议 v2 冷启动游标)。
+			scenePayload = gin.H{"version": scene.Version, "data": json.RawMessage(data), "cursor": cursor}
+		}
 	}
 	fileMetas := make([]gin.H, 0, len(files))
 	for _, f := range files {
 		fileMetas = append(fileMetas, gin.H{"file_id": f.FileID, "mime_type": f.MimeType})
 	}
 	apiresp.OK(c, gin.H{
-		"canvas": canvasResponseFrom(canvas),
-		"scene":  scenePayload,
-		"files":  fileMetas,
+		"canvas":  canvasResponseFrom(canvas),
+		"scene":   scenePayload,
+		"files":   fileMetas,
+		"my_role": roleFrom(c),
 	})
+}
+
+// effectiveSceneData 计算"唯一事实 + 待处理事件"的读视图:
+// 快照 + 按 seq 折叠 pending 事件,不落库(compactor 负责持久化收敛)。
+// 返回的 cursor 是读视图实际折叠到的最大事件 id(无 pending 时为
+// folded_upto),供客户端作为 scene-diff 的起点。
+func (h *canvasHandlers) effectiveSceneData(ctx context.Context, canvasID string, snapshot store.CanvasScene) ([]byte, int64, error) {
+	events, err := h.db.ListPendingEvents(ctx, canvasID, snapshot.FoldedUpto, maxReadFoldEvents)
+	if err != nil {
+		return nil, 0, err
+	}
+	if len(events) == 0 {
+		if len(snapshot.Data) == 0 {
+			return nil, snapshot.FoldedUpto, nil
+		}
+		return snapshot.Data, snapshot.FoldedUpto, nil
+	}
+	baseElements, appState, err := scenepkg.SplitSceneData(snapshot.Data)
+	if err != nil {
+		return nil, 0, err
+	}
+	deltas := make([][]json.RawMessage, 0, len(events))
+	for _, ev := range events {
+		deltas = append(deltas, ev.Elements)
+		if ev.AppState != nil {
+			appState = ev.AppState
+		}
+	}
+	folded := scenepkg.FoldElements(baseElements, deltas...)
+	data, err := scenepkg.BuildSceneData(folded, appState)
+	if err != nil {
+		return nil, 0, err
+	}
+	return data, events[len(events)-1].ID, nil
 }
 
 type saveSceneRequest struct {
@@ -183,7 +311,7 @@ type saveSceneRequest struct {
 func (h *canvasHandlers) saveScene(c *gin.Context) {
 	var req saveSceneRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		apiresp.Fail(c, apiresp.CodeCanvasInvalid, "data and base_version are required")
+		apiresp.Fail(c, apiresp.CodeCanvasInvalid, "data is required")
 		return
 	}
 	if len(req.Data) > h.limits.MaxSceneBytes {
@@ -194,21 +322,24 @@ func (h *canvasHandlers) saveScene(c *gin.Context) {
 		apiresp.Fail(c, apiresp.CodeCanvasInvalid, "data must be valid json")
 		return
 	}
-	if req.BaseVersion < 0 {
-		apiresp.Fail(c, apiresp.CodeCanvasInvalid, "base_version must be >= 0")
-		return
-	}
 	if req.Thumbnail != nil && len(*req.Thumbnail) > h.limits.MaxThumbnailBytes {
 		apiresp.Fail(c, apiresp.CodeCanvasTooLarge, "thumbnail too large")
 		return
 	}
-	version, err := h.db.SaveCanvasScene(c.Request.Context(), auth.UserIDFrom(c), c.Param("id"), req.BaseVersion, req.Data, req.Thumbnail)
-	if errors.Is(err, store.ErrCanvasNotFound) {
-		apiresp.Fail(c, apiresp.CodeCanvasNotFound, "canvas not found")
+	// 折叠写入:元素级版本即事实,base_version 不再作为闸门
+	// (保留参数兼容旧客户端;多人并发保存天然无冲突)。
+	elements, appState, err := scenepkg.SplitSceneData(req.Data)
+	if err != nil || elements == nil {
+		apiresp.Fail(c, apiresp.CodeCanvasInvalid, "data must contain an elements array")
 		return
 	}
-	if errors.Is(err, store.ErrCanvasVersionConflict) {
-		apiresp.Fail(c, apiresp.CodeCanvasConflict, "version conflict")
+	if err != nil || elements == nil {
+		apiresp.Fail(c, apiresp.CodeCanvasInvalid, "data must contain an elements array")
+		return
+	}
+	version, err := h.db.FoldCanvasScene(c.Request.Context(), c.Param("id"), elements, appState, req.Thumbnail)
+	if errors.Is(err, store.ErrCanvasNotFound) {
+		apiresp.Fail(c, apiresp.CodeCanvasNotFound, "canvas not found")
 		return
 	}
 	if err != nil {
@@ -233,7 +364,7 @@ func (h *canvasHandlers) rename(c *gin.Context) {
 		apiresp.Fail(c, apiresp.CodeCanvasInvalid, "canvas name must be 1-100 characters")
 		return
 	}
-	canvas, err := h.db.RenameCanvas(c.Request.Context(), auth.UserIDFrom(c), c.Param("id"), req.Name)
+	canvas, err := h.db.RenameCanvas(c.Request.Context(), c.Param("id"), req.Name)
 	if errors.Is(err, store.ErrCanvasNotFound) {
 		apiresp.Fail(c, apiresp.CodeCanvasNotFound, "canvas not found")
 		return
@@ -246,7 +377,7 @@ func (h *canvasHandlers) rename(c *gin.Context) {
 }
 
 func (h *canvasHandlers) remove(c *gin.Context) {
-	err := h.db.SoftDeleteCanvas(c.Request.Context(), auth.UserIDFrom(c), c.Param("id"))
+	err := h.db.SoftDeleteCanvas(c.Request.Context(), c.Param("id"))
 	if errors.Is(err, store.ErrCanvasNotFound) {
 		apiresp.Fail(c, apiresp.CodeCanvasNotFound, "canvas not found")
 		return
@@ -299,7 +430,7 @@ func (h *canvasHandlers) putFiles(c *gin.Context) {
 		}
 		storeFiles = append(storeFiles, store.CanvasFile{FileID: f.FileID, MimeType: f.MimeType, Data: data})
 	}
-	err := h.db.UpsertCanvasFiles(c.Request.Context(), auth.UserIDFrom(c), c.Param("id"), storeFiles)
+	err := h.db.UpsertCanvasFiles(c.Request.Context(), c.Param("id"), storeFiles)
 	if errors.Is(err, store.ErrCanvasNotFound) {
 		apiresp.Fail(c, apiresp.CodeCanvasNotFound, "canvas not found")
 		return
@@ -314,7 +445,7 @@ func (h *canvasHandlers) putFiles(c *gin.Context) {
 // getFile 是 apiresp 契约的唯一例外:返回原始二进制以便浏览器缓存
 // (file_id 为内容 hash,响应 immutable);找不到仍按契约回 JSON 错误。
 func (h *canvasHandlers) getFile(c *gin.Context) {
-	file, err := h.db.GetCanvasFile(c.Request.Context(), auth.UserIDFrom(c), c.Param("id"), c.Param("fileId"))
+	file, err := h.db.GetCanvasFile(c.Request.Context(), c.Param("id"), c.Param("fileId"))
 	if errors.Is(err, store.ErrCanvasNotFound) {
 		apiresp.Fail(c, apiresp.CodeCanvasNotFound, "file not found")
 		return
