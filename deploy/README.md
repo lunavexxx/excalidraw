@@ -188,6 +188,11 @@ curl http://localhost:8080/readyz     # 200 = 连通服务器 Nacos(local namesp
 ## Nacos 配置管理
 
 - 配置位置:namespace `server`(服务器 api/room)/ `local`(本地 api/room);dataId:`excalidraw-api.yaml` + `excalidraw-room.yaml`(协作房间服务,socket.io 线协议,persist-then-relay)
+- **room 配置发布走 `init-nacos-room.sh`**(首次或重发布;从各 namespace 现有 api 配置派生密钥,命令行零密钥输入,顺带修复 api yaml 的大写 `INTERNAL_TOKEN` 历史键名):
+  ```bash
+  NACOS_ADDR=<服务器IP>:8848 NACOS_USERNAME=xxx NACOS_PASSWORD=xxx WEB_DOMAIN=<域名> ./init-nacos-room.sh [--dry-run]
+  ```
+- 重跑**完整** `init-nacos.sh` 会覆盖全部配置,必须原样传现有 `JWT_SECRET`/`PHONE_CRYPTO_KEY`(后者一经使用不可更换,传错新值手机号数据全废)——日常只动 room 配置时用上面的 `init-nacos-room.sh`
 - 改配置:Nacos 控制台改 yaml → `docker compose -f test.yml restart api room`(配置只在启动时拉取)
 - **改 PG 密码要同时改两处**:`.env`(pg 容器)和 Nacos 里的 `database_url`(api/room 两份),然后 `up -d` + `restart api room`
 - **改 JWT_SECRET / INTERNAL_TOKEN**:只改 Nacos(api、room 两份 dataid)→ 重启 api 与 room;compose 不再注入这两个密钥,无双源问题
