@@ -23,6 +23,7 @@
 │  └ api.<域名>        → api(运维直连)      │
 │ web(nginx 静态)                           │
 │ api(Gin)← 配置来自 Nacos(namespace server)│
+│ room(Go,socket.io 协作)← 配置/注册同上    │
 │ nacos(standalone + 鉴权;8848/9848)        │
 │ pg(5432)                                  │
 └────────────────────────────────────────────┘
@@ -30,11 +31,12 @@
 ┌───────┴─────────────────────┴──────────────┐
 │ 本地(local.yml)                            │
 │ api 127.0.0.1:8080(namespace local)        │
+│ room 127.0.0.1:3002(可 --scale room=2)    │
 │ web 127.0.0.1:3000                         │
 └────────────────────────────────────────────┘
 ```
 
-**配置管理**:api 的全部应用配置(PORT、DATABASE_URL)存 Nacos,通过 `--nacos-addr` 参数定位;`.env`(gitignore)只存基础设施自举密钥(pg 密码、nacos 自身鉴权)与部署位置(IP、域名)。改配置不进 git、不用重新构建镜像。
+**配置管理**:api 与 room 的全部应用配置存 Nacos,通过 `--nacos-addr` 参数定位;`.env`(gitignore)只存基础设施自举密钥(pg 密码、nacos 自身鉴权)与部署位置(IP、域名)。改配置不进 git、不用重新构建镜像。
 
 ## 子域名与 DNS
 
@@ -129,8 +131,9 @@ docker compose -f test.yml up -d --build
    PG_PASSWORD=<与 .env 相同> \
    JWT_SECRET=$(openssl rand -base64 32) \
    PHONE_CRYPTO_KEY=$(openssl rand -base64 32) \
+   INTERNAL_TOKEN=$(openssl rand -hex 24) \
    ./init-nacos.sh
-   docker compose -f test.yml restart api
+   docker compose -f test.yml restart api room
    ```
    > 密钥生成后同步回填 `.env` 存档(Nacos 控制台看不到 base64 原文时以 .env 为准);
    > 重跑 init-nacos.sh 会整体覆盖配置,自定义键值先备份。
@@ -184,22 +187,24 @@ curl http://localhost:8080/readyz     # 200 = 连通服务器 Nacos(local namesp
 
 ## Nacos 配置管理
 
-- 配置位置:namespace `server`(服务器 api)/ `local`(本地 api),dataId `excalidraw-api.yaml`
-- 改配置:Nacos 控制台改 yaml → `docker compose -f test.yml restart api`(配置只在启动时拉取)
-- **改 PG 密码要同时改两处**:`.env`(pg 容器)和 Nacos 里的 `database_url`,然后 `up -d` + `restart api`
+- 配置位置:namespace `server`(服务器 api/room)/ `local`(本地 api/room);dataId:`excalidraw-api.yaml` + `excalidraw-room.yaml`(协作房间服务,socket.io 线协议,persist-then-relay)
+- 改配置:Nacos 控制台改 yaml → `docker compose -f test.yml restart api room`(配置只在启动时拉取)
+- **改 PG 密码要同时改两处**:`.env`(pg 容器)和 Nacos 里的 `database_url`(api/room 两份),然后 `up -d` + `restart api room`
+- **改 JWT_SECRET / INTERNAL_TOKEN**:只改 Nacos(api、room 两份 dataid)→ 重启 api 与 room;compose 不再注入这两个密钥,无双源问题
+- room 还会把自己注册到 Nacos naming(服务名 `excalidraw-room`,临时实例,gRPC 保活,控制台「服务管理 → 服务列表」可见)
 - 备份即 `nacos-data` 卷(derby 内嵌存储)
 
 ## 秘密清单
 
 | 项 | 存放 | 说明 |
 |---|---|---|
-| `database_url`(含 PG 密码) | Nacos | 应用配置唯一来源 |
-| `jwt_secret` | Nacos | api access token 签名(`.env` 的 `JWT_SECRET` 发布进去) |
+| `database_url`(含 PG 密码) | Nacos | 应用配置唯一来源(api/room 两份) |
+| `jwt_secret` | Nacos | api access token 签名,room 握手验签(`.env` 的 `JWT_SECRET` 发布进去) |
 | `phone_crypto_key` | Nacos | 手机号加解密/HMAC 主密钥,**一经使用不可更换** |
 | `PG_PASSWORD` | `.env`(gitignore) | pg 容器启动;与 Nacos 保持一致 |
 | `SERVER_IP` / `WEB_DOMAIN` / `API_DOMAIN` | `.env` | 部署位置与域名,不进 git |
 | `NACOS_AUTH_*` | `.env` | nacos 容器自身鉴权 |
-| `NACOS_USERNAME/PASSWORD` | `.env` | api SDK + init 脚本登录 |
+| `NACOS_USERNAME/PASSWORD` | `.env` | api/room SDK + init 脚本登录 |
 | `JWT_SECRET` / `PHONE_CRYPTO_KEY` | `.env` | 应用密钥存档(经 init-nacos.sh 发布进 Nacos) |
 
 ## 故障排查
@@ -212,5 +217,6 @@ curl http://localhost:8080/readyz     # 200 = 连通服务器 Nacos(local namesp
 ## 已知边界(按计划推进)
 
 - 账号体系已自建(`/api/v1/auth/*`,手机号+密码,web 经 Caddy 同源访问);在线保存/文档 API/图片上传随 M1 余项落地,此前 web 前端的历史云功能仍指向上游后端
-- MinIO / room / admin / 备份脚本分别随 M1 / M3 / M7 落地
+- room 协作服务已落地(Go,`apps/room`;socket.io 线协议 + Nacos 配置/服务注册);`room.<域名>` 仍为预留——生产流量走主域 `https://<域名>/socket.io/*`(Caddy 反代到 room:3002),无需独立子域
+- MinIO / admin / 备份脚本分别随 M1 余项 / M7 落地
 - 数据库迁移为手动步骤(schema 与 api 启动解耦),见「数据库迁移」一节

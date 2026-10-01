@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 一次性初始化 Nacos:创建 namespace(local / server)并发布 api 配置。
+# 一次性初始化 Nacos:创建 namespace(local / server)并发布 api 与 room 配置。
 # 幂等,可重复执行(重新发布 = 覆盖)。
 #
 # 用法(在能访问 Nacos 的机器上执行,通常直接在服务器上):
@@ -8,7 +8,7 @@
 #   PG_PASSWORD=xxx JWT_SECRET=xxx PHONE_CRYPTO_KEY=xxx INTERNAL_TOKEN=xxx \
 #   ./init-nacos.sh
 # 密钥生成: openssl rand -base64 32;INTERNAL_TOKEN: openssl rand -hex 24
-# 注意:重新执行会整体覆盖两份配置,保留自定义键值时先在控制台备份。
+# 注意:重新执行会整体覆盖各配置(api×2 + room×2),保留自定义键值时先在控制台备份。
 set -euo pipefail
 
 : "${NACOS_ADDR:?need NACOS_ADDR, e.g. <server-ip>:8848}"
@@ -73,4 +73,27 @@ publish server "$SERVER_DB_URL" "https://${WEB_DOMAIN}"
 # local:local.yml 的 web(3000) → api(8080) 跨端口,需要 CORS
 publish local "$LOCAL_DB_URL" "http://localhost:3000"
 
-echo "==> done. 重启 api 生效: docker compose -f test.yml restart api"
+# ── room 配置(dataid excalidraw-room.yaml):socket.io 协作房间服务 ──
+# 密钥与 api 同源(JWT_SECRET 校验握手 token;INTERNAL_TOKEN 回调内部端点),
+# 此后改密钥只需改这里 + 重启 room,不再需要动 compose env。
+publish_room() {
+  ns=$1
+  db_url=$2
+  cors=$3
+  content=$(printf 'port: "3002"\nredis_url: "redis://redis:6379"\ndatabase_url: "%s"\njwt_secret: "%s"\ngo_api_url: "http://api:8080/api/v1"\ninternal_token: "%s"\ncors_origins: "%s"\n' \
+    "$db_url" "$JWT_SECRET" "$INTERNAL_TOKEN" "$cors")
+  echo "==> publish excalidraw-room.yaml -> namespace ${ns}"
+  ok=$(curl -fsS -X POST "http://${NACOS_ADDR}/nacos/v1/cs/configs" \
+    --data-urlencode "accessToken=${TOKEN}" \
+    --data-urlencode "tenant=${ns}" \
+    --data-urlencode "dataId=excalidraw-room.yaml" \
+    --data-urlencode "group=${GROUP}" \
+    --data-urlencode "content=${content}")
+  [ "$ok" = "true" ] || { echo "publish room to ${ns} failed: ${ok}"; exit 1; }
+}
+
+publish_room server "$SERVER_DB_URL" "https://${WEB_DOMAIN}"
+# local:web(3000)/vite dev(5173) 直连 room(3002) 跨端口
+publish_room local "$LOCAL_DB_URL" "http://localhost:3000,http://localhost:5173"
+
+echo "==> done. 重启 api/room 生效: docker compose -f test.yml restart api room"
