@@ -26,7 +26,6 @@ import {
   isTestEnv,
   preventUnload,
   resolvablePromise,
-  isRunningInIframe,
   isDevEnv,
 } from "@excalidraw/common";
 import polyfill from "@excalidraw/excalidraw/polyfill";
@@ -132,6 +131,8 @@ import {
 import { isBrowserStorageStateNewer } from "./data/tabSync";
 import { NotificationBell } from "./share/NotificationBell";
 import { ShareDialog, shareDialogStateAtom } from "./share/ShareDialog";
+import { CanvasRealtimeStatus } from "./canvas/CanvasRealtimeStatus";
+import { useCanvasCollaboration } from "./canvas/useCanvasCollaboration";
 import CollabError, { collabErrorIndicatorAtom } from "./collab/CollabError";
 import { useHandleAppTheme } from "./useHandleAppTheme";
 import { getPreferredLanguage } from "./app-language/language-detector";
@@ -449,7 +450,7 @@ const ExcalidrawWrapper = () => {
   const excalidrawAPI = useExcalidrawAPI();
 
   const [errorMessage, setErrorMessage] = useState("");
-  const isCollabDisabled = isRunningInIframe();
+  const appRootRef = useRef<HTMLDivElement>(null);
 
   const { editorTheme, appTheme, setAppTheme } = useHandleAppTheme();
 
@@ -494,6 +495,12 @@ const ExcalidrawWrapper = () => {
   const currentUser = useAtomValue(currentUserAtom);
   const canvasId = useAtomValue(canvasIdAtom);
   const collabError = useAtomValue(collabErrorIndicatorAtom);
+  useCanvasCollaboration({
+    excalidrawAPI,
+    collabAPI,
+    canvasId,
+    rootRef: appRootRef,
+  });
   const userToFollow = useAtomValue(userToFollowAtom);
 
   // 已授权登录用户均可打开分享面板，具体管理操作由能力控制。
@@ -651,7 +658,7 @@ const ExcalidrawWrapper = () => {
   );
 
   useEffect(() => {
-    if (!excalidrawAPI || (!isCollabDisabled && !collabAPI)) {
+    if (!excalidrawAPI || !collabAPI) {
       return;
     }
     canvasSaver.init(excalidrawAPI);
@@ -690,10 +697,7 @@ const ExcalidrawWrapper = () => {
       if (isTestEnv()) {
         return;
       }
-      if (
-        !document.hidden &&
-        ((collabAPI && !collabAPI.isCollaborating()) || isCollabDisabled)
-      ) {
+      if (!document.hidden && collabAPI && !collabAPI.isCollaborating()) {
         // don't sync if local state is newer or identical to browser state
         // 服务端画布模式下场景权威在云端,本地草稿(可能为空/陈旧)
         // 一旦导入会清空当前场景并触发空场景上送,故跳过
@@ -784,7 +788,7 @@ const ExcalidrawWrapper = () => {
         false,
       );
     };
-  }, [isCollabDisabled, collabAPI, excalidrawAPI, setLangCode, loadImages]);
+  }, [collabAPI, excalidrawAPI, setLangCode, loadImages]);
 
   useEffect(() => {
     const unloadHandler = (event: BeforeUnloadEvent) => {
@@ -857,40 +861,11 @@ const ExcalidrawWrapper = () => {
     };
   }, [excalidrawAPI]);
 
-  const autoJoinAttemptRef = useRef<string | null>(null);
-
   const onChange = (
     elements: readonly OrderedExcalidrawElement[],
     appState: AppState,
     files: BinaryFiles,
   ) => {
-    const activeCanvas = appJotaiStore.get(canvasIdAtom);
-    if (!activeCanvas) {
-      autoJoinAttemptRef.current = null;
-    }
-    if (
-      activeCanvas &&
-      collabAPI &&
-      !appState.isLoading &&
-      !collabAPI.isCollaborating() &&
-      autoJoinAttemptRef.current !== activeCanvas
-    ) {
-      autoJoinAttemptRef.current = activeCanvas;
-      void Promise.resolve()
-        .then(() => canvasSaver.flushAsync())
-        .then(() => {
-          if (
-            appJotaiStore.get(canvasIdAtom) === activeCanvas &&
-            !collabAPI.isCollaborating()
-          ) {
-            return collabAPI.startCollaboration({
-              canvasId: activeCanvas,
-              username: appJotaiStore.get(currentUserAtom)?.nickname,
-            });
-          }
-        })
-        .catch(() => undefined);
-    }
     if (collabAPI?.isCollaborating()) {
       collabAPI.syncElements(elements);
     } else {
@@ -1092,6 +1067,7 @@ const ExcalidrawWrapper = () => {
 
   return (
     <div
+      ref={appRootRef}
       style={{ height: "100%" }}
       className={clsx("excalidraw-app", {
         "is-collaborating": isCollaborating,
@@ -1147,6 +1123,7 @@ const ExcalidrawWrapper = () => {
         renderTopRightUI={() => {
           return (
             <div className="excalidraw-ui-top-right">
+              {canvasId && <CanvasRealtimeStatus compact />}
               {currentUser && <NotificationBell />}
               {canvasId && (
                 <button
@@ -1173,7 +1150,6 @@ const ExcalidrawWrapper = () => {
       >
         <AppMainMenu
           onCollabDialogOpen={onCollabDialogOpen}
-          isCollaborating={isCollaborating}
           isCollabEnabled={isCollabEnabled}
           theme={appTheme}
           refresh={() => forceRefresh((prev) => !prev)}
@@ -1223,12 +1199,9 @@ const ExcalidrawWrapper = () => {
             setErrorMessage={setErrorMessage}
           />
         )}
-        {excalidrawAPI && !isCollabDisabled && (
-          <Collab excalidrawAPI={excalidrawAPI} />
-        )}
+        {excalidrawAPI && <Collab excalidrawAPI={excalidrawAPI} />}
 
         <ShareDialog
-          collabAPI={collabAPI}
           onExportToBackend={async () => {
             if (excalidrawAPI) {
               try {

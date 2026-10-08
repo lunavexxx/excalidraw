@@ -27,6 +27,7 @@ import {
   canvasIdAtom,
   canvasRoleAtom,
   canvasCapabilitiesAtom,
+  canvasTransitionAtom,
   type CanvasAccessRole,
 } from "./atoms";
 import { getCanvas, loadCanvasFiles } from "./api";
@@ -55,9 +56,9 @@ export type OpenServerCanvasOpts = {
 };
 
 // 协作与画布切换互斥(两套持久化);打开服务端画布自动进入实时房间。
-const stopCollabIfActive = (): Promise<void> => {
+const disconnectPreviousCanvas = (): Promise<void> => {
   const collab = appJotaiStore.get(collabAPIAtom);
-  if (collab?.isCollaborating()) {
+  if (collab) {
     return collab.stopCollaboration();
   }
   return Promise.resolve();
@@ -66,7 +67,7 @@ const stopCollabIfActive = (): Promise<void> => {
 // 有访问权限的用户打开服务端画布后自动加入；服务端角色决定可否编辑。
 export const autoJoinCollab = (canvasId: string): Promise<void> => {
   const collab = appJotaiStore.get(collabAPIAtom);
-  if (!collab || collab.isCollaborating()) {
+  if (!collab) {
     return Promise.resolve();
   }
   const username = appJotaiStore.get(currentUserAtom)?.nickname;
@@ -212,7 +213,7 @@ const doSwitchToCanvas = async (params: {
     return;
   }
 
-  await stopCollabIfActive();
+  await disconnectPreviousCanvas();
   await canvasSaver.flushAsync();
   const prevAppState = excalidrawAPI.getAppState();
   const result = await openServerCanvas(canvasId, prevAppState, excalidrawAPI);
@@ -259,7 +260,7 @@ const doSwitchToBlankCanvas = async (params: {
   historyMode?: "push" | "replace";
 }): Promise<void> => {
   const { excalidrawAPI, historyMode = "push" } = params;
-  await stopCollabIfActive();
+  await disconnectPreviousCanvas();
   await canvasSaver.flushAsync();
   // resetScene 会把 openSidebar 重置为 null(收起侧边栏),先保留
   const openSidebar = excalidrawAPI.getAppState().openSidebar;
@@ -296,7 +297,15 @@ const doSwitchToBlankCanvas = async (params: {
  */
 let switchChain: Promise<void> = Promise.resolve();
 const enqueueCanvasSwitch = (task: () => Promise<void>): Promise<void> => {
-  const run = switchChain.then(task, task);
+  const transition = async () => {
+    appJotaiStore.set(canvasTransitionAtom, true);
+    try {
+      await task();
+    } finally {
+      appJotaiStore.set(canvasTransitionAtom, false);
+    }
+  };
+  const run = switchChain.then(transition, transition);
   switchChain = run.catch(() => {});
   return run;
 };

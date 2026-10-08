@@ -16,6 +16,7 @@ import { isSyncableElement } from "../data";
 import { appJotaiStore } from "../app-jotai";
 import {
   presenceConnectedAtom,
+  canvasRealtimeStatusAtom,
   onlineUsersAtom,
   collaborationRefreshAtom,
 } from "../canvas/atoms";
@@ -33,6 +34,7 @@ class Portal {
   socket: Socket | null = null;
   socketInitialized: boolean = false; // we don't want the socket to emit any updates until it is fully initialized
   roomId: string | null = null;
+  roomJoined = false;
   broadcastedElementVersions: Map<string, number> = new Map();
 
   constructor(collab: TCollabClass) {
@@ -52,8 +54,8 @@ class Portal {
           "join-room",
           this.roomId,
           (res?: { error?: string; role?: string } | null) => {
-            if (this.socket && !res?.error) {
-              this.collab.onRoomJoined();
+            if (this.socket === socket && this.roomId === id && !res?.error) {
+              this.roomJoined = true;
               if (res?.role && this.roomId) {
                 void this.collab.onAccessChanged({
                   canvas_id: this.roomId,
@@ -61,7 +63,9 @@ class Portal {
                 });
               }
               appJotaiStore.set(presenceConnectedAtom, true);
+              appJotaiStore.set(canvasRealtimeStatusAtom, "connected");
               this.socket.emit("presence-request", this.roomId);
+              void this.collab.onRoomJoined();
             }
           },
         );
@@ -95,8 +99,13 @@ class Portal {
       appJotaiStore.set(collaborationRefreshAtom, (n) => n + 1);
     });
     this.socket.on("disconnect", (reason: string) => {
+      this.roomJoined = false;
+      this.socketInitialized = false;
+      this.broadcastedElementVersions.clear();
+      appJotaiStore.set(canvasRealtimeStatusAtom, "reconnecting");
       appJotaiStore.set(presenceConnectedAtom, false);
       appJotaiStore.set(onlineUsersAtom, new Map());
+      this.collab.setCollaborators([]);
       if (reason === "io server disconnect") {
         this.socket?.connect();
       }
@@ -104,13 +113,13 @@ class Portal {
     this.socket.on("room-user-change", (clients: SocketId[]) => {
       this.collab.setCollaborators(clients);
     });
-    // 重连补拉:socket.io 自动重连后 init-room → join-room 会重放,
-    // 但 first-in-room 是 .once、SCENE_INIT 消费 guard 也已失效;
-    // 断线窗口的场景变化由服务端持久层补齐(绝不盲覆盖)。
+    this.socket.on("connect_error", () => {
+      appJotaiStore.set(canvasRealtimeStatusAtom, "reconnecting");
+    });
+    // Synchronize only after membership acknowledgement, never before joining.
     this.socket.on("connect", () => {
-      if (this.roomId) {
-        this.collab.onSocketReconnected();
-      }
+      this.roomJoined = false;
+      this.socketInitialized = false;
     });
 
     return socket;
@@ -121,17 +130,24 @@ class Portal {
       return;
     }
     this.queueFileUpload.flush();
+    this.socket.removeAllListeners();
     this.socket.close();
     appJotaiStore.set(presenceConnectedAtom, false);
     appJotaiStore.set(onlineUsersAtom, new Map());
     this.socket = null;
     this.roomId = null;
     this.socketInitialized = false;
+    this.roomJoined = false;
     this.broadcastedElementVersions = new Map();
   }
 
   isOpen() {
-    return !!(this.socketInitialized && this.socket && this.roomId);
+    return !!(
+      this.socketInitialized &&
+      this.roomJoined &&
+      this.socket?.connected &&
+      this.roomId
+    );
   }
 
   async _broadcastSocketData(
@@ -150,6 +166,7 @@ class Portal {
       const json = JSON.stringify(data);
       const encoded = new TextEncoder().encode(json);
       const target = roomId ?? this.roomId;
+      const socket = this.socket;
 
       if (volatile) {
         this.socket?.emit(WS_EVENTS.SERVER_VOLATILE, target, encoded);
@@ -162,13 +179,13 @@ class Portal {
         target,
         encoded,
         (res?: { seq?: number; error?: string } | null) => {
-          if (!this.roomId) {
+          if (!target || this.socket !== socket || this.roomId !== target) {
             return;
           }
           if (typeof res?.seq === "number") {
-            this.collab.onOwnPersistedSeq(this.roomId, res.seq);
+            this.collab.onOwnPersistedSeq(target, res.seq);
           } else if (res?.error) {
-            this.collab.onOwnPersistFailed(this.roomId);
+            this.collab.onOwnPersistFailed(target);
           }
         },
       );
@@ -218,6 +235,9 @@ class Portal {
     elements: readonly OrderedExcalidrawElement[],
     syncAll: boolean,
   ) => {
+    if (!this.isOpen()) {
+      return;
+    }
     if (updateType === WS_SUBTYPES.INIT && !syncAll) {
       throw new Error("syncAll must be true when sending SCENE.INIT");
     }

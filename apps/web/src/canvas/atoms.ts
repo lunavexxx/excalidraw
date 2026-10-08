@@ -36,3 +36,10 @@ export const onlineUsersAtom = atom<
 >(new Map());
 export const presenceConnectedAtom = atom(false);
 export const collaborationRefreshAtom = atom(0);
+
+/** Online canvases own a persistent realtime connection. */
+export const canvasRealtimeStatusAtom = atom<
+  "idle" | "connecting" | "connected" | "reconnecting"
+>("idle");
+/** Suspend automatic connections while the scene and canvas ID are changing. */
+export const canvasTransitionAtom = atom(false);

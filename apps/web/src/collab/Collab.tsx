@@ -78,6 +78,8 @@ import {
 } from "../auth/guestSession";
 import { refreshSession } from "../auth/api";
 import {
+  canvasIdAtom,
+  canvasRealtimeStatusAtom,
   canvasRoleAtom,
   canvasCapabilitiesAtom,
   onlineUsersAtom,
@@ -161,6 +163,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   private seqStates = new Map<string, SeqCursorState>();
   private seqPatrolTimer: number | null = null;
   private syncInFlight = false;
+  private connectionGeneration = 0;
+  private startingCanvasId: string | null = null;
+  private resolveRoomInitialization: (() => void) | null = null;
 
   constructor(props: CollabProps) {
     super(props);
@@ -297,6 +302,8 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       this.idleTimeoutId = null;
     }
     this.onUmmount?.();
+    void this.stopCollaboration(false);
+    appJotaiStore.set(collabAPIAtom, null);
   }
 
   isCollaborating = () => appJotaiStore.get(isCollaboratingAtom)!;
@@ -314,11 +321,13 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       this.getSceneElementsIncludingDeleted(),
     );
 
-    // 场景尾部已"到达即落库"(room 捕获广播),无需客户端兜底保存;
-    // 仅图片文件仍在途时提示(文件二进制不经 room,需客户端上传)。
+    // Warn before leaving with disconnected edits or pending image uploads.
     if (
       this.isCollaborating() &&
-      this.fileManager.shouldPreventUnload(syncableElements)
+      (this.fileManager.shouldPreventUnload(syncableElements) ||
+        (!this.excalidrawAPI.getAppState().viewModeEnabled &&
+          getSceneVersion(syncableElements) >
+            this.lastBroadcastedOrReceivedSceneVersion))
     ) {
       if (import.meta.env.VITE_APP_DISABLE_PREVENT_UNLOAD !== "true") {
         preventUnload(event);
@@ -335,7 +344,11 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   // (即使 room 事件链路出现过缺口)。场景持久化主路径是 room 的事件流。
   private syncToServer = async (): Promise<void> => {
     const canvasId = this.portal.roomId;
-    if (!canvasId || getGuestToken(canvasId)) {
+    if (
+      !canvasId ||
+      getGuestToken(canvasId) ||
+      this.excalidrawAPI.getAppState().viewModeEnabled
+    ) {
       return;
     }
     try {
@@ -381,6 +394,8 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   };
 
   stopCollaboration = async (keepRemoteState = true) => {
+    this.connectionGeneration++;
+    this.startingCanvasId = null;
     if (this.seqPatrolTimer !== null) {
       window.clearInterval(this.seqPatrolTimer);
       this.seqPatrolTimer = null;
@@ -428,8 +443,13 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   };
 
   private destroySocketClient = (opts?: { isUnload: boolean }) => {
+    this.connectionGeneration++;
+    this.startingCanvasId = null;
+    this.resolveRoomInitialization?.();
+    this.resolveRoomInitialization = null;
     this.lastBroadcastedOrReceivedSceneVersion = -1;
     this.portal.close();
+    appJotaiStore.set(canvasRealtimeStatusAtom, "idle");
     this.fileManager.reset();
     this.followedBy = new Set();
     if (!opts?.isUnload) {
@@ -508,27 +528,55 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     }
 
     if (this.portal.socket || this.isCollaborating()) {
+      if (
+        this.portal.roomId === opts.canvasId &&
+        this.portal.socket &&
+        !this.portal.socket.connected &&
+        !this.portal.socket.active
+      ) {
+        this.portal.socket.connect();
+      }
       return null;
     }
-
+    if (this.startingCanvasId) {
+      return null;
+    }
     const roomId = opts.canvasId;
+    const generation = this.connectionGeneration;
+    this.startingCanvasId = roomId;
 
     const scenePromise = resolvablePromise<
       | (ImportedDataState & { elements: readonly OrderedExcalidrawElement[] })
       | null
     >();
 
-    await canvasSaver.flushAsync();
-    if (this.portal.socket || this.isCollaborating()) {
+    let socketIOClient: typeof import("socket.io-client").default;
+    try {
+      await canvasSaver.flushAsync();
+      socketIOClient = (await import("socket.io-client")).default;
+    } catch (error) {
+      if (generation === this.connectionGeneration) {
+        this.startingCanvasId = null;
+        appJotaiStore.set(canvasRealtimeStatusAtom, "reconnecting");
+      }
+      console.error(error);
       return null;
     }
+    if (
+      generation !== this.connectionGeneration ||
+      appJotaiStore.get(canvasIdAtom) !== roomId
+    ) {
+      if (generation === this.connectionGeneration) {
+        this.startingCanvasId = null;
+      }
+      return null;
+    }
+    this.startingCanvasId = null;
     canvasSaver.pauseForCollaboration();
     this.setIsCollaborating(true);
+    appJotaiStore.set(canvasRealtimeStatusAtom, "connecting");
     LocalData.pauseSave("collaboration");
-
-    const { default: socketIOClient } = await import(
-      /* webpackChunkName: "socketIoClient" */ "socket.io-client"
-    );
+    this.resolveRoomInitialization = () => scenePromise.resolve(null);
 
     const fallbackInitializationHandler = () => {
       this.initializeRoom({ fetchScene: true }).then((scene) => {
@@ -566,7 +614,8 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       this.portal.socket.once("connect_error", fallbackInitializationHandler);
     } catch (error: any) {
       console.error(error);
-      this.setErrorDialog(error.message);
+      this.destroySocketClient();
+      appJotaiStore.set(canvasRealtimeStatusAtom, "reconnecting");
       return null;
     }
 
@@ -689,6 +738,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     });
 
     this.portal.socket.on("first-in-room", async () => {
+      if (!this.portal.roomJoined) {
+        return;
+      }
       const sceneData = await this.initializeRoom({ fetchScene: true });
       scenePromise.resolve(sceneData);
     });
@@ -730,7 +782,8 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       );
     }
     const canvasId = this.portal.roomId;
-    if (fetchScene && canvasId && this.portal.socket) {
+    const socket = this.portal.socket;
+    if (fetchScene && canvasId && socket) {
       try {
         const synced = await this.syncFromServerSeq(canvasId);
         if (!synced) {
@@ -740,10 +793,12 @@ class Collab extends PureComponent<CollabProps, CollabState> {
         // log the error and move on. other peers will sync us the scene.
         console.error(error);
       } finally {
-        this.portal.socketInitialized = true;
+        if (this.portal.socket === socket && this.portal.roomId === canvasId) {
+          this.portal.socketInitialized = this.portal.roomJoined;
+        }
       }
     } else {
-      this.portal.socketInitialized = true;
+      this.portal.socketInitialized = this.portal.roomJoined;
     }
     return null;
   };
@@ -755,6 +810,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     const detail = await getCanvas(canvasId, {
       token: getGuestToken(canvasId),
     });
+    if (this.portal.roomId !== canvasId) {
+      return;
+    }
     const remoteElements = detail.scene?.data?.elements;
     if (remoteElements && remoteElements.length > 0) {
       const restored = restoreElements(
@@ -821,6 +879,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
         if (!patch || "error" in patch) {
           return false;
         }
+        if (this.portal.socket !== socket || this.portal.roomId !== canvasId) {
+          return false;
+        }
         if (patch.elements.length > 0) {
           const restored = restoreElements(
             toBrandedType<readonly RemoteExcalidrawElement[]>(
@@ -870,14 +931,32 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   private patrolSeq = (): void => {
     const canvasId = this.portal.roomId;
     if (this.isCollaborating() && canvasId && this.portal.socket?.connected) {
-      void this.syncFromServerSeq(canvasId).catch(() => undefined);
+      void this.syncFromServerSeq(canvasId)
+        .then(() => this.syncElements(this.getSceneElementsIncludingDeleted()))
+        .catch(() => undefined);
     }
   };
 
-  /** join-room 成功后的首次同步(join ack / first-in-room / 兜底共用) */
-  onRoomJoined = (): void => {
-    if (this.portal.roomId && !this.portal.socketInitialized) {
-      void this.initializeRoom({ fetchScene: true });
+  /** Every successful join reconciles remote changes and sends pending edits. */
+  onRoomJoined = async (): Promise<void> => {
+    const socket = this.portal.socket;
+    const canvasId = this.portal.roomId;
+    await this.initializeRoom({ fetchScene: true });
+    if (
+      this.portal.socket !== socket ||
+      this.portal.roomId !== canvasId ||
+      !this.portal.isOpen()
+    ) {
+      return;
+    }
+    this.resolveRoomInitialization?.();
+    this.resolveRoomInitialization = null;
+    if (!this.excalidrawAPI.getAppState().viewModeEnabled) {
+      const elements = this.getSceneElementsIncludingDeleted();
+      if (elements.length) {
+        await this.portal.broadcastScene(WS_SUBTYPES.UPDATE, elements, true);
+        this.lastBroadcastedOrReceivedSceneVersion = getSceneVersion(elements);
+      }
     }
   };
 
@@ -892,17 +971,10 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   /** 自写帧未落库(队列溢出/DB 故障):显式提示降级,巡检+兜底 PUT 自愈 */
   onOwnPersistFailed = (canvasId: string): void => {
     if (canvasId === this.portal.roomId && this.isCollaborating()) {
+      this.portal.broadcastedElementVersions.clear();
+      this.lastBroadcastedOrReceivedSceneVersion = -1;
       this.setErrorIndicator(t("errors.collabSyncDegraded"));
     }
-  };
-
-  // 重连补拉:socket.io 自动重连后由 Portal 回调;断线窗口内的远端变更
-  // 已被 room 落库,从服务端快照 reconcile 收敛。
-  onSocketReconnected = () => {
-    if (!this.isCollaborating() || !this.portal.roomId) {
-      return;
-    }
-    void this.initializeRoom({ fetchScene: true });
   };
 
   private _reconcileElements = (
@@ -1055,6 +1127,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     if (access.unavailable) {
       appJotaiStore.set(canvasRoleAtom, "viewer");
       appJotaiStore.set(presenceConnectedAtom, false);
+      appJotaiStore.set(canvasRealtimeStatusAtom, "reconnecting");
       appJotaiStore.set(canvasCapabilitiesAtom, {
         can_manage_collaborators: false,
         can_manage_share_links: false,
@@ -1069,6 +1142,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       return;
     }
     appJotaiStore.set(presenceConnectedAtom, true);
+    appJotaiStore.set(canvasRealtimeStatusAtom, "connected");
     if (!access.role) {
       appJotaiStore.set(canvasRoleAtom, "viewer");
       appJotaiStore.set(canvasCapabilitiesAtom, {
@@ -1216,6 +1290,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   };
 
   broadcastElements = (elements: readonly OrderedExcalidrawElement[]) => {
+    if (!this.portal.isOpen()) {
+      return;
+    }
     if (
       getSceneVersion(elements) >
       this.getLastBroadcastedOrReceivedSceneVersion()

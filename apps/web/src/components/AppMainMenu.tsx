@@ -1,4 +1,8 @@
-import { loginIcon, eyeIcon } from "@excalidraw/excalidraw/components/icons";
+import {
+  loginIcon,
+  eyeIcon,
+  usersIcon,
+} from "@excalidraw/excalidraw/components/icons";
 import { useI18n } from "@excalidraw/excalidraw/i18n";
 import { MainMenu } from "@excalidraw/excalidraw/index";
 import React from "react";
@@ -26,7 +30,6 @@ const avatarColor = (id: string) => {
 
 export const AppMainMenu: React.FC<{
   onCollabDialogOpen: () => any;
-  isCollaborating: boolean;
   isCollabEnabled: boolean;
   theme: Theme | "system";
   refresh: () => void;
@@ -41,10 +44,9 @@ export const AppMainMenu: React.FC<{
       <MainMenu.DefaultItems.Export />
       <MainMenu.DefaultItems.SaveAsImage />
       {props.isCollabEnabled && (
-        <MainMenu.DefaultItems.LiveCollaborationTrigger
-          isCollaborating={props.isCollaborating}
-          onSelect={() => props.onCollabDialogOpen()}
-        />
+        <MainMenu.Item icon={usersIcon} onSelect={props.onCollabDialogOpen}>
+          {t("collabAccess.shareTitle")}
+        </MainMenu.Item>
       )}
       <MainMenu.DefaultItems.CommandPalette className="highlighted" />
       <MainMenu.DefaultItems.SearchMenu />

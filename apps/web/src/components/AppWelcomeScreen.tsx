@@ -1,3 +1,4 @@
+import { usersIcon } from "@excalidraw/excalidraw/components/icons";
 import { POINTER_EVENTS } from "@excalidraw/common";
 import { useI18n } from "@excalidraw/excalidraw/i18n";
 import { WelcomeScreen } from "@excalidraw/excalidraw/index";
@@ -59,9 +60,12 @@ export const AppWelcomeScreen: React.FC<{
           <WelcomeScreen.Center.MenuItemLoadScene />
           <WelcomeScreen.Center.MenuItemHelp />
           {props.isCollabEnabled && (
-            <WelcomeScreen.Center.MenuItemLiveCollaborationTrigger
-              onSelect={() => props.onCollabDialogOpen()}
-            />
+            <WelcomeScreen.Center.MenuItem
+              icon={usersIcon}
+              onSelect={props.onCollabDialogOpen}
+            >
+              {t("collabAccess.shareTitle")}
+            </WelcomeScreen.Center.MenuItem>
           )}
         </WelcomeScreen.Center.Menu>
       </WelcomeScreen.Center>

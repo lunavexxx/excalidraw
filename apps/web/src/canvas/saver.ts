@@ -71,10 +71,9 @@ export const normalizeSentName = (
 };
 
 /**
- * 服务端自动保存器:onChange 旁路接入,防抖 PUT 场景快照。
- * 服务端为权威存储;本地草稿仅匿名态存在(登录后冻结,
- * 由 LocalData 的 skipDataState 保证),同一账号多标签页
- * 靠 base_version 乐观锁 + reconcileElements 自动合并。
+ * Bootstrap new online canvases and flush HTTP work before realtime takes over.
+ * Existing online canvases use the room's persistence and synchronization;
+ * adopt() temporarily restores this saver when switching away from a room.
  */
 class CanvasSaver {
   private excalidrawAPI: ExcalidrawImperativeAPI | null = null;
