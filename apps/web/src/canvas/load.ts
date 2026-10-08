@@ -23,7 +23,12 @@ import { collabAPIAtom } from "../collab/Collab";
 import { currentUserAtom } from "../auth/atoms";
 
 import { canvasSaver } from "./saver";
-import { canvasIdAtom, canvasRoleAtom, type CanvasAccessRole } from "./atoms";
+import {
+  canvasIdAtom,
+  canvasRoleAtom,
+  canvasCapabilitiesAtom,
+  type CanvasAccessRole,
+} from "./atoms";
 import { getCanvas, loadCanvasFiles } from "./api";
 import { CanvasApiError } from "./api";
 
@@ -49,22 +54,17 @@ export type OpenServerCanvasOpts = {
   role?: "editor" | "viewer";
 };
 
-// 协作与画布切换互斥(两套持久化);协作中 viewer/guest 打开画布自动进房围观。
+// 协作与画布切换互斥(两套持久化);打开服务端画布自动进入实时房间。
 const stopCollabIfActive = (): Promise<void> => {
   const collab = appJotaiStore.get(collabAPIAtom);
   if (collab?.isCollaborating()) {
-    return collab.stopCollaboration(false);
+    return collab.stopCollaboration();
   }
   return Promise.resolve();
 };
 
-// viewer/guest 打开服务端画布后自动进入实时房间(只读围观);
-// editor/owner 的协作由分享对话框显式发起。
-const autoJoinCollabIfReadOnly = (canvasId: string): Promise<void> => {
-  const role = appJotaiStore.get(canvasRoleAtom);
-  if (role !== "viewer" && role !== "guest") {
-    return Promise.resolve();
-  }
+// 有访问权限的用户打开服务端画布后自动加入；服务端角色决定可否编辑。
+export const autoJoinCollab = (canvasId: string): Promise<void> => {
   const collab = appJotaiStore.get(collabAPIAtom);
   if (!collab || collab.isCollaborating()) {
     return Promise.resolve();
@@ -109,6 +109,14 @@ export const openServerCanvas = async (
 
   const role: CanvasAccessRole = token ? "guest" : detail.my_role ?? "owner";
   appJotaiStore.set(canvasRoleAtom, role);
+  appJotaiStore.set(
+    canvasCapabilitiesAtom,
+    detail.capabilities ?? {
+      can_manage_collaborators: role === "owner",
+      can_manage_share_links: role === "owner",
+      can_review_requests: role === "owner",
+    },
+  );
   const readOnly = role === "viewer" || role === "guest";
 
   // 协议 v2:冷启动同步游标注入(协作进房后的 sync-request 以此为起点)
@@ -228,7 +236,7 @@ const doSwitchToCanvas = async (params: {
     captureUpdate: CaptureUpdateAction.NEVER,
   });
   loadServerCanvasFiles(canvasId, elements, excalidrawAPI);
-  await autoJoinCollabIfReadOnly(canvasId);
+  await autoJoinCollab(canvasId);
 
   const url = `/c/${canvasId}`;
   if (historyMode === "replace") {
@@ -261,6 +269,11 @@ const doSwitchToBlankCanvas = async (params: {
     clearGuestSession(prevCanvasId);
   }
   appJotaiStore.set(canvasRoleAtom, null);
+  appJotaiStore.set(canvasCapabilitiesAtom, {
+    can_manage_collaborators: false,
+    can_manage_share_links: false,
+    can_review_requests: false,
+  });
   // detach 必须先于 resetScene:否则空场景 onChange 会以旧画布身份
   // 通过 seenContent 兜底,2s 后把空快照 PUT 上去清空云端画布
   canvasSaver.detach();

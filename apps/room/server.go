@@ -19,11 +19,12 @@ import (
 )
 
 type RoomServer struct {
-	cfg       *Config
-	http      *http.Server
-	io        *socket.Server
-	persister *Persister
-	registry  *Registry
+	cfg          *Config
+	http         *http.Server
+	io           *socket.Server
+	persister    *Persister
+	registry     *Registry
+	accessCancel context.CancelFunc
 }
 
 func NewRoomServer(cfg *Config) (*RoomServer, error) {
@@ -79,6 +80,8 @@ func NewRoomServer(cfg *Config) (*RoomServer, error) {
 	conns := NewConnectionGuard(cfg.PerIdentityConnectionLimit)
 	hub := NewRoomHub(io, cfg, persister, NewSceneSync(cfg), NewACLResolver(cfg), rate, conns)
 	hub.Register()
+	accessCtx, accessCancel := context.WithCancel(context.Background())
+	hub.StartAccessEvents(accessCtx)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
@@ -93,7 +96,7 @@ func NewRoomServer(cfg *Config) (*RoomServer, error) {
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 
-	return &RoomServer{cfg: cfg, http: httpSrv, io: io, persister: persister}, nil
+	return &RoomServer{cfg: cfg, http: httpSrv, io: io, persister: persister, accessCancel: accessCancel}, nil
 }
 
 func newRedisClient(redisURL string) (goredis.UniversalClient, error) {
@@ -124,6 +127,9 @@ func (rs *RoomServer) Run() error {
 // engine/adapter)→ Nacos 注销 → 冲洗落库队列(5s 内)→ 关 HTTP。
 func (rs *RoomServer) Shutdown() {
 	log.Printf("[room] shutting down")
+	if rs.accessCancel != nil {
+		rs.accessCancel()
+	}
 	done := make(chan struct{})
 	go func() {
 		rs.io.Close(func(err error) {

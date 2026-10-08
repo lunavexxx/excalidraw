@@ -133,13 +133,26 @@ export const UserList = React.memo(
         ? currentUserControls(!!mobile)
         : currentUserControls;
 
-    const collaboratorsArray = Array.from(
+    const allCollaborators = Array.from(
       collaborators,
       ([socketId, collaborator]) => ({
         ...collaborator,
         socketId,
       }),
     ).filter((collaborator) => collaborator.username?.trim());
+    const byAccount = new Map<string, typeof allCollaborators[number]>();
+    for (const c of allCollaborators) {
+      const key = c.id || c.socketId;
+      const existing = byAccount.get(key);
+      if (
+        !existing ||
+        c.isCurrentUser ||
+        (!existing.isCurrentUser && c.socketId === userToFollow)
+      ) {
+        byAccount.set(key, c);
+      }
+    }
+    const collaboratorsArray = [...byAccount.values()];
     const currentUser = collaboratorsArray.find((c) => c.isCurrentUser);
     const otherCollaborators = collaboratorsArray.filter(
       (c) => !c.isCurrentUser,

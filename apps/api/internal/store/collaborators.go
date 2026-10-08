@@ -18,7 +18,7 @@ type Collaborator struct {
 	CreatedAt   time.Time
 }
 
-// ListCollaborators 列出画布协作者(管理接口,owner 专属,handler 门控)。
+// ListCollaborators 列出画布协作者(管理接口,由 handler 校验分享管理能力)。
 func (db *DB) ListCollaborators(ctx context.Context, canvasID string) ([]Collaborator, error) {
 	rows, err := db.pool.Query(ctx, `
 		SELECT cc.canvas_id, cc.user_id, cc.role, u.nickname, u.phone_masked, cc.created_at

@@ -20,3 +20,19 @@ export const canvasSaveErrorAtom = atom<string | null>(null);
 
 /** 未落库草稿是否有内容(面板「未保存草稿」指示条)。 */
 export const draftDirtyAtom = atom<boolean>(false);
+
+export const canvasCapabilitiesAtom = atom<
+  import("./types").CanvasCapabilities
+>({
+  can_manage_collaborators: false,
+  can_manage_share_links: false,
+  can_review_requests: false,
+});
+export const onlineUsersAtom = atom<
+  Map<
+    string,
+    { user_id: string; nickname: string; avatar_url: string; role: string }
+  >
+>(new Map());
+export const presenceConnectedAtom = atom(false);
+export const collaborationRefreshAtom = atom(0);

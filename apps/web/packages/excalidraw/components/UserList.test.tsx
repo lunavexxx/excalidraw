@@ -69,7 +69,8 @@ describe("UserList", () => {
       const dropdownCollaborators = dropdown?.querySelectorAll(
         ".UserList__collaborator",
       );
-      expect(dropdownCollaborators).toHaveLength(2);
+      // The two clients belong to one account; keep the local dropdown.
+      expect(dropdownCollaborators).toHaveLength(1);
       expect(
         dropdown?.querySelectorAll(".UserList__collaborator.is-current-user"),
       ).toHaveLength(1);

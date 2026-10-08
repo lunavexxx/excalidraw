@@ -7,8 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// CanvasRole 是画布内容的解析角色(信息类操作一律 owner 专属,
-// 不在此建模;见 canvas handlers 的 authorize 中间件)。
+// CanvasRole 是画布内容角色；分享管理能力独立建模于 CanvasCapabilities。
 type CanvasRole string
 
 const (

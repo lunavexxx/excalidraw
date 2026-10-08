@@ -202,7 +202,7 @@ export const loadCanvasFiles = async (
   return { loadedFiles, erroredFiles };
 };
 
-// ---- 协作者 / 分享链接 / guest 换票(信息类管理一律 owner 专属)----
+// ---- 协作者 / 分享链接 / guest 换票(写操作需分享管理能力)----
 
 export const listCollaborators = async (
   canvasId: string,
@@ -213,7 +213,7 @@ export const listCollaborators = async (
   return data.items;
 };
 
-/** 按手机号邀请/变更协作者(owner;upsert 语义)。 */
+/** 按手机号直接添加/变更协作者(分享管理者；upsert 语义)。 */
 export const putCollaborator = async (
   canvasId: string,
   phone: string,

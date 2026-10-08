@@ -13,6 +13,13 @@ import type {
 import { WS_EVENTS, FILE_UPLOAD_TIMEOUT, WS_SUBTYPES } from "../app_constants";
 import { isSyncableElement } from "../data";
 
+import { appJotaiStore } from "../app-jotai";
+import {
+  presenceConnectedAtom,
+  onlineUsersAtom,
+  collaborationRefreshAtom,
+} from "../canvas/atoms";
+
 import type {
   SocketUpdateData,
   SocketUpdateDataSource,
@@ -44,13 +51,54 @@ class Portal {
         this.socket.emit(
           "join-room",
           this.roomId,
-          (res?: { error?: string } | null) => {
+          (res?: { error?: string; role?: string } | null) => {
             if (this.socket && !res?.error) {
               this.collab.onRoomJoined();
+              if (res?.role && this.roomId) {
+                void this.collab.onAccessChanged({
+                  canvas_id: this.roomId,
+                  role: res.role,
+                });
+              }
+              appJotaiStore.set(presenceConnectedAtom, true);
+              this.socket.emit("presence-request", this.roomId);
             }
           },
         );
         trackEvent("share", "room joined");
+      }
+    });
+    this.socket.on(
+      "presence-roster",
+      (
+        people: {
+          socket_id: SocketId;
+          user_id: string;
+          nickname: string;
+          avatar_url: string;
+          role: string;
+        }[],
+      ) => {
+        this.collab.setPresence(people);
+      },
+    );
+    this.socket.on(
+      "canvas-access-changed",
+      (access: { canvas_id: string; role: string; unavailable?: boolean }) => {
+        void this.collab.onAccessChanged(access);
+      },
+    );
+    this.socket.on("canvas-members-changed", () => {
+      appJotaiStore.set(collaborationRefreshAtom, (n) => n + 1);
+    });
+    this.socket.on("notifications-changed", () => {
+      appJotaiStore.set(collaborationRefreshAtom, (n) => n + 1);
+    });
+    this.socket.on("disconnect", (reason: string) => {
+      appJotaiStore.set(presenceConnectedAtom, false);
+      appJotaiStore.set(onlineUsersAtom, new Map());
+      if (reason === "io server disconnect") {
+        this.socket?.connect();
       }
     });
     this.socket.on("room-user-change", (clients: SocketId[]) => {
@@ -74,6 +122,8 @@ class Portal {
     }
     this.queueFileUpload.flush();
     this.socket.close();
+    appJotaiStore.set(presenceConnectedAtom, false);
+    appJotaiStore.set(onlineUsersAtom, new Map());
     this.socket = null;
     this.roomId = null;
     this.socketInitialized = false;
@@ -90,6 +140,12 @@ class Portal {
     roomId?: string,
   ) {
     if (this.isOpen()) {
+      if (
+        !volatile &&
+        this.collab.excalidrawAPI.getAppState().viewModeEnabled
+      ) {
+        return;
+      }
       // 明文 JSON 广播(传输由 TLS 保护;房间内容由 ACL 把关)。
       const json = JSON.stringify(data);
       const encoded = new TextEncoder().encode(json);

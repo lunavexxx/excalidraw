@@ -15,7 +15,27 @@ registerSW();
 // 登录页(含 ~400KB 装饰 SVG)动态加载,避免编辑器主包超出 PWA 预缓存上限。
 const isLoginRoute = /^\/(login|signup)\/?$/.test(window.location.pathname);
 
-if (isLoginRoute) {
+const ownerWindow = rootElement.ownerDocument.defaultView!;
+const accessKind =
+  ownerWindow.location.pathname === "/invite"
+    ? "invite"
+    : ownerWindow.location.pathname === "/request-access"
+    ? "request"
+    : null;
+if (accessKind) {
+  const query = new URLSearchParams(ownerWindow.location.search);
+  void import("./share/AccessLandingPage").then(({ AccessLandingApp }) => {
+    root.render(
+      <StrictMode>
+        <AccessLandingApp
+          kind={accessKind}
+          initialToken={query.get("token") || ""}
+          invitationId={query.get("id") || ""}
+        />
+      </StrictMode>,
+    );
+  });
+} else if (isLoginRoute) {
   void import("./components/LoginPage").then(({ LoginApp }) => {
     root.render(
       <StrictMode>

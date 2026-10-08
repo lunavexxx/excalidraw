@@ -14,7 +14,7 @@ export type CanvasErrorCode =
   | 42004 // 分享链接失效(过期/撤销/不存在)
   | 42005; // 邀请目标未注册
 
-/** 当前请求者在画布上的内容角色(API 返回;管理类操作一律 owner 专属) */
+/** 当前请求者在画布上的内容角色；分享管理由独立 capabilities 判定 */
 export type CanvasRole = "owner" | "editor" | "viewer";
 
 export type CanvasMeta = {
@@ -26,6 +26,7 @@ export type CanvasMeta = {
 };
 
 export type CanvasDetail = {
+  capabilities?: CanvasCapabilities;
   canvas: CanvasMeta;
   scene: {
     version: number;
@@ -69,4 +70,62 @@ export type GuestAccessPayload = {
   expires_in: number;
   role: "editor" | "viewer";
   canvas_id: string;
+};
+
+export type CanvasCapabilities = {
+  can_manage_collaborators: boolean;
+  can_manage_share_links: boolean;
+  can_review_requests: boolean;
+};
+export type CanvasMember = {
+  user_id: string;
+  nickname: string;
+  avatar_url: string;
+  phone_masked?: string;
+  effective_role: CanvasRole;
+  direct_role: "editor" | "viewer" | "";
+  workspace_role: "owner" | "admin" | "editor" | "viewer" | "";
+  can_manage: boolean;
+};
+export type Invitation = {
+  id: string;
+  canvas_id: string;
+  canvas_name: string;
+  phone_masked: string;
+  role: "editor" | "viewer";
+  status: "pending" | "accepted" | "revoked";
+  expires_at: string;
+  created_at: string;
+};
+export type AccessEntry = {
+  id: string;
+  expires_at: string;
+  revoked_at: string | null;
+};
+export type AccessRequest = {
+  id: string;
+  canvas_id: string;
+  user_id: string;
+  nickname: string;
+  role: "editor" | "viewer";
+  reason: string;
+  status: "pending" | "approved" | "rejected" | "cancelled";
+  granted_role: "editor" | "viewer" | "";
+  result_reason: string;
+  created_at: string;
+};
+export type CollaborationNotification = {
+  id: number;
+  type:
+    | "member_added"
+    | "invitation"
+    | "invitation_accepted"
+    | "access_requested"
+    | "access_approved"
+    | "access_rejected";
+  canvas_id: string;
+  canvas_name: string;
+  entity_id: string;
+  read_at: string | null;
+  created_at: string;
 };

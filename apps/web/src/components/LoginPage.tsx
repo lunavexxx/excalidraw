@@ -1,6 +1,6 @@
 import { TextField } from "@excalidraw/excalidraw/components/TextField";
 import { languages, setLanguage, t } from "@excalidraw/excalidraw/i18n";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import { getPreferredLanguage } from "../app-language/language-detector";
 import { ApiError, login, register } from "../auth/api";
@@ -22,6 +22,14 @@ const FieldError = ({ message }: { message?: string }) =>
   message ? <div className="login-page__field-error">{message}</div> : null;
 
 export const LoginPage = ({ initialMode }: { initialMode: LoginMode }) => {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const returnPath = () => {
+    const ownerWindow = rootRef.current?.ownerDocument.defaultView;
+    const path = new URLSearchParams(ownerWindow?.location.search).get(
+      "returnTo",
+    );
+    return path && /^\/(invite|request-access)(\?|$)/.test(path) ? path : "/";
+  };
   const [mode, setMode] = useState<LoginMode>(initialMode);
 
   const [phone, setPhone] = useState("");
@@ -39,7 +47,12 @@ export const LoginPage = ({ initialMode }: { initialMode: LoginMode }) => {
     setFieldErrors({});
     setFormError("");
     // 保持 URL 与模式一致(/login ↔ /signup),不触发整页刷新
-    window.history.pushState(null, "", `/${next}`);
+    const ownerWindow = rootRef.current?.ownerDocument.defaultView;
+    ownerWindow?.history.pushState(
+      null,
+      "",
+      `/${next}?returnTo=${encodeURIComponent(returnPath())}`,
+    );
   };
 
   const validate = (): string | null => {
@@ -74,7 +87,7 @@ export const LoginPage = ({ initialMode }: { initialMode: LoginMode }) => {
           )
         : await login(normalizePhoneInput(phone), password);
       // 编辑器装载时经静默 refresh 恢复会话
-      window.location.assign("/");
+      rootRef.current?.ownerDocument.defaultView?.location.assign(returnPath());
     } catch (error: any) {
       if (error instanceof ApiError) {
         switch (error.code) {
@@ -98,7 +111,7 @@ export const LoginPage = ({ initialMode }: { initialMode: LoginMode }) => {
   };
 
   return (
-    <div className="login-page">
+    <div className="login-page" ref={rootRef}>
       <BlobTopLeft className="login-page__blob login-page__blob--top-left" />
       <BlobTopRight className="login-page__blob login-page__blob--top-right" />
       <BlobBottomCenter className="login-page__blob login-page__blob--bottom-center" />

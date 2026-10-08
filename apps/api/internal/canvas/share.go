@@ -1,4 +1,4 @@
-// share.go:画布协作者与分享链接管理(信息类操作,一律 canvas owner 专属)
+// share.go:画布协作者与分享链接管理(画布 owner 或所属工作区 owner/admin)
 // 以及匿名 guest 换票端点。协作者/分享链接的变更不影响场景内容本身。
 package canvas
 
@@ -23,14 +23,16 @@ import (
 const shareLinkTokenTTL = time.Hour
 
 // registerShareRoutes 在 /canvases 组内追加协作者与分享链接路由。
-// 这些都是信息类操作,统一 RoleOwner 门控。
+// 管理操作按独立能力鉴权；公开成员展示仅需读取权限。
 func registerShareRoutes(g *gin.RouterGroup, h *canvasHandlers) {
-	g.GET("/:id/collaborators", h.authorize(store.RoleOwner), h.listCollaborators)
-	g.PUT("/:id/collaborators", h.authorize(store.RoleOwner), h.putCollaborator)
-	g.DELETE("/:id/collaborators/:userId", h.authorize(store.RoleOwner), h.removeCollaborator)
-	g.GET("/:id/share-links", h.authorize(store.RoleOwner), h.listShareLinks)
-	g.POST("/:id/share-links", h.authorize(store.RoleOwner), h.createShareLink)
-	g.DELETE("/:id/share-links/:linkId", h.authorize(store.RoleOwner), h.revokeShareLink)
+	g.GET("/:id/members", auth.RequireUser(), h.authorize(store.RoleViewer), h.listMembers)
+	g.GET("/:id/collaborators", h.authorizeManagement(), h.listCollaborators)
+	g.PUT("/:id/collaborators", h.authorizeManagement(), h.putCollaborator)
+	g.PATCH("/:id/collaborators/:userId", h.authorizeManagement(), h.updateCollaborator)
+	g.DELETE("/:id/collaborators/:userId", h.authorizeManagement(), h.removeCollaborator)
+	g.GET("/:id/share-links", h.authorizeManagement(), h.listShareLinks)
+	g.POST("/:id/share-links", h.authorizeManagement(), h.createShareLink)
+	g.DELETE("/:id/share-links/:linkId", h.authorizeManagement(), h.revokeShareLink)
 }
 
 // newShareLinkToken 生成 32 字节随机 token(base64url 给客户端)与其
@@ -119,7 +121,11 @@ func (h *canvasHandlers) putCollaborator(c *gin.Context) {
 		apiresp.Fail(c, apiresp.CodeInternal, "lookup user failed")
 		return
 	}
-	if err := h.db.UpsertCollaborator(c.Request.Context(), c.Param("id"), target.ID, req.Role, auth.UserIDFrom(c)); err != nil {
+	if target.ID == canvasFrom(c).OwnerID {
+		apiresp.Fail(c, apiresp.CodeForbidden, "cannot change canvas owner")
+		return
+	}
+	if err := h.db.GrantCollaborator(c.Request.Context(), c.Param("id"), target.ID, req.Role, auth.UserIDFrom(c)); err != nil {
 		apiresp.Fail(c, apiresp.CodeInternal, "save collaborator failed")
 		return
 	}
@@ -320,3 +326,38 @@ func (h *canvasHandlers) guestAccess(c *gin.Context) {
 }
 
 // guestLimiter/phoneCrypto 由 canvasHandlers 携带(见 RegisterRoutes)。
+
+func (h *canvasHandlers) updateCollaborator(c *gin.Context) {
+	var req struct {
+		Role string `json:"role"`
+	}
+	if c.ShouldBindJSON(&req) != nil || !validAccessRole(req.Role) {
+		apiresp.Fail(c, apiresp.CodeCanvasInvalid, "invalid role")
+		return
+	}
+	if !uuidRe.MatchString(c.Param("userId")) || c.Param("userId") == canvasFrom(c).OwnerID {
+		apiresp.Fail(c, apiresp.CodeForbidden, "invalid collaborator")
+		return
+	}
+	items, err := h.db.ListCollaborators(c.Request.Context(), c.Param("id"))
+	if err != nil {
+		failAccess(c, err)
+		return
+	}
+	found := false
+	for _, it := range items {
+		if it.UserID == c.Param("userId") {
+			found = true
+			break
+		}
+	}
+	if !found {
+		apiresp.Fail(c, apiresp.CodeCanvasNotFound, "collaborator not found")
+		return
+	}
+	if err := h.db.GrantCollaborator(c.Request.Context(), c.Param("id"), c.Param("userId"), req.Role, auth.UserIDFrom(c)); err != nil {
+		failAccess(c, err)
+		return
+	}
+	apiresp.OK(c, nil)
+}

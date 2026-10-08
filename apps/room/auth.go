@@ -5,6 +5,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 	"sync"
@@ -22,20 +23,24 @@ type GuestIdentity struct {
 }
 
 type aclEntry struct {
-	role    string // "owner"|"editor"|"viewer",或 ""(已缓存的拒绝)
-	expires int64  // epoch 秒
+	role        string // "owner"|"editor"|"viewer",或 ""(已缓存的拒绝)
+	unavailable bool
+	expires     int64 // epoch 秒
 }
 
 // Session 是握手成功后的连接级身份,挂到 socket.Data() 上。
 type Session struct {
-	Token    string
-	TokenExp int64 // epoch 秒;无 exp 则 0(ACL 缓存 TTL 回落 60s)
-	UserID   string
-	Guest    *GuestIdentity
+	Token       string
+	TokenExp    int64 // epoch 秒;无 exp 则 0(ACL 缓存 TTL 回落 60s)
+	DisplayName string
+	AvatarURL   string
+	UserID      string
+	Guest       *GuestIdentity
 
-	mu    sync.Mutex
-	acl   map[string]*aclEntry // canvasId → 角色缓存
-	roles map[string]string    // canvasId → join 后的内容角色
+	accessMu sync.Mutex
+	mu       sync.Mutex
+	acl      map[string]*aclEntry // canvasId → 角色缓存
+	roles    map[string]string    // canvasId → join 后的内容角色
 }
 
 // setRole 记录 join 成功后该画布房间的角色;按房间存储——单连接加入
@@ -134,4 +139,46 @@ func parseGuestSubject(sub string) (string, error) {
 		return "", errors.New("malformed guest subject")
 	}
 	return shareLinkID, nil
+}
+
+// Adapter replication exposes only public presence data, never the bearer token.
+func (s *Session) MarshalJSON() ([]byte, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	id := s.UserID
+	if id == "" && s.Guest != nil {
+		id = s.Guest.Subject
+	}
+	return json.Marshal(struct {
+		UserID    string            `json:"user_id"`
+		Nickname  string            `json:"nickname"`
+		AvatarURL string            `json:"avatar_url"`
+		Roles     map[string]string `json:"roles"`
+	}{id, s.DisplayName, s.AvatarURL, s.roles})
+}
+func (s *Session) invalidateACL(canvasID string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.acl, canvasID)
+}
+
+func (s *Session) cachedAccess(canvasID string, now int64) (string, error, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	e, ok := s.acl[canvasID]
+	if !ok || e.expires <= now {
+		return "", nil, false
+	}
+	if e.unavailable {
+		return "", ErrACLUnavailable, true
+	}
+	return e.role, nil, true
+}
+func (s *Session) storeAccess(canvasID, role string, expires int64, unavailable bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.acl == nil {
+		s.acl = make(map[string]*aclEntry)
+	}
+	s.acl[canvasID] = &aclEntry{role: role, expires: expires, unavailable: unavailable}
 }

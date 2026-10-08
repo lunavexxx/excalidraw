@@ -22,6 +22,8 @@ import { LocalData } from "../data/LocalData";
 
 import {
   canvasIdAtom,
+  canvasRoleAtom,
+  canvasCapabilitiesAtom,
   canvasSaveErrorAtom,
   canvasSaveStateAtom,
   draftDirtyAtom,
@@ -130,6 +132,16 @@ class CanvasSaver {
     appJotaiStore.set(canvasIdAtom, params.canvasId);
     appJotaiStore.set(draftDirtyAtom, false);
     this.setState("idle");
+  }
+
+  /** The room owns persistence after pending HTTP saves have been flushed. */
+  pauseForCollaboration() {
+    this.generation++;
+    this.pending = null;
+    this.firstPendingAt = 0;
+    this.role = "viewer";
+    this.scheduleSave.cancel();
+    this.scheduleRename.cancel();
   }
 
   /** 面板等外部途径完成重命名后同步基准,避免保存器重复 PATCH。 */
@@ -303,6 +315,12 @@ class CanvasSaver {
         this.savedName = canvas.name;
         this.syncedFileIds = new Set();
         appJotaiStore.set(canvasIdAtom, canvas.id);
+        appJotaiStore.set(canvasRoleAtom, "owner");
+        appJotaiStore.set(canvasCapabilitiesAtom, {
+          can_manage_collaborators: true,
+          can_manage_share_links: true,
+          can_review_requests: true,
+        });
         window.history.replaceState({}, APP_NAME, `/c/${canvas.id}`);
         // 懒创建成功=首页草稿被隐式导入:清掉冻结草稿防重复导入;
         // 先 flush(登录态为 files-only)再清,防 debounce 陈旧参数复活草稿

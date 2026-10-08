@@ -71,9 +71,22 @@ import {
   saveUsernameToLocalStorage,
 } from "../data/localStorage";
 
-import { getGuestToken } from "../auth/guestSession";
+import {
+  getGuestToken,
+  getGuestShareToken,
+  setGuestToken,
+} from "../auth/guestSession";
+import { refreshSession } from "../auth/api";
+import {
+  canvasRoleAtom,
+  canvasCapabilitiesAtom,
+  onlineUsersAtom,
+  presenceConnectedAtom,
+  collaborationRefreshAtom,
+} from "../canvas/atoms";
 import { getAccessToken } from "../auth/tokens";
 import {
+  exchangeShareToken,
   getCanvas,
   loadCanvasFiles,
   putCanvasFiles,
@@ -173,7 +186,11 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       },
       saveFiles: async ({ addedFiles }) => {
         const canvasId = this.portal.roomId;
-        if (!canvasId || getGuestToken(canvasId)) {
+        if (
+          !canvasId ||
+          getGuestToken(canvasId) ||
+          appJotaiStore.get(canvasRoleAtom) === "viewer"
+        ) {
           // guest 无 PUT 凭证:文件经房间广播保持在线,不落库
           throw new AbortError();
         }
@@ -401,6 +418,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
           version: detail.scene?.version ?? 0,
           name: detail.canvas.name,
           fileIds: detail.files.map((f) => f.file_id),
+          role: detail.my_role === "viewer" ? "viewer" : "editor",
         });
       } catch (error) {
         // adopt 失败时下一次保存的冲突处理路径兜底
@@ -489,7 +507,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       });
     }
 
-    if (this.portal.socket) {
+    if (this.portal.socket || this.isCollaborating()) {
       return null;
     }
 
@@ -500,6 +518,11 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       | null
     >();
 
+    await canvasSaver.flushAsync();
+    if (this.portal.socket || this.isCollaborating()) {
+      return null;
+    }
+    canvasSaver.pauseForCollaboration();
     this.setIsCollaborating(true);
     LocalData.pauseSave("collaboration");
 
@@ -520,10 +543,22 @@ class Collab extends PureComponent<CollabProps, CollabState> {
           // 生产同源(经 Caddy /socket.io);websocket-only 免粘性会话
           transports: ["websocket"],
           // 回调形式:每次(重)连接取当前 token,access 过期后重连自动续
-          auth: (cb: (data: object) => void) =>
-            cb({
-              token: getGuestToken(roomId) ?? (getAccessToken() || undefined),
-            }),
+          auth: async (cb: (data: object) => void) => {
+            try {
+              const share = getGuestShareToken(roomId);
+              if (share) {
+                const guest = await exchangeShareToken(roomId, share);
+                setGuestToken(roomId, guest.access_token);
+              } else {
+                await refreshSession();
+              }
+              cb({
+                token: getGuestToken(roomId) ?? getAccessToken() ?? undefined,
+              });
+            } catch {
+              cb({});
+            }
+          },
         }),
         roomId,
       );
@@ -596,7 +631,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
             pointer,
             button,
             selectedElementIds,
-            username,
+            username: this.collaborators.get(socketId)?.id
+              ? this.collaborators.get(socketId)?.username
+              : username,
           });
 
           break;
@@ -638,7 +675,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
           const { userState, socketId, username } = decodedData.payload;
           this.updateCollaborator(socketId, {
             userState,
-            username,
+            username: this.collaborators.get(socketId)?.id
+              ? this.collaborators.get(socketId)?.username
+              : username,
           });
           break;
         }
@@ -980,6 +1019,113 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     document.addEventListener(EVENT.VISIBILITY_CHANGE, this.onVisibilityChange);
   };
 
+  setPresence(
+    people: {
+      socket_id: SocketId;
+      user_id: string;
+      nickname: string;
+      avatar_url: string;
+      role: string;
+    }[],
+  ) {
+    const users = new Map<
+      string,
+      { user_id: string; nickname: string; avatar_url: string; role: string }
+    >();
+    this.setCollaborators(people.map((p) => p.socket_id));
+    for (const p of people) {
+      users.set(p.socket_id, p);
+      this.updateCollaborator(p.socket_id, {
+        id: p.user_id,
+        username: p.nickname || "Guest",
+        avatarUrl: p.avatar_url,
+      });
+    }
+    appJotaiStore.set(onlineUsersAtom, users);
+  }
+
+  onAccessChanged = async (access: {
+    canvas_id: string;
+    role: string;
+    unavailable?: boolean;
+  }) => {
+    if (access.canvas_id !== this.portal.roomId) {
+      return;
+    }
+    if (access.unavailable) {
+      appJotaiStore.set(canvasRoleAtom, "viewer");
+      appJotaiStore.set(presenceConnectedAtom, false);
+      appJotaiStore.set(canvasCapabilitiesAtom, {
+        can_manage_collaborators: false,
+        can_manage_share_links: false,
+        can_review_requests: false,
+      });
+      this.excalidrawAPI.updateScene({
+        appState: {
+          viewModeEnabled: true,
+          errorMessage: t("collabAccess.permissionUnavailable"),
+        },
+      });
+      return;
+    }
+    appJotaiStore.set(presenceConnectedAtom, true);
+    if (!access.role) {
+      appJotaiStore.set(canvasRoleAtom, "viewer");
+      appJotaiStore.set(canvasCapabilitiesAtom, {
+        can_manage_collaborators: false,
+        can_manage_share_links: false,
+        can_review_requests: false,
+      });
+      this.excalidrawAPI.updateScene({ appState: { viewModeEnabled: true } });
+      await this.stopCollaboration(false);
+      canvasSaver.detach();
+      this.excalidrawAPI.resetScene();
+      this.excalidrawAPI.updateScene({
+        appState: {
+          viewModeEnabled: true,
+          errorMessage: t("collabAccess.accessLost"),
+        },
+      });
+      return;
+    }
+    const guest = !!getGuestToken(access.canvas_id);
+    appJotaiStore.set(
+      canvasRoleAtom,
+      guest ? "guest" : (access.role as "owner" | "editor" | "viewer"),
+    );
+    this.excalidrawAPI.updateScene({
+      appState: {
+        viewModeEnabled: access.role === "viewer",
+        errorMessage:
+          this.excalidrawAPI.getAppState().errorMessage ===
+          t("collabAccess.permissionUnavailable")
+            ? null
+            : this.excalidrawAPI.getAppState().errorMessage,
+      },
+    });
+    if (!guest) {
+      try {
+        const detail = await getCanvas(access.canvas_id);
+        if (access.canvas_id !== this.portal.roomId) {
+          return;
+        }
+        if (detail.capabilities) {
+          appJotaiStore.set(canvasCapabilitiesAtom, detail.capabilities);
+        }
+        canvasSaver.adopt({
+          canvasId: access.canvas_id,
+          version: detail.scene?.version ?? 0,
+          name: detail.canvas.name,
+          fileIds: detail.files.map((f) => f.file_id),
+          role: access.role === "viewer" ? "viewer" : "editor",
+        });
+      } catch {
+        /* room already enforces the updated permission */
+      }
+    }
+    appJotaiStore.set(collaborationRefreshAtom, (n) => n + 1);
+  };
+
   setCollaborators(sockets: SocketId[]) {
     const collaborators: InstanceType<typeof Collab>["collaborators"] =
       new Map();
@@ -1007,6 +1153,10 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   }
 
   updateCollaborator = (socketId: SocketId, updates: Partial<Collaborator>) => {
+    // Pointer payloads cannot introduce accounts absent from the server roster.
+    if (!this.collaborators.has(socketId)) {
+      return;
+    }
     const isCurrentUser = socketId === this.portal.socket?.id;
     const collaborators = new Map(this.collaborators);
     const user: Mutable<Collaborator> = Object.assign(
@@ -1077,6 +1227,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   };
 
   syncElements = (elements: readonly OrderedExcalidrawElement[]) => {
+    if (this.excalidrawAPI.getAppState().viewModeEnabled) {
+      return;
+    }
     // 场景持久化 = room 先落库后转发(帧携带 seq),客户端无保存循环
     this.broadcastElements(elements);
   };

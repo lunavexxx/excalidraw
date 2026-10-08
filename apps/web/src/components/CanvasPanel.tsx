@@ -8,13 +8,16 @@ import { PlusIcon } from "@excalidraw/excalidraw/components/icons";
 import Spinner from "@excalidraw/excalidraw/components/Spinner";
 import { useI18n } from "@excalidraw/excalidraw/i18n";
 
-import { useAtomValue } from "../app-jotai";
+import { useAtomValue, appJotaiStore } from "../app-jotai";
 import { currentUserAtom } from "../auth/atoms";
 import {
   canvasIdAtom,
+  canvasRoleAtom,
+  canvasCapabilitiesAtom,
   canvasSaveErrorAtom,
   canvasSaveStateAtom,
   draftDirtyAtom,
+  collaborationRefreshAtom,
 } from "../canvas/atoms";
 import {
   createCanvas,
@@ -30,7 +33,11 @@ import {
   localDraftNonEmpty,
   localDraftUpdatedAt,
 } from "../canvas/localDraft";
-import { switchToBlankCanvas, switchToCanvas } from "../canvas/load";
+import {
+  switchToBlankCanvas,
+  switchToCanvas,
+  autoJoinCollab,
+} from "../canvas/load";
 import { canvasSaver, normalizeSentName } from "../canvas/saver";
 
 import { LocalData } from "../data/LocalData";
@@ -58,6 +65,8 @@ export const CanvasPanel = () => {
   const saveError = useAtomValue(canvasSaveErrorAtom);
   const draftDirty = useAtomValue(draftDirtyAtom);
 
+  const refreshVersion = useAtomValue(collaborationRefreshAtom);
+  const [scope, setScope] = React.useState<"mine" | "shared">("mine");
   const [items, setItems] = React.useState<CanvasMeta[]>([]);
   const [nextCursor, setNextCursor] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -67,32 +76,34 @@ export const CanvasPanel = () => {
   const [confirmDeleteId, setConfirmDeleteId] = React.useState<string | null>(
     null,
   );
-  const [newCanvasArmed, setNewCanvasArmed] = React.useState(false);
   const [discardArmed, setDiscardArmed] = React.useState(false);
   const [switchingId, setSwitchingId] = React.useState<string | null>(null);
   const [switchError, setSwitchError] = React.useState<string | null>(null);
 
-  const refresh = React.useCallback(async (append = false, cursor = "") => {
-    setLoading(true);
-    try {
-      const res = await listCanvases(cursor || undefined, PAGE_SIZE);
-      setItems((prev) => (append ? [...prev, ...res.items] : res.items));
-      setNextCursor(res.next_cursor);
-    } catch {
-      if (!append) {
-        setItems([]);
-        setNextCursor("");
+  const refresh = React.useCallback(
+    async (append = false, cursor = "") => {
+      setLoading(true);
+      try {
+        const res = await listCanvases(cursor || undefined, PAGE_SIZE, scope);
+        setItems((prev) => (append ? [...prev, ...res.items] : res.items));
+        setNextCursor(res.next_cursor);
+      } catch {
+        if (!append) {
+          setItems([]);
+          setNextCursor("");
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [scope],
+  );
 
   React.useEffect(() => {
     if (user) {
       void refresh();
     }
-  }, [user, canvasId, refresh]);
+  }, [user, canvasId, refresh, refreshVersion]);
 
   if (!user) {
     const draftTime = localDraftNonEmpty() ? localDraftUpdatedAt() : null;
@@ -111,54 +122,17 @@ export const CanvasPanel = () => {
           ) : null}
           <div style={guideStyle}>
             <div style={guideTextStyle}>{t("canvasPanel.loginPrompt")}</div>
-            <FilledButton
-              label={t("canvasPanel.loginAction")}
-              onClick={() => {
-                window.location.assign("/login");
-              }}
-            />
           </div>
-        </div>
-        <div style={footerStyle}>
-          <div style={dividerStyle} />
-          <FilledButton
-            size="medium"
-            fullWidth
-            icon={PlusIcon}
-            color={newCanvasArmed ? "warning" : "primary"}
-            onClick={() => void handleNewCanvas()}
-          >
-            {newCanvasArmed
-              ? t("canvasPanel.newCanvasConfirm")
-              : t("canvasPanel.newCanvas")}
-          </FilledButton>
         </div>
       </div>
     );
   }
 
-  const hasSceneContent = () => {
-    return !!excalidrawAPI
-      ?.getSceneElementsIncludingDeleted()
-      .some((el) => !el.isDeleted);
-  };
-
   const handleNewCanvas = async () => {
     if (!excalidrawAPI) {
       return;
     }
-    if (!user) {
-      // 匿名:场景有内容时重置会清空本地草稿,先确认
-      if (hasSceneContent() && !newCanvasArmed) {
-        setNewCanvasArmed(true);
-        return;
-      }
-      setNewCanvasArmed(false);
-      await switchToBlankCanvas({ excalidrawAPI, historyMode: "replace" });
-      return;
-    }
     // 登录态:切换函数内部先 flush,防 detach 丢弃 2s 防抖窗口内的内容
-    setNewCanvasArmed(false);
     await switchToBlankCanvas({ excalidrawAPI, historyMode: "replace" });
     void refresh();
   };
@@ -256,7 +230,14 @@ export const CanvasPanel = () => {
         name: canvas.name,
         fileIds: payloads.map((f) => f.file_id),
       });
+      appJotaiStore.set(canvasRoleAtom, "owner");
+      appJotaiStore.set(canvasCapabilitiesAtom, {
+        can_manage_collaborators: true,
+        can_manage_share_links: true,
+        can_review_requests: true,
+      });
       window.history.replaceState({}, document.title, `/c/${canvas.id}`);
+      await autoJoinCollab(canvas.id);
       void refresh();
     } catch {
       // 失败保持本地草稿不动,下次可重试
@@ -313,6 +294,22 @@ export const CanvasPanel = () => {
   return (
     <div className="CanvasPanel" style={panelStyle}>
       <div style={listStyle}>
+        <div style={{ display: "flex", gap: 8 }}>
+          {(["mine", "shared"] as const).map((s) => (
+            <button
+              key={s}
+              style={actionBtnStyle}
+              aria-pressed={scope === s}
+              onClick={() => {
+                setItems([]);
+                setNextCursor("");
+                setScope(s);
+              }}
+            >
+              {t(`collabAccess.${s}`)}
+            </button>
+          ))}
+        </div>
         {!canvasId && localDraftNonEmpty() ? (
           <div style={draftCardStyle}>
             <div style={draftCardHeadStyle}>
@@ -417,6 +414,9 @@ export const CanvasPanel = () => {
                     title={canvas.name}
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (scope === "shared") {
+                        return;
+                      }
                       setRenamingId(canvas.id);
                       setRenameValue(canvas.name);
                     }}
@@ -440,7 +440,7 @@ export const CanvasPanel = () => {
             </div>
             {switchingId === canvas.id ? (
               <span style={actionBtnStyle} />
-            ) : (
+            ) : scope === "mine" ? (
               <button
                 style={{
                   ...actionBtnStyle,
@@ -454,7 +454,7 @@ export const CanvasPanel = () => {
               >
                 ✕
               </button>
-            )}
+            ) : null}
           </div>
         ))}
 
@@ -502,11 +502,12 @@ const panelStyle: React.CSSProperties = {
   minHeight: 0,
 };
 
+// 登录提示:在纵向 flex 列表里用 auto margin 垂直居中
 const guideStyle: React.CSSProperties = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  gap: "0.75rem",
+  margin: "auto 0",
   padding: "1.5rem 0.5rem",
   textAlign: "center",
 };

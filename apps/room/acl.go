@@ -6,6 +6,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -14,7 +15,9 @@ import (
 	"time"
 )
 
-const aclCacheTTL = int64(60) // 秒
+var ErrACLUnavailable = errors.New("permission service unavailable")
+
+const aclCacheTTL = int64(20) // 秒
 
 var uuidRe = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 
@@ -40,56 +43,73 @@ type internalAccessResponse struct {
 
 // ResolveRole 返回 "" 表示拒绝进房(无关系/链接失效/回调失败)。
 func (a *ACLResolver) ResolveRole(ctx context.Context, session *Session, canvasID string) (string, error) {
+	role, _ := a.ResolveAccess(ctx, session, canvasID)
+	return role, nil
+}
+
+func (a *ACLResolver) ResolveAccess(ctx context.Context, session *Session, canvasID string) (string, error) {
 	now := time.Now().Unix()
-	if role, ok := session.cachedACL(canvasID, now); ok {
-		return role, nil
+	if session.TokenExp > 0 && session.TokenExp <= now {
+		return "", nil
+	}
+	if role, err, ok := session.cachedAccess(canvasID, now); ok {
+		return role, err
 	}
 
-	role := a.fetchRole(ctx, session, canvasID)
+	role, err := a.fetchAccess(ctx, session, canvasID)
 	// 缓存拒绝结果与放行同等重要:API 抖动期不放大回调量。
 	ttl := aclCacheTTL
+	if err != nil {
+		ttl = 2
+	}
 	if session.TokenExp > 0 && session.TokenExp-now < ttl {
 		ttl = session.TokenExp - now
 	}
 	if ttl < 0 {
 		ttl = aclCacheTTL
 	}
-	session.storeACL(canvasID, role, now+ttl)
-	return role, nil
+	session.storeAccess(canvasID, role, now+ttl, err != nil)
+	return role, err
 }
 
-func (a *ACLResolver) fetchRole(ctx context.Context, session *Session, canvasID string) string {
+func (a *ACLResolver) fetchAccess(ctx context.Context, session *Session, canvasID string) (string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet,
 		fmt.Sprintf("%s/internal/canvas/%s/access", a.cfg.GoAPIURL, url.PathEscape(canvasID)), nil)
 	if err != nil {
-		return ""
+		return "", ErrACLUnavailable
 	}
 	req.Header.Set("Authorization", "Bearer "+session.Token)
 	req.Header.Set("X-Internal-Token", a.cfg.InternalToken)
 
 	resp, err := a.client.Do(req)
 	if err != nil {
-		return ""
+		return "", ErrACLUnavailable
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return ""
+		return "", ErrACLUnavailable
 	}
 	body, err := io.ReadAll(io.LimitReader(resp.Body, 64<<10))
 	if err != nil {
-		return ""
+		return "", ErrACLUnavailable
 	}
 	var parsed internalAccessResponse
 	if err := json.Unmarshal(body, &parsed); err != nil {
-		return ""
+		return "", ErrACLUnavailable
 	}
-	if parsed.Code != 0 || parsed.Data == nil {
-		return ""
+	if parsed.Code != 0 {
+		if parsed.Code >= 50000 {
+			return "", ErrACLUnavailable
+		}
+		return "", nil
+	}
+	if parsed.Data == nil {
+		return "", ErrACLUnavailable
 	}
 	switch parsed.Data.Role {
 	case "owner", "editor", "viewer":
-		return parsed.Data.Role
+		return parsed.Data.Role, nil
 	default:
-		return ""
+		return "", ErrACLUnavailable
 	}
 }

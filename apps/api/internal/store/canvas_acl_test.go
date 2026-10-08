@@ -53,3 +53,17 @@ func TestCanvasRoleOrdering(t *testing.T) {
 		t.Fatal("无权限不应满足 viewer 门槛")
 	}
 }
+
+func TestCanManageCanvas(t *testing.T) {
+	for _, tc := range []struct {
+		user, ws string
+		want     bool
+	}{
+		{"owner", "", true}, {"member", "owner", true}, {"member", "admin", true},
+		{"member", "editor", false}, {"member", "viewer", false}, {"member", "", false}, {"", "admin", false},
+	} {
+		if got := CanManageCanvas("owner", tc.user, tc.ws); got != tc.want {
+			t.Fatalf("user=%q ws=%q: got %v", tc.user, tc.ws, got)
+		}
+	}
+}

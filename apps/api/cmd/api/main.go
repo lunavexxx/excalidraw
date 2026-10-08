@@ -134,7 +134,7 @@ func registerCORS(apiGroup *gin.RouterGroup, origins []string) {
 		AllowOrigins: origins,
 		// canvas 场景/文件用 PUT、重命名/删除用 PATCH/DELETE。
 		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders: []string{"Authorization", "Content-Type"},
+		AllowHeaders: []string{"Authorization", "Content-Type", "X-Access-Entry"},
 		MaxAge:       12 * time.Hour,
 	}))
 }

@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/zishang520/socket.io/servers/socket/v3"
@@ -30,10 +31,12 @@ type RoomHub struct {
 	acl     *ACLResolver
 	rate    *RateLimiter
 	conns   *ConnectionGuard
+	localMu sync.Mutex
+	local   map[string]*socket.Socket
 }
 
 func NewRoomHub(io *socket.Server, cfg *Config, persist *Persister, sync *SceneSync, acl *ACLResolver, rate *RateLimiter, conns *ConnectionGuard) *RoomHub {
-	return &RoomHub{io: io, cfg: cfg, persist: persist, sync: sync, acl: acl, rate: rate, conns: conns}
+	return &RoomHub{io: io, cfg: cfg, persist: persist, sync: sync, acl: acl, rate: rate, conns: conns, local: make(map[string]*socket.Socket)}
 }
 
 func (h *RoomHub) Register() {
@@ -51,16 +54,36 @@ func (h *RoomHub) Register() {
 		// 连接数按握手身份计(access userId / guest subject):IP 在反代/NAT
 		// 后不唯一,不可作限制键。
 		identity := session.Identity()
+		if session.UserID != "" && h.persist != nil && h.persist.pool != nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			_ = h.persist.pool.QueryRow(ctx, `SELECT nickname,COALESCE(avatar_url,'') FROM users WHERE id=$1`, session.UserID).Scan(&session.DisplayName, &session.AvatarURL)
+			cancel()
+		} else {
+			session.DisplayName = "Guest"
+		}
 		if !h.conns.Acquire(identity) {
 			s.Disconnect(true)
 			return
 		}
+		h.localMu.Lock()
+		h.local[string(s.Id())] = s
+		h.localMu.Unlock()
 		s.On("disconnect", func(_ ...any) {
 			h.conns.Release(identity)
 			h.rate.Release(string(s.Id()))
+			h.localMu.Lock()
+			delete(h.local, string(s.Id()))
+			h.localMu.Unlock()
 		})
 
 		s.Emit("init-room")
+		s.On("presence-request", func(evArgs ...any) {
+			if len(evArgs) > 0 {
+				if roomID, ok := evArgs[0].(string); ok && s.Rooms().Has(socket.Room(roomID)) {
+					h.broadcastPresence(roomID, "")
+				}
+			}
+		})
 
 		s.On("join-room", func(evArgs ...any) {
 			h.onJoinRoom(s, session, evArgs)
@@ -94,6 +117,7 @@ func (h *RoomHub) Register() {
 					// 将离者此刻仍在房间(fetchSockets 含自身),名册须剔除,
 					// 否则对端收到幽灵成员且无人纠正(Node 版既有 bug,此处修正)。
 					h.io.To(room).Emit("room-user-change", rosterIDs(sockets, string(s.Id())))
+					h.emitPresence(string(room), sockets, string(s.Id()))
 				})
 			}
 		})
@@ -102,6 +126,9 @@ func (h *RoomHub) Register() {
 
 func (h *RoomHub) onJoinRoom(s *socket.Socket, session *Session, evArgs []any) {
 	ack, hasAck := lastAck(evArgs)
+	if len(evArgs) == 0 {
+		return
+	}
 	roomID, _ := evArgs[0].(string)
 	if !IsCanvasRoom(roomID) {
 		deny(s, ack, hasAck, "invalid_room")
@@ -138,6 +165,7 @@ func (h *RoomHub) onJoinRoom(s *socket.Socket, session *Session, evArgs []any) {
 			s.To(socket.Room(roomID)).Emit("new-user", s.Id())
 		}
 		h.io.To(socket.Room(roomID)).Emit("room-user-change", rosterIDs(sockets, ""))
+		h.emitPresence(roomID, sockets, "")
 		if hasAck {
 			ack([]any{map[string]any{"role": role}}, nil)
 		}
@@ -146,13 +174,16 @@ func (h *RoomHub) onJoinRoom(s *socket.Socket, session *Session, evArgs []any) {
 
 func (h *RoomHub) onServerBroadcast(s *socket.Socket, session *Session, evArgs []any) {
 	ack, hasAck := lastAck(evArgs)
+	if len(evArgs) < 2 {
+		return
+	}
 	roomID, _ := evArgs[0].(string)
 	if roomID == "" {
 		return
 	}
 	// 只转发/落库自己已通过 ACL 加入的画布房间(viewer 一律丢弃:
 	// 场景更新只走本事件,presence 走 volatile,分叉即强制点)。
-	if session.roleOf(roomID) == "viewer" || !s.Rooms().Has(socket.Room(roomID)) {
+	if !s.Rooms().Has(socket.Room(roomID)) || !h.checkRoomAccess(s, session, roomID, false) || session.roleOf(roomID) == "viewer" {
 		return
 	}
 	if !h.rate.Allow(string(s.Id()), time.Now().UnixMilli()) {
@@ -212,12 +243,16 @@ func parseSceneUpdate(raw []byte) ([]byte, map[string]any, bool) {
 
 func (h *RoomHub) onSyncRequest(s *socket.Socket, evArgs []any) {
 	ack, hasAck := lastAck(evArgs)
+	if len(evArgs) == 0 {
+		return
+	}
 	roomID, _ := evArgs[0].(string)
 	// ack 缺失无法回执(客户端 .timeout(5000) 自行超时);roomId 须为已入房。
 	if !hasAck || roomID == "" {
 		return
 	}
-	if !s.Rooms().Has(socket.Room(roomID)) {
+	session, _ := s.Data().(*Session)
+	if session == nil || !s.Rooms().Has(socket.Room(roomID)) || !h.checkRoomAccess(s, session, roomID, false) {
 		ack([]any{map[string]any{"error": "forbidden"}}, nil)
 		return
 	}
@@ -235,6 +270,9 @@ func (h *RoomHub) onSyncRequest(s *socket.Socket, evArgs []any) {
 }
 
 func (h *RoomHub) onServerVolatileBroadcast(s *socket.Socket, evArgs []any) {
+	if len(evArgs) < 2 {
+		return
+	}
 	roomID, _ := evArgs[0].(string)
 	if roomID == "" || len(evArgs) < 2 {
 		return

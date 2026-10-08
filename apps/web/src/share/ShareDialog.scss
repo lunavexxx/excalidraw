@@ -219,3 +219,145 @@
     font-size: 0.75rem;
   }
 }
+
+.excalidraw .AccessManager {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  h3,
+  h4,
+  p {
+    margin: 0;
+  }
+  p,
+  small {
+    color: var(--text-secondary-color);
+    font-size: 0.8rem;
+  }
+  small {
+    display: block;
+  }
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+    color: var(--text-primary-color);
+    background: var(--island-bg-color);
+    border: 1px solid var(--dialog-border-color);
+    border-radius: 6px;
+    padding: 0.5rem;
+  }
+  input,
+  textarea {
+    min-width: 0;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  &__row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  &__row > input {
+    flex: 1;
+  }
+  &__person {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  &__person > img,
+  &__avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  &__avatar {
+    display: grid;
+    place-items: center;
+    background: var(--color-primary-light);
+  }
+  &__createdLink {
+    padding: 0.75rem;
+    border: 1px solid var(--color-primary);
+    border-radius: 8px;
+  }
+  .ShareDialog__collabList li {
+    flex-wrap: wrap;
+  }
+}
+.excalidraw .AccessManager__row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.collaboration-share-button {
+  font: inherit;
+  border: 1px solid var(--dialog-border-color);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  background: var(--island-bg-color);
+  color: var(--text-primary-color);
+  cursor: pointer;
+}
+.CollaborationNotifications {
+  position: relative;
+  &__panel {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: min(340px, 85vw);
+    max-height: 65vh;
+    overflow: auto;
+    background: var(--island-bg-color);
+    border: 1px solid var(--dialog-border-color);
+    border-radius: 8px;
+    padding: 0.75rem;
+    z-index: 10;
+    box-shadow: 0 4px 20px #0002;
+    > button {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      width: 100%;
+      text-align: left;
+      background: none;
+      color: inherit;
+      border: 0;
+      padding: 0.75rem;
+      cursor: pointer;
+    }
+    > button.is-unread {
+      background: var(--color-primary-light);
+    }
+  }
+}
+.CollaborationLanding {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--island-bg-color);
+  color: var(--text-primary-color);
+}
+.CollaborationLanding > main {
+  width: min(520px, 90vw);
+  padding: 2rem;
+}

@@ -130,6 +130,7 @@ import {
   localStorageQuotaExceededAtom,
 } from "./data/LocalData";
 import { isBrowserStorageStateNewer } from "./data/tabSync";
+import { NotificationBell } from "./share/NotificationBell";
 import { ShareDialog, shareDialogStateAtom } from "./share/ShareDialog";
 import CollabError, { collabErrorIndicatorAtom } from "./collab/CollabError";
 import { useHandleAppTheme } from "./useHandleAppTheme";
@@ -295,22 +296,7 @@ const initializeScene = async (opts: {
           ? { token: guestToken, role: guestRole ?? "viewer" }
           : undefined,
       );
-      // viewer/guest 打开即自动进房围观(只读);editor/owner 由分享对话框发起
-      const role = appJotaiStore.get(canvasRoleAtom);
-      if (
-        opts.collabAPI &&
-        (role === "viewer" || role === "guest") &&
-        !opts.collabAPI.isCollaborating()
-      ) {
-        try {
-          await opts.collabAPI.startCollaboration({
-            canvasId: result.canvasId,
-            username: appJotaiStore.get(currentUserAtom)?.nickname,
-          });
-        } catch {
-          // 进房失败不阻断画布浏览
-        }
-      }
+
       return {
         scene: result.scene,
         isExternalScene: false,
@@ -510,12 +496,8 @@ const ExcalidrawWrapper = () => {
   const collabError = useAtomValue(collabErrorIndicatorAtom);
   const userToFollow = useAtomValue(userToFollowAtom);
 
-  // 协作入口:登录 + 已打开服务端画布 + 内容角色非只读
-  // (viewer/guest 打开画布时只读;本地草稿需先保存成画布才能协作)。
-  const isCollabEnabled =
-    !!currentUser &&
-    !!canvasId &&
-    (canvasRole === "owner" || canvasRole === "editor");
+  // 已授权登录用户均可打开分享面板，具体管理操作由能力控制。
+  const isCollabEnabled = !!currentUser && !!canvasId && !!canvasRole;
 
   const viewportStatusFrame = useMemo(
     () =>
@@ -875,11 +857,40 @@ const ExcalidrawWrapper = () => {
     };
   }, [excalidrawAPI]);
 
+  const autoJoinAttemptRef = useRef<string | null>(null);
+
   const onChange = (
     elements: readonly OrderedExcalidrawElement[],
     appState: AppState,
     files: BinaryFiles,
   ) => {
+    const activeCanvas = appJotaiStore.get(canvasIdAtom);
+    if (!activeCanvas) {
+      autoJoinAttemptRef.current = null;
+    }
+    if (
+      activeCanvas &&
+      collabAPI &&
+      !appState.isLoading &&
+      !collabAPI.isCollaborating() &&
+      autoJoinAttemptRef.current !== activeCanvas
+    ) {
+      autoJoinAttemptRef.current = activeCanvas;
+      void Promise.resolve()
+        .then(() => canvasSaver.flushAsync())
+        .then(() => {
+          if (
+            appJotaiStore.get(canvasIdAtom) === activeCanvas &&
+            !collabAPI.isCollaborating()
+          ) {
+            return collabAPI.startCollaboration({
+              canvasId: activeCanvas,
+              username: appJotaiStore.get(currentUserAtom)?.nickname,
+            });
+          }
+        })
+        .catch(() => undefined);
+    }
     if (collabAPI?.isCollaborating()) {
       collabAPI.syncElements(elements);
     } else {
@@ -1133,13 +1144,18 @@ const ExcalidrawWrapper = () => {
         autoFocus={true}
         theme={editorTheme}
         onThemeChange={setAppTheme}
-        renderTopRightUI={(isMobile) => {
-          if (isMobile || !collabAPI || isCollabDisabled) {
-            return null;
-          }
-
+        renderTopRightUI={() => {
           return (
             <div className="excalidraw-ui-top-right">
+              {currentUser && <NotificationBell />}
+              {canvasId && (
+                <button
+                  className="collaboration-share-button"
+                  onClick={onCollabDialogOpen}
+                >
+                  {t("collabAccess.share")}
+                </button>
+              )}
               {collabError.message && <CollabError collabError={collabError} />}
             </div>
           );

@@ -83,6 +83,7 @@ func RegisterRoutes(rg *gin.RouterGroup, db *store.DB, jwtSecret string, limits 
 	g.PUT("/:id/files", h.authorize(store.RoleEditor), h.putFiles)
 	g.GET("/:id/files/:fileId", h.authorize(store.RoleViewer), h.getFile)
 	registerShareRoutes(g, h)
+	registerAccessRoutes(rg, h)
 
 	// 匿名 guest 换票:唯一的无鉴权画布端点(持 URL 中的 share token)。
 	rg.POST("/canvases/:id/access", h.guestAccess)
@@ -95,7 +96,7 @@ func (h *canvasHandlers) authorize(minRole store.CanvasRole) gin.HandlerFunc {
 		ident := auth.IdentityFrom(c)
 		canvasID := c.Param("id")
 		role, canvas, err := h.db.AuthorizeCanvas(c.Request.Context(), ident, canvasID)
-		if errors.Is(err, store.ErrCanvasNotFound) || role == store.RoleNone {
+		if errors.Is(err, store.ErrCanvasNotFound) || (err == nil && role == store.RoleNone) {
 			apiresp.Fail(c, apiresp.CodeCanvasNotFound, "canvas not found")
 			c.Abort()
 			return
@@ -260,11 +261,17 @@ func (h *canvasHandlers) get(c *gin.Context) {
 	for _, f := range files {
 		fileMetas = append(fileMetas, gin.H{"file_id": f.FileID, "mime_type": f.MimeType})
 	}
+	capabilities, err := h.db.CanvasCapabilities(c.Request.Context(), canvas, auth.UserIDFrom(c))
+	if err != nil {
+		apiresp.Fail(c, apiresp.CodeInternal, "load capabilities failed")
+		return
+	}
 	apiresp.OK(c, gin.H{
-		"canvas":  canvasResponseFrom(canvas),
-		"scene":   scenePayload,
-		"files":   fileMetas,
-		"my_role": roleFrom(c),
+		"capabilities": capabilities,
+		"canvas":       canvasResponseFrom(canvas),
+		"scene":        scenePayload,
+		"files":        fileMetas,
+		"my_role":      roleFrom(c),
 	})
 }
 
