@@ -930,9 +930,17 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   // 巡检:低频探针,游标落后即拉补丁(远程完整性;断帧/乱序自愈)
   private patrolSeq = (): void => {
     const canvasId = this.portal.roomId;
-    if (this.isCollaborating() && canvasId && this.portal.socket?.connected) {
+    if (this.isCollaborating() && canvasId && this.portal.isOpen()) {
+      this.portal.socket?.emit("presence-request", canvasId);
       void this.syncFromServerSeq(canvasId)
-        .then(() => this.syncElements(this.getSceneElementsIncludingDeleted()))
+        .then(() => {
+          // Reconciliation updates the scene-version guard. A failed send
+          // cleared the portal's versions, so let pending edits pass it again.
+          if (!this.portal.broadcastedElementVersions.size) {
+            this.lastBroadcastedOrReceivedSceneVersion = -1;
+          }
+          this.syncElements(this.getSceneElementsIncludingDeleted());
+        })
         .catch(() => undefined);
     }
   };
@@ -1114,6 +1122,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       });
     }
     appJotaiStore.set(onlineUsersAtom, users);
+    appJotaiStore.set(presenceConnectedAtom, true);
   }
 
   onAccessChanged = async (access: {
@@ -1141,7 +1150,6 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       });
       return;
     }
-    appJotaiStore.set(presenceConnectedAtom, true);
     appJotaiStore.set(canvasRealtimeStatusAtom, "connected");
     if (!access.role) {
       appJotaiStore.set(canvasRoleAtom, "viewer");

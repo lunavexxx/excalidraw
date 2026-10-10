@@ -15,33 +15,39 @@ import type { Socket } from "socket.io-client";
 const socketFixture = () => {
   const listeners = new Map<string, (...args: any[]) => void>();
   let role = "editor";
+  let joinError: Error | null = null;
   const socket = {
     connected: true,
     on: vi.fn((event, handler) => {
       listeners.set(event, handler);
     }),
-    emit: vi.fn((event, ...args) => {
-      if (event === "join-room") {
-        args.at(-1)({ role });
-      }
-    }),
+    emit: vi.fn((_event: string, ..._args: any[]) => {}),
     timeout: () => ({
-      emit: (
-        _event: string,
-        _id: string,
-        _request: unknown,
-        ack: (...args: any[]) => void,
-      ) => ack(null, { elements: [], cursor: 0, has_more: false }),
+      emit: (event: string, ...args: any[]) => {
+        socket.emit(event, ...args);
+        if (event === "join-room") {
+          args.at(-1)(joinError, joinError ? undefined : { role });
+        } else if (event === "sync-request") {
+          args.at(-1)(null, { elements: [], cursor: 0, has_more: false });
+        }
+      },
     }),
     removeAllListeners: vi.fn(() => listeners.clear()),
     close: vi.fn(() => listeners.get("disconnect")?.("io client disconnect")),
     connect: vi.fn(),
+    disconnect: vi.fn(() => {
+      listeners.get("disconnect")?.("io client disconnect");
+      return socket;
+    }),
   };
   return {
     socket,
     fire: (event: string, ...args: any[]) => listeners.get(event)?.(...args),
     setRole: (r: string) => {
       role = r;
+    },
+    failJoin: () => {
+      joinError = new Error("ack timeout");
     },
   };
 };
@@ -118,5 +124,65 @@ it("closing a canvas removes disconnect listeners so it cannot reconnect itself"
   );
   expect(socket.connect).not.toHaveBeenCalled();
   expect(collab.portal.isOpen()).toBe(false);
+  appJotaiStore.set(isCollaboratingAtom, false);
+});
+
+it("restarts the handshake when a connected socket receives no join acknowledgement", () => {
+  const collab = new Collab({ excalidrawAPI: {} as ExcalidrawImperativeAPI });
+  vi.spyOn(collab, "setCollaborators").mockImplementation(() => {});
+  const joined = vi.spyOn(collab, "onRoomJoined");
+  const { socket, fire, failJoin } = socketFixture();
+  collab.portal.open(socket as unknown as Socket, "canvas");
+  failJoin();
+  fire("init-room");
+  expect(socket.disconnect).toHaveBeenCalledTimes(1);
+  expect(socket.connect).toHaveBeenCalledTimes(1);
+  expect(joined).not.toHaveBeenCalled();
+  expect(collab.portal.isOpen()).toBe(false);
+  collab.portal.close();
+});
+
+it("retries unacknowledged edits after patrol reconciliation updates the scene guard", async () => {
+  const elements = syncInvalidIndices([
+    API.createElement({ type: "rectangle", id: "retry-edit" }),
+  ]);
+  const api = {
+    getAppState: () => ({ viewModeEnabled: false }),
+    getSceneElementsIncludingDeleted: () => elements,
+    getFiles: () => ({}),
+    updateScene: vi.fn(),
+  } as unknown as ExcalidrawImperativeAPI;
+  const collab = new Collab({ excalidrawAPI: api });
+  const { socket } = socketFixture();
+  collab.portal.open(socket as unknown as Socket, "canvas");
+  collab.portal.roomJoined = true;
+  collab.portal.socketInitialized = true;
+  appJotaiStore.set(isCollaboratingAtom, true);
+  collab.syncElements(elements);
+  const frame = socket.emit.mock.calls.find(
+    (call) => call[0] === WS_EVENTS.SERVER,
+  )!;
+  frame.at(-1)(new Error("ack timeout"));
+  expect(collab.portal.broadcastedElementVersions.size).toBe(0);
+
+  // A patch can update the scene guard without confirming the pending send.
+  const patrol = collab as unknown as {
+    syncFromServerSeq: () => Promise<boolean>;
+    patrolSeq: () => void;
+  };
+  vi.spyOn(patrol, "syncFromServerSeq").mockImplementation(async () => {
+    collab.setLastBroadcastedOrReceivedSceneVersion(elements[0].version);
+    return true;
+  });
+  socket.emit.mockClear();
+  patrol.patrolSeq();
+  await vi.waitFor(() =>
+    expect(
+      socket.emit.mock.calls.some((call) => call[0] === WS_EVENTS.SERVER),
+    ).toBe(true),
+  );
+  expect(socket.emit).toHaveBeenCalledWith("presence-request", "canvas");
+  collab.portal.queueFileUpload.cancel();
+  collab.portal.close();
   appJotaiStore.set(isCollaboratingAtom, false);
 });

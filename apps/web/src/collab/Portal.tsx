@@ -10,7 +10,12 @@ import type {
   SocketId,
 } from "@excalidraw/excalidraw/types";
 
-import { WS_EVENTS, FILE_UPLOAD_TIMEOUT, WS_SUBTYPES } from "../app_constants";
+import {
+  WS_EVENTS,
+  FILE_UPLOAD_TIMEOUT,
+  WS_SUBTYPES,
+  SCENE_SYNC_TIMEOUT,
+} from "../app_constants";
 import { isSyncableElement } from "../data";
 
 import { appJotaiStore } from "../app-jotai";
@@ -48,27 +53,46 @@ class Portal {
     // Initialize socket listeners
     this.socket.on("init-room", () => {
       if (this.socket) {
-        // join-room ack 触发游标同步(协议 v2);旧 room 无 ack,由
-        // first-in-room / 超时兜底计时器触发,行为等价。
-        this.socket.emit(
-          "join-room",
-          this.roomId,
-          (res?: { error?: string; role?: string } | null) => {
-            if (this.socket === socket && this.roomId === id && !res?.error) {
-              this.roomJoined = true;
-              if (res?.role && this.roomId) {
-                void this.collab.onAccessChanged({
-                  canvas_id: this.roomId,
-                  role: res.role,
-                });
+        const connectionId = socket.id;
+        // Membership acknowledgement starts reconciliation; timeouts restart
+        // the handshake instead of leaving an unusable transport connected.
+        this.socket
+          .timeout(SCENE_SYNC_TIMEOUT * 2)
+          .emit(
+            "join-room",
+            this.roomId,
+            (
+              err: Error | null,
+              res?: { error?: string; role?: string } | null,
+            ) => {
+              if (
+                this.socket !== socket ||
+                this.roomId !== id ||
+                socket.id !== connectionId ||
+                !socket.connected
+              ) {
+                return;
               }
-              appJotaiStore.set(presenceConnectedAtom, true);
-              appJotaiStore.set(canvasRealtimeStatusAtom, "connected");
-              this.socket.emit("presence-request", this.roomId);
-              void this.collab.onRoomJoined();
-            }
-          },
-        );
+              if (err || !res) {
+                // A connected transport without membership cannot send edits.
+                // Restart the handshake so missing init/join replies can recover.
+                socket.disconnect().connect();
+                return;
+              }
+              if (!res.error) {
+                this.roomJoined = true;
+                if (res?.role && this.roomId) {
+                  void this.collab.onAccessChanged({
+                    canvas_id: this.roomId,
+                    role: res.role,
+                  });
+                }
+                appJotaiStore.set(canvasRealtimeStatusAtom, "connected");
+                this.socket.emit("presence-request", this.roomId);
+                void this.collab.onRoomJoined();
+              }
+            },
+          );
         trackEvent("share", "room joined");
       }
     });
@@ -167,6 +191,7 @@ class Portal {
       const encoded = new TextEncoder().encode(json);
       const target = roomId ?? this.roomId;
       const socket = this.socket;
+      const connectionId = socket?.id;
 
       if (volatile) {
         this.socket?.emit(WS_EVENTS.SERVER_VOLATILE, target, encoded);
@@ -174,21 +199,33 @@ class Portal {
       }
       // 非 volatile 帧要求落库确认(协议 v2):ack 携带 seq 表示已
       // 持久化并转发;persist_failed 表示该帧既未落库也未转发。
-      this.socket?.emit(
-        WS_EVENTS.SERVER,
-        target,
-        encoded,
-        (res?: { seq?: number; error?: string } | null) => {
-          if (!target || this.socket !== socket || this.roomId !== target) {
-            return;
-          }
-          if (typeof res?.seq === "number") {
-            this.collab.onOwnPersistedSeq(target, res.seq);
-          } else if (res?.error) {
-            this.collab.onOwnPersistFailed(target);
-          }
-        },
-      );
+      this.socket
+        ?.timeout(SCENE_SYNC_TIMEOUT)
+        .emit(
+          WS_EVENTS.SERVER,
+          target,
+          encoded,
+          (
+            err: Error | null,
+            res?: { seq?: number; error?: string } | null,
+          ) => {
+            if (
+              !target ||
+              this.socket !== socket ||
+              this.roomId !== target ||
+              socket?.id !== connectionId
+            ) {
+              return;
+            }
+            if (err || !res) {
+              this.collab.onOwnPersistFailed(target);
+            } else if (typeof res.seq === "number") {
+              this.collab.onOwnPersistedSeq(target, res.seq);
+            } else if (res?.error) {
+              this.collab.onOwnPersistFailed(target);
+            }
+          },
+        );
     }
   }
 
@@ -263,6 +300,11 @@ class Portal {
         elements: syncableElements,
       },
     };
+
+    // The server rejects empty updates; they have nothing to acknowledge.
+    if (!syncableElements.length) {
+      return;
+    }
 
     for (const syncableElement of syncableElements) {
       this.broadcastedElementVersions.set(

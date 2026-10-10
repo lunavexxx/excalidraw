@@ -145,6 +145,11 @@ func (h *RoomHub) onJoinRoom(s *socket.Socket, session *Session, evArgs []any) {
 	}
 	session.setRole(roomID, role)
 	s.Join(socket.Room(roomID))
+	// Membership depends on ACL, not on Redis roster aggregation. A failed
+	// presence query must not leave an authorized editor waiting forever.
+	if hasAck {
+		ack([]any{map[string]any{"role": role}}, nil)
+	}
 
 	// 判空与名册均经 redis adapter 聚合(多实例语义)。
 	h.io.In(socket.Room(roomID)).FetchSockets()(func(sockets []*socket.RemoteSocket, err error) {
@@ -166,9 +171,6 @@ func (h *RoomHub) onJoinRoom(s *socket.Socket, session *Session, evArgs []any) {
 		}
 		h.io.To(socket.Room(roomID)).Emit("room-user-change", rosterIDs(sockets, ""))
 		h.emitPresence(roomID, sockets, "")
-		if hasAck {
-			ack([]any{map[string]any{"role": role}}, nil)
-		}
 	})
 }
 
