@@ -4,24 +4,14 @@ import { useAtomValue } from "../app-jotai";
 
 import { canvasRealtimeStatusAtom } from "./atoms";
 
-export const CanvasRealtimeStatus = ({
-  compact = false,
-}: {
-  compact?: boolean;
-}) => {
+export const CanvasRealtimeStatus = () => {
   const status = useAtomValue(canvasRealtimeStatusAtom);
   const { t } = useI18n();
   const key =
     status === "connected"
-      ? compact
-        ? "collabAccess.syncStatus"
-        : "collabAccess.connected"
+      ? "collabAccess.connected"
       : status === "reconnecting"
-      ? compact
-        ? "collabAccess.syncReconnecting"
-        : "collabAccess.reconnecting"
-      : compact
-      ? "collabAccess.syncConnecting"
+      ? "collabAccess.reconnecting"
       : "collabAccess.connecting";
   return (
     <span

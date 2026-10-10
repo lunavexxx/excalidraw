@@ -309,14 +309,32 @@
   gap: 0.5rem;
 }
 
-.collaboration-share-button {
-  font: inherit;
-  border: 1px solid var(--dialog-border-color);
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  background: var(--island-bg-color);
-  color: var(--text-primary-color);
+// 与画布上的 .sidebar-trigger(素材库按钮)同款外观:复制包内
+// outlineButtonStyles + filledButtonOnCanvas mixins 的关键部分。
+// 需带 .excalidraw 前缀提高优先级,否则 .excalidraw button 的
+// font-size: 0.8333rem 会覆盖这里的 0.75rem。
+.excalidraw .collaboration-share-button {
+  display: inline-flex;
+  align-items: center;
+  height: var(--lg-button-size);
+  box-sizing: border-box;
+  padding: 0 0.75rem;
+  border: none;
+  border-radius: var(--border-radius-lg);
+  background-color: var(--color-surface-low);
+  box-shadow: 0 0 0 1px var(--color-surface-lowest);
+  color: var(--color-on-surface);
+  font-family: var(--ui-font);
+  font-size: 0.75rem;
+  letter-spacing: 0.4px;
   cursor: pointer;
+
+  &:hover {
+    background-color: var(--button-hover-bg, var(--island-bg-color));
+  }
+  &:active {
+    box-shadow: 0 0 0 1px var(--color-brand-active);
+  }
 }
 .CollaborationNotifications {
   position: relative;

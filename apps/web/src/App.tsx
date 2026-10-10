@@ -131,7 +131,6 @@ import {
 import { isBrowserStorageStateNewer } from "./data/tabSync";
 import { NotificationBell } from "./share/NotificationBell";
 import { ShareDialog, shareDialogStateAtom } from "./share/ShareDialog";
-import { CanvasRealtimeStatus } from "./canvas/CanvasRealtimeStatus";
 import { useCanvasCollaboration } from "./canvas/useCanvasCollaboration";
 import CollabError, { collabErrorIndicatorAtom } from "./collab/CollabError";
 import { useHandleAppTheme } from "./useHandleAppTheme";
@@ -1123,7 +1122,6 @@ const ExcalidrawWrapper = () => {
         renderTopRightUI={() => {
           return (
             <div className="excalidraw-ui-top-right">
-              {canvasId && <CanvasRealtimeStatus compact />}
               {currentUser && <NotificationBell />}
               {canvasId && (
                 <button
