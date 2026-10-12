@@ -388,17 +388,19 @@ func (db *DB) DecideAccessRequest(ctx context.Context, canvasID, id, actor, deci
 }
 
 type Notification struct {
-	ID         int64      `json:"id"`
-	Type       string     `json:"type"`
-	CanvasID   string     `json:"canvas_id"`
-	CanvasName string     `json:"canvas_name"`
-	EntityID   string     `json:"entity_id"`
-	ReadAt     *time.Time `json:"read_at"`
-	CreatedAt  time.Time  `json:"created_at"`
+	ID            int64      `json:"id"`
+	Type          string     `json:"type"`
+	CanvasID      string     `json:"canvas_id"`
+	CanvasName    string     `json:"canvas_name"`
+	EntityID      string     `json:"entity_id"`
+	ReadAt        *time.Time `json:"read_at"`
+	CreatedAt     time.Time  `json:"created_at"`
+	ActorName     string     `json:"actor_name"`
+	SourceVersion *int64     `json:"source_version,omitempty"`
 }
 
 func (db *DB) ListNotifications(ctx context.Context, userID string, before int64) ([]Notification, int, error) {
-	rows, err := db.pool.Query(ctx, `SELECT n.id,n.type,COALESCE(n.canvas_id::text,''),COALESCE(c.name,''),COALESCE(n.entity_id::text,''),n.read_at,n.created_at FROM notifications n LEFT JOIN canvases c ON c.id=n.canvas_id WHERE n.recipient_id=$1 AND ($2::bigint=0 OR n.id<$2) ORDER BY n.id DESC LIMIT 50`, userID, before)
+	rows, err := db.pool.Query(ctx, `SELECT n.id,n.type,COALESCE(n.canvas_id::text,''),COALESCE(c.name,''),COALESCE(n.entity_id::text,''),n.read_at,n.created_at,COALESCE(u.nickname,''),n.source_version FROM notifications n LEFT JOIN canvases c ON c.id=n.canvas_id LEFT JOIN users u ON u.id=n.actor_id WHERE n.recipient_id=$1 AND ($2::bigint=0 OR n.id<$2) ORDER BY n.id DESC LIMIT 50`, userID, before)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -406,7 +408,7 @@ func (db *DB) ListNotifications(ctx context.Context, userID string, before int64
 	items := []Notification{}
 	for rows.Next() {
 		var n Notification
-		if err := rows.Scan(&n.ID, &n.Type, &n.CanvasID, &n.CanvasName, &n.EntityID, &n.ReadAt, &n.CreatedAt); err != nil {
+		if err := rows.Scan(&n.ID, &n.Type, &n.CanvasID, &n.CanvasName, &n.EntityID, &n.ReadAt, &n.CreatedAt, &n.ActorName, &n.SourceVersion); err != nil {
 			return nil, 0, err
 		}
 		items = append(items, n)

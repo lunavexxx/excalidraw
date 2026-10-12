@@ -34,6 +34,11 @@ const (
 	CodeAlreadyMember       = 42003
 	CodeShareLinkInvalid    = 42004
 	CodeInviteTargetMissing = 42005
+
+	CodeCommentInvalid   = 43000
+	CodeCommentNotFound  = 43001
+	CodeCommentConflict  = 43002
+	CodeCommentRateLimit = 43003
 )
 
 type Body struct {

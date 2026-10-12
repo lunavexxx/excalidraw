@@ -704,6 +704,14 @@ export const questionCircle = createIcon(
   { mirror: true },
 );
 
+export const bellIcon = createIcon(
+  <>
+    <path d="M15 6a5 5 0 0 0-10 0c0 6-2 6-2 8h14c0-2-2-2-2-8Z" />
+    <path d="M8 17a2 2 0 0 0 4 0" />
+  </>,
+  { ...modifiedTablerIconProps, strokeWidth: 1.5 },
+);
+
 export const share = createIcon(
   <path
     d="M5 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM15 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM15 17.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM7.25 8.917l5.5-2.834M7.25 11.083l5.5 2.834"

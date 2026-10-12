@@ -38,6 +38,7 @@ import {
   XBrandIcon,
   DiscordIcon,
   youtubeIcon,
+  share,
 } from "@excalidraw/excalidraw/components/icons";
 import { isElementLink } from "@excalidraw/element";
 import {
@@ -147,6 +148,7 @@ import { ExcalidrawPlusIframeExport } from "./ExcalidrawPlusIframeExport";
 
 import "./index.scss";
 
+import { CommentsController } from "./comments/CommentsController";
 import { AppSidebar } from "./components/AppSidebar";
 import { PresentationMode } from "./components/PresentationMode";
 import { refreshSession } from "./auth/api";
@@ -1125,10 +1127,14 @@ const ExcalidrawWrapper = () => {
               {currentUser && <NotificationBell />}
               {canvasId && (
                 <button
+                  type="button"
                   className="collaboration-share-button"
+                  title={t("collabAccess.share")}
+                  aria-label={t("collabAccess.share")}
+                  aria-haspopup="dialog"
                   onClick={onCollabDialogOpen}
                 >
-                  {t("collabAccess.share")}
+                  {share}
                 </button>
               )}
               {collabError.message && <CollabError collabError={collabError} />}
@@ -1216,6 +1222,7 @@ const ExcalidrawWrapper = () => {
         />
 
         <AppSidebar />
+        <CommentsController />
 
         <PresentationMode />
 

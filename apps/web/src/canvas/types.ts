@@ -122,10 +122,16 @@ export type CollaborationNotification = {
     | "invitation_accepted"
     | "access_requested"
     | "access_approved"
-    | "access_rejected";
+    | "access_rejected"
+    | "comment_mentioned"
+    | "comment_replied"
+    | "comment_resolved"
+    | "comment_reopened";
   canvas_id: string;
   canvas_name: string;
   entity_id: string;
   read_at: string | null;
   created_at: string;
+  actor_name?: string;
+  source_version?: number;
 };

@@ -1,6 +1,8 @@
 import { Footer } from "@excalidraw/excalidraw/index";
 import React from "react";
 
+import { CommentModeButton } from "../comments/CommentsController";
+
 import { DebugFooter, isVisualDebuggerEnabled } from "./DebugCanvas";
 
 export const AppFooter = React.memo(
@@ -14,6 +16,7 @@ export const AppFooter = React.memo(
             alignItems: "center",
           }}
         >
+          <CommentModeButton />
           {isVisualDebuggerEnabled() && <DebugFooter onChange={onChange} />}
         </div>
       </Footer>

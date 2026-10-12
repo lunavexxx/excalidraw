@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@excalidraw/excalidraw/i18n";
+import { bellIcon } from "@excalidraw/excalidraw/components/icons";
 
 import { useAtomValue, appJotaiStore } from "../app-jotai";
 import { clearGuestSession } from "../auth/guestSession";
 import { currentUserAtom } from "../auth/atoms";
 import { refreshSession } from "../auth/api";
 import { getAccessToken } from "../auth/tokens";
+import { refreshComments, selectComment } from "../comments/atoms";
 import { collaborationRefreshAtom } from "../canvas/atoms";
 
 import { shareDialogStateAtom } from "./ShareDialog";
@@ -25,17 +27,37 @@ export const NotificationBell = () => {
   const [unread, setUnread] = useState(0);
   const [error, setError] = useState("");
   const [more, setMore] = useState(false);
+  const requestRef = useRef(0);
   const reload = useCallback(async () => {
+    if (!userId) {
+      return;
+    }
+    const request = ++requestRef.current;
     try {
       const n = await notifications();
+      if (request !== requestRef.current) {
+        return;
+      }
       setItems(n.items);
       setUnread(n.unread_count);
       setMore(n.items.length === 50);
       setError("");
     } catch {
-      setError(t("collabAccess.failed"));
+      if (request === requestRef.current) {
+        setError(t("collabAccess.failed"));
+      }
     }
-  }, [t]);
+  }, [t, userId]);
+  useEffect(() => {
+    const requests = requestRef;
+    setItems([]);
+    setUnread(0);
+    setMore(false);
+    setOpen(false);
+    return () => {
+      requests.current++;
+    };
+  }, [userId]);
   useEffect(() => {
     void reload();
   }, [reload, version]);
@@ -80,6 +102,13 @@ export const NotificationBell = () => {
       connection.on("notifications-changed", () =>
         appJotaiStore.set(collaborationRefreshAtom, (n) => n + 1),
       );
+      connection.on(
+        "comment-reads-changed",
+        ({ canvas_id }: { canvas_id: string }) => {
+          refreshComments(canvas_id);
+          appJotaiStore.set(collaborationRefreshAtom, (n) => n + 1);
+        },
+      );
       connection.on("connect", () => void reload());
       connection.on("disconnect", (reason) => {
         if (reason === "io server disconnect") {
@@ -94,18 +123,31 @@ export const NotificationBell = () => {
       ownerWindow.clearInterval(timer);
     };
   }, [userId, reload]);
+  const label = `${t("collabAccess.notifications")}${
+    unread > 0 ? ` (${unread})` : ""
+  }`;
   return (
     <div className="CollaborationNotifications" ref={rootRef}>
       <button
+        type="button"
         className="collaboration-share-button"
+        title={label}
+        aria-label={label}
         aria-expanded={open}
         onClick={() => {
           setOpen((v) => !v);
           void reload();
         }}
       >
-        {t("collabAccess.notifications")}
-        {unread > 0 && ` (${unread})`}
+        {bellIcon}
+        {unread > 0 && (
+          <span
+            className="CollaborationNotifications__badge"
+            aria-hidden="true"
+          >
+            {unread > 99 ? "99+" : unread}
+          </span>
+        )}
       </button>
       {open && (
         <div className="CollaborationNotifications__panel">
@@ -142,7 +184,16 @@ export const NotificationBell = () => {
                   ) {
                     clearGuestSession(n.canvas_id);
                   }
-                  if (n.type === "invitation") {
+                  if (n.type.startsWith("comment_")) {
+                    setOpen(false);
+                    if (ownerWindow.location.pathname === `/c/${n.canvas_id}`) {
+                      selectComment(n.entity_id, true);
+                    } else {
+                      ownerWindow.location.assign(
+                        `/c/${n.canvas_id}?comment=${n.entity_id}`,
+                      );
+                    }
+                  } else if (n.type === "invitation") {
                     ownerWindow.location.assign(`/invite?id=${n.entity_id}`);
                   } else if (n.type === "access_rejected") {
                     setOpen(false);
@@ -165,7 +216,10 @@ export const NotificationBell = () => {
               }}
             >
               <strong>{n.canvas_name}</strong>
-              <span>{t(`collabAccess.${n.type}`)}</span>
+              <span>
+                {n.actor_name && `${n.actor_name} · `}
+                {t(`collabAccess.${n.type}`)}
+              </span>
               <small>{new Date(n.created_at).toLocaleString()}</small>
             </button>
           ))}
@@ -173,7 +227,11 @@ export const NotificationBell = () => {
             <button
               onClick={async () => {
                 try {
+                  const request = requestRef.current;
                   const n = await notifications(items[items.length - 1].id);
+                  if (request !== requestRef.current) {
+                    return;
+                  }
                   setItems((p) => [...p, ...n.items]);
                   setMore(n.items.length === 50);
                 } catch {

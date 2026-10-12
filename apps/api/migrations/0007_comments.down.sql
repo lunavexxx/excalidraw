@@ -1,0 +1,10 @@
+DROP TRIGGER IF EXISTS comment_event_anchor ON canvas_events;
+DROP TRIGGER IF EXISTS comment_scene_anchor ON canvas_scenes;
+DROP FUNCTION IF EXISTS comment_anchor_fallback();
+DROP TABLE IF EXISTS collaboration_outbox_receipts, collaboration_consumers;
+ALTER TABLE collaboration_outbox DROP COLUMN IF EXISTS source_version, DROP COLUMN IF EXISTS thread_id;
+DELETE FROM collaboration_outbox WHERE type IN ('comments','comment_reads');
+DELETE FROM notifications WHERE source_version IS NOT NULL;
+DROP INDEX IF EXISTS notifications_comment_idx, notifications_unread_idx, notifications_event_idx;
+ALTER TABLE notifications DROP COLUMN IF EXISTS source_version, DROP COLUMN IF EXISTS event_key;
+DROP TABLE IF EXISTS comment_thread_reads, comment_reactions, comment_mentions, comments, comment_threads;

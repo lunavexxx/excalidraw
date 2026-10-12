@@ -26,6 +26,8 @@ import {
   collaborationRefreshAtom,
 } from "../canvas/atoms";
 
+import { refreshComments } from "../comments/atoms";
+
 import type {
   SocketUpdateData,
   SocketUpdateDataSource,
@@ -122,6 +124,19 @@ class Portal {
     this.socket.on("notifications-changed", () => {
       appJotaiStore.set(collaborationRefreshAtom, (n) => n + 1);
     });
+    this.socket.on(
+      "comments-changed",
+      ({ canvas_id }: { canvas_id: string }) => {
+        refreshComments(canvas_id);
+      },
+    );
+    this.socket.on(
+      "comment-reads-changed",
+      ({ canvas_id }: { canvas_id: string }) => {
+        refreshComments(canvas_id);
+        appJotaiStore.set(collaborationRefreshAtom, (n) => n + 1);
+      },
+    );
     this.socket.on("disconnect", (reason: string) => {
       this.roomJoined = false;
       this.socketInitialized = false;

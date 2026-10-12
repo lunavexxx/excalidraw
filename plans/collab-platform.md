@@ -182,11 +182,15 @@ storage_quotas   (workspace_id, bytes_used, bytes_limit)
 
 **目标:图钉式评论,协作者可讨论、@提及、解决。**
 
-- [ ] Schema:comments / comment_mentions
-- [ ] API:创建线程、回复、解决/重开、@提及;通知(in-app 未读数,先不做邮件)
-- [ ] 实时:评论事件走 room 的独立 channel(避免轮询)
-- [ ] 前端:画布图钉 UI、侧栏线程面板、未读红点
-- [ ] e2e:A 打图钉 → B 实时收到并回复 → A 解决 → 双方一致
+> 2026-10-12：产品规则已确认，详细范围与验收见 [M4 评论功能实施计划](./comments-m4.md)。本次包含留言表情反应、正文 emoji 输入与选择器；本地功能已实现，隔离数据库竞态测试、23 项前端测试、生产构建与双 room 联调通过。浏览器视觉验收受电脑控制通道启动故障阻塞，尚未部署。
+
+- [x] Schema:comment_threads / comments / comment_mentions / comment_reactions / comment_thread_reads
+- [x] API:创建线程、回复、解决/重开、@提及;通知(in-app 未读数,先不做邮件)
+- [x] 实时:评论事件走 room 的独立 channel(避免轮询)
+- [x] 前端:画布图钉 UI、侧栏线程面板、未读红点
+- [x] 表情:留言 emoji 反应(添加/取消/计数)、正文 emoji 选择器与 Unicode 组合支持
+- [x] e2e:隔离 API/双 room 创建线程 → B 实时收到并回复 → A 解决 → 双方一致
+- [ ] 浏览器视觉与手机真机验收（电脑控制连接不可用）
 
 ### M5 — 导出增强(第 13 周)🟡 P1
 

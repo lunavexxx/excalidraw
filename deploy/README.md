@@ -163,6 +163,30 @@ psql "postgres://excalidraw:${PG_PASSWORD}@<服务器IP>:5432/excalidraw" \
   是早期 golang-migrate 的遗留,可忽略
 - 也可用 golang-migrate CLI(见 `apps/api/Makefile` 的 `migrate-up/down`)
 
+### M4 评论发布顺序
+
+先应用 `apps/api/migrations/0007_comments.up.sql`，再更新 API、全部 room 实例与 web。API 的通知查询和 room 的 outbox 消费依赖新增列和收据表，不能先发布新程序再补迁移。迁移不修改已有邀请、成员或申请访问通知。
+
+评论内容与场景分开保存；`comment_threads`、`comments`、提及、反应与每用户已读进度使用独立表。场景事件/快照上的触发器只更新绑定图钉的最后位置，不把评论写入场景或导出文件。正文与 Unicode emoji 数据不依赖外部图片服务。
+
+room 各自持有消费者收据，避免并发事务晚提交的较小 outbox ID 被遗漏；每秒读取一次提示，每 20 秒清理心跳超过 5 分钟的失效消费者。浏览器收到提示后重新鉴权拉取内容，并在重连、页面重新获得焦点及可见时每 30 秒补拉。已读提示只投递给当前账号的连接。
+
+回退前先停止新版 web/API/room，恢复兼容旧 schema 的程序，再按维护流程执行 `0007_comments.down.sql`。该文件会删除本次评论表与评论通知，保留既有访问通知；需要保留评论时应先备份，不把回退当作无损操作。
+
+隔离环境验收命令：
+
+```bash
+# 仅设置为测试专用 PostgreSQL。测试会创建并清理独立 schema。
+cd apps/api
+COLLAB_TEST_DATABASE_URL="$TEST_DATABASE_URL" go test -race ./...
+
+# 两个 room 连接相同测试 PostgreSQL 和 Redis，API 已应用 0001–0007。
+cd ../..
+API_BASE=http://127.0.0.1:18080/api/v1 \
+ROOM_A=http://127.0.0.1:18082 ROOM_B=http://127.0.0.1:18083 \
+node apps/room/e2e/comments.mjs
+```
+
 ## 日常更新(服务器)
 
 ```bash

@@ -55,22 +55,24 @@ const (
 )
 
 type canvasHandlers struct {
-	db           *store.DB
-	limits       Limits
-	jwtSecret    string
-	phoneCrypto  *auth.PhoneCrypto
-	guestLimiter *ipRateLimiter
+	db             *store.DB
+	limits         Limits
+	jwtSecret      string
+	phoneCrypto    *auth.PhoneCrypto
+	guestLimiter   *ipRateLimiter
+	commentLimiter *ipRateLimiter
 }
 
 // RegisterRoutes 注册 /canvases 路由;需要 db 与 jwtSecret 已就绪。
 // phoneCrypto 可为 nil(此时按手机号邀请协作者的端点回 50000)。
 func RegisterRoutes(rg *gin.RouterGroup, db *store.DB, jwtSecret string, limits Limits, pc *auth.PhoneCrypto) {
 	h := &canvasHandlers{
-		db:           db,
-		limits:       limits,
-		jwtSecret:    jwtSecret,
-		phoneCrypto:  pc,
-		guestLimiter: newIPRateLimiter(10, time.Minute),
+		db:             db,
+		limits:         limits,
+		jwtSecret:      jwtSecret,
+		phoneCrypto:    pc,
+		guestLimiter:   newIPRateLimiter(10, time.Minute),
+		commentLimiter: newIPRateLimiter(120, time.Minute),
 	}
 	// 组级接受双身份(access/guest),用户专属端点再叠 RequireUser。
 	g := rg.Group("/canvases", auth.AuthAnyRequired(jwtSecret))
@@ -84,6 +86,7 @@ func RegisterRoutes(rg *gin.RouterGroup, db *store.DB, jwtSecret string, limits 
 	g.GET("/:id/files/:fileId", h.authorize(store.RoleViewer), h.getFile)
 	registerShareRoutes(g, h)
 	registerAccessRoutes(rg, h)
+	registerCommentRoutes(g, h)
 
 	// 匿名 guest 换票:唯一的无鉴权画布端点(持 URL 中的 share token)。
 	rg.POST("/canvases/:id/access", h.guestAccess)

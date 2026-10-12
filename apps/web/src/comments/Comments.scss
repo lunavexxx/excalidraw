@@ -1,0 +1,522 @@
+@use "../../packages/excalidraw/css/variables.module" as *;
+
+.excalidraw {
+  .CommentModeButton {
+    @include outlineButtonStyles;
+    @include filledButtonOnCanvas;
+    position: relative;
+    width: var(--lg-button-size);
+    height: var(--lg-button-size);
+    padding: 0;
+    svg {
+      width: var(--lg-icon-size);
+      height: var(--lg-icon-size);
+    }
+    &[aria-pressed="true"] {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+    .CommentUnreadDot {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+    }
+  }
+  .CommentLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    font-family: var(--ui-font);
+    font-size: 13px;
+    color: var(--text-primary-color);
+  }
+  .CommentPlacement {
+    position: absolute;
+    inset: 0;
+    pointer-events: auto;
+    cursor: crosshair;
+    touch-action: none;
+    &__hint {
+      position: absolute;
+      bottom: 76px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: max-content;
+      max-width: calc(100% - 32px);
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--island-bg-color);
+      box-shadow: var(--shadow-island);
+      cursor: default;
+    }
+  }
+  .CommentAvatar {
+    display: inline-flex;
+    flex: 0 0 26px;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    font-weight: 600;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  .CommentPin {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    width: 34px;
+    height: 34px;
+    padding: 2px;
+    transform: translate(-50%, -100%);
+    border: 2px solid var(--color-primary);
+    border-radius: 50% 50% 50% 3px;
+    background: var(--island-bg-color);
+    box-shadow: 0 2px 8px #0002;
+    cursor: pointer;
+    &.is-active {
+      outline: 3px solid var(--color-primary-light);
+      z-index: 1;
+    }
+    &.is-resolved {
+      border-color: var(--color-muted-darker);
+      opacity: 0.7;
+    }
+    &__count {
+      position: absolute;
+      bottom: -6px;
+      right: -8px;
+      padding: 1px 4px;
+      border-radius: 8px;
+      font-size: 10px;
+      color: var(--island-bg-color);
+      background: var(--color-primary);
+    }
+    .CommentUnreadDot {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      border: 2px solid var(--island-bg-color);
+    }
+  }
+  .CommentUnreadDot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--color-primary);
+  }
+  .CommentPopover {
+    position: absolute;
+    pointer-events: auto;
+    z-index: 2;
+    border: 1px solid var(--sidebar-border-color);
+    border-radius: 12px;
+    box-shadow: 0 6px 28px #0002;
+    background: var(--island-bg-color);
+    overflow: hidden;
+  }
+  .CommentsPanel,
+  .CommentThreadView,
+  .CommentPlacement__hint,
+  .CommentLayer__error {
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+      color: inherit;
+      box-sizing: border-box;
+    }
+    button {
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      padding: 6px 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: var(--button-hover-bg);
+    }
+    button:disabled {
+      cursor: default;
+      opacity: 0.5;
+    }
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+    input:not([type="checkbox"]),
+    textarea,
+    select {
+      border: 1px solid var(--sidebar-border-color);
+      border-radius: 8px;
+      padding: 8px;
+      background: var(--island-bg-color);
+    }
+    .CommentPrimaryButton {
+      background: var(--color-primary);
+      color: var(--color-surface-lowest);
+    }
+    .CommentPrimaryButton:hover {
+      background: var(--color-primary-darker);
+    }
+    .CommentTextButton {
+      color: var(--color-primary);
+    }
+  }
+  .CommentMuted {
+    color: var(--color-muted-darker);
+    font-size: 12px;
+  }
+  .CommentError {
+    color: var(--color-danger);
+    font-size: 12px;
+  }
+  .CommentResolved {
+    font-size: 11px;
+    border-radius: 5px;
+    padding: 4px 6px;
+    background: var(--color-primary-light);
+  }
+  .CommentsPanel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    font-size: 13px;
+    padding: 0 12px;
+    &__controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--sidebar-border-color);
+    }
+    &__row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    &__row > time,
+    &__row > .CommentTextButton,
+    &__row > .CommentPrimaryButton {
+      margin-left: auto;
+    }
+    &__row select {
+      max-width: 140px;
+    }
+    &__list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    &__thread {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border-radius: 0 !important;
+      padding: 14px 4px !important;
+      border-bottom: 1px solid var(--sidebar-border-color) !important;
+      &.is-active {
+        background: var(--color-primary-light);
+      }
+      &.is-unread {
+        border-left: 3px solid var(--color-primary) !important;
+        padding-left: 8px !important;
+      }
+      strong {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      p {
+        margin: 8px 0;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    }
+  }
+  .CommentThreadView {
+    display: flex;
+    flex-direction: column;
+    max-height: var(
+      --comment-popup-max-height,
+      min(640px, calc(100vh - 160px))
+    );
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--sidebar-border-color);
+    }
+    &__tools {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: auto;
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    &__messages {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      min-height: 0;
+      flex: 1;
+      padding: 0 12px;
+    }
+    &__footer {
+      padding: 12px;
+      border-top: 1px solid var(--sidebar-border-color);
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+    &__management {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 8px;
+      font-size: 11px;
+    }
+    &__notice {
+      padding: 8px 12px;
+      input {
+        width: 100%;
+      }
+    }
+  }
+  .CommentMessage {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--sidebar-border-color);
+    &:last-child {
+      border-bottom: 0;
+    }
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      strong {
+        display: block;
+        font-size: 12px;
+      }
+      time,
+      small {
+        color: var(--color-muted-darker);
+        font-size: 10px;
+        margin-right: 6px;
+      }
+    }
+    &__body {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.65;
+      margin: 10px 0;
+      mark {
+        color: var(--color-primary);
+        background: var(--color-primary-light);
+        border-radius: 3px;
+      }
+    }
+    &__menu {
+      margin-left: auto;
+      position: relative;
+      summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 4px 8px;
+      }
+      &[open] {
+        border-radius: 6px;
+        background: var(--button-hover-bg);
+      }
+      button {
+        display: block;
+        width: 100%;
+        text-align: left;
+      }
+    }
+  }
+  .CommentComposer {
+    position: relative;
+    textarea {
+      width: 100%;
+      resize: vertical;
+      min-height: 64px;
+      max-height: 160px;
+      line-height: 1.5;
+    }
+    &__actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      small {
+        margin-right: auto;
+        color: var(--color-muted-darker);
+        font-size: 10px;
+      }
+    }
+    &__mentions {
+      max-height: 180px;
+      overflow-y: auto;
+      border: 1px solid var(--sidebar-border-color);
+      border-radius: 8px;
+      margin: 4px 0;
+      button {
+        display: block;
+        width: 100%;
+        text-align: left;
+      }
+      [aria-selected="true"] {
+        background: var(--color-primary-light);
+      }
+    }
+  }
+  .CommentReactions {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    font-size: 12px;
+  }
+  .CommentReaction {
+    position: relative;
+    display: inline-flex;
+    border: 1px solid var(--sidebar-border-color);
+    border-radius: 16px;
+    button {
+      padding: 3px 6px;
+      border-radius: 16px;
+    }
+    .is-own {
+      background: var(--color-primary-light);
+    }
+    &__participants {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      z-index: 5;
+      min-width: 150px;
+      max-height: 160px;
+      overflow: auto;
+      background: var(--island-bg-color);
+      border: 1px solid var(--sidebar-border-color);
+      border-radius: 8px;
+      box-shadow: 0 2px 12px #0002;
+      padding: 8px;
+      span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px;
+      }
+    }
+  }
+  .CommentReactionPicker {
+    width: 100%;
+  }
+  .CommentReactions__quick {
+    display: flex;
+    gap: 4px;
+  }
+  .CommentEmojiPicker {
+    padding: 8px;
+    margin-top: 8px;
+    border: 1px solid var(--sidebar-border-color);
+    border-radius: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--island-bg-color);
+    &__header {
+      display: flex;
+      gap: 4px;
+      input {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+    select {
+      width: 100%;
+      margin: 6px 0;
+    }
+    &__grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      margin: 6px 0;
+      button {
+        font-size: 20px;
+        padding: 5px 0;
+        min-width: 0;
+      }
+    }
+  }
+  .CommentConfirm {
+    padding: 8px;
+    border-radius: 8px;
+    background: var(--color-primary-light);
+    font-size: 12px;
+    span {
+      display: block;
+      margin-bottom: 4px;
+    }
+  }
+  .CommentLayer__error {
+    position: absolute;
+    pointer-events: auto;
+    bottom: 72px;
+    left: 16px;
+    max-width: calc(100% - 32px);
+    padding: 10px;
+    border-radius: 8px;
+    background: var(--island-bg-color);
+    box-shadow: var(--shadow-island);
+  }
+  @media (max-width: 730px) {
+    .CommentPopover {
+      top: auto !important;
+      bottom: 76px;
+      left: 8px !important;
+      width: calc(100% - 16px) !important;
+    }
+    .CommentThreadView {
+      max-height: 65vh;
+      max-height: var(--comment-popup-max-height, 65dvh);
+    }
+    .CommentComposer textarea {
+      font-size: 16px;
+    }
+    .CommentPlacement__hint {
+      white-space: normal;
+      font-size: 12px;
+    }
+  }
+}
