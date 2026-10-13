@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "سهم زاوي",
     "fontSize": "حجم الخط",
     "fontFamily": "نوع الخط",
-    "addWatermark": "إضافة \"مصنوعة بواسطة Excalidraw\"",
+    "addWatermark": "إضافة \"مصنوعة بواسطة Doodly\"",
     "handDrawn": "رسم باليد",
     "normal": "عادي",
     "code": "رمز",
@@ -107,7 +107,7 @@
     "untitled": "غير معنون",
     "name": "الاسم",
     "yourName": "اسمك",
-    "madeWithExcalidraw": "مصنوعة بواسطة Excalidraw",
+    "madeWithExcalidraw": "مصنوعة بواسطة Doodly",
     "group": "تحديد مجموعة",
     "ungroup": "إلغاء تحديد مجموعة",
     "collaborators": "المتعاونون",
@@ -116,7 +116,6 @@
     "addToLibrary": "أضف إلى المكتبة",
     "removeFromLibrary": "حذف من المكتبة",
     "libraryLoadingMessage": "جارٍ تحميل المكتبة...",
-    "libraries": "تصفح المكتبات",
     "loadingScene": "جارٍ تحميل المشهد…",
     "loadScene": "تحميل المشهد من ملف",
     "align": "محاذاة",
@@ -168,19 +167,16 @@
       "lockAll": "قفل الكل",
       "unlockAll": "فتح الكل"
     },
-    "statusPublished": "نُشر",
     "sidebarLock": "إبقاء الشريط الجانبي مفتوح",
     "selectAllElementsInFrame": "تحديد جميع العناصر في الإطار",
     "removeAllElementsFromFrame": "إزالة جميع العناصر من الإطار",
     "eyeDropper": "اختيار اللون من القماش",
     "textToDiagram": "نص إلى رسم بياني",
     "prompt": "تعليمات",
-    "followUs": "تابعنا",
-    "discordChat": "دردشة ديسكورد",
     "zoomToFitViewport": "التكبير لتناسب العرض",
     "zoomToFitSelection": "تكبير للعنصر المحدد",
     "zoomToFit": "تكبير لتلائم جميع العناصر",
-    "installPWA": "تثبيت Excalidraw محليًا (PWA)",
+    "installPWA": "تثبيت Doodly محليًا (PWA)",
     "autoResize": "تمكين تغيير حجم النص تلقائيًا",
     "imageCropping": "قص الصورة",
     "unCroppedDimension": "الأبعاد غير المقصوصة",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "التقاط إلى العناصر",
     "exitZenMode": "إلغاء وضع التأمل",
     "cancel": "إلغاء",
-    "saveLibNames": "احفظ الاسم(اء) واخرج",
     "clear": "مسح",
     "remove": "إزالة",
     "embed": "تبديل الإدراج",
-    "publishLibrary": "أعد التسمية أو أُنشر",
     "submit": "إرسال",
     "confirm": "تأكيد",
     "embeddableInteractionButton": "اضغط للتفاعل"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "لا يمكن تصدير لوحة فارغة.",
     "couldNotCopyToClipboard": "تعذر النسخ إلى الحافظة.",
     "decryptFailed": "تعذر فك تشفير البيانات.",
-    "uploadedSecurly": "تم تأمين التحميل بتشفير النهاية إلى النهاية، مما يعني أن خادم Excalidraw والأطراف الثالثة لا يمكنها قراءة المحتوى.",
+    "uploadedSecurly": "تم تأمين التحميل بتشفير النهاية إلى النهاية، مما يعني أن خادم Doodly والأطراف الثالثة لا يمكنها قراءة المحتوى.",
     "loadSceneOverridePrompt": "تحميل الرسم الخارجي سيحل محل المحتوى الموجود لديك. هل ترغب في المتابعة؟",
     "collabStopOverridePrompt": "إيقاف الجلسة سيؤدي إلى الكتابة فوق رسومك السابقة المخزنة داخليًا. هل أنت متأكد؟\n\n(إذا كنت ترغب في الاحتفاظ برسمك المخزن داخليًا، أغلق علامة تبويب المتصفح بدلاً من ذلك.)",
     "errorAddingToLibrary": "تعذر إضافة العنصر إلى المكتبة",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "هذا سيضيف {{numShapes}} شكل إلى مكتبتك. هل أنت متأكد؟",
     "imageDoesNotContainScene": "يبدو أن هذه الصورة لا تحتوي على أي بيانات مشهد. هل قمت بتمكين تضمين المشهد أثناء التصدير؟",
     "cannotRestoreFromImage": "تعذر استعادة المشهد من ملف الصورة",
-    "invalidSceneUrl": "تعذر استيراد المشهد من عنوان URL المتوفر. إما أنها مشوهة، أو لا تحتوي على بيانات Excalidraw JSON صالحة.",
+    "invalidSceneUrl": "تعذر استيراد المشهد من عنوان URL المتوفر. إما أنها مشوهة، أو لا تحتوي على بيانات Doodly JSON صالحة.",
     "resetLibrary": "هذا سيؤدي إلى مسح مكتبتك. هل أنت متأكد؟",
     "removeItemsFromsLibrary": "حذف {{count}} عنصر (عناصر) من المكتبة؟",
     "invalidEncryptionKey": "مفتاح التشفير يجب أن يكون من 22 حرفًا. التعاون المباشر معطل.",
@@ -338,7 +332,7 @@
     "bucketfill": "",
     "hand": "يد (أداة الإزاحة)",
     "extraTools": "المزيد من الأدوات",
-    "mermaidToExcalidraw": "من Mermaid إلى Excalidraw",
+    "mermaidToExcalidraw": "من Mermaid إلى Doodly",
     "convertElementType": "تبديل نوع الشكل"
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "إذا لم تعمل إعادة التحميل، حاول مرة أخرى ",
     "clearCanvasCaveat": "هذا سيؤدي إلى فقدان العمل",
     "trackedToSentry": "تم تتبع الخطأ في المعرف {{eventId}} على نظامنا.",
-    "openIssueMessage": "حرصنا على عدم إضافة معلومات المشهد في بلاغ الخطأ. في حال كون مشهدك لا يحمل أي معلومات خاصة، نرجو المتابعة على <button>نظام تتبع الأخطاء</button>. نرجو إضافة المعلومات أدناه بنسخها ولصقها في محتوى البلاغ على GitHub.",
     "sceneContent": "محتوى المشهد:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "تجري الآن جلسة تعاون مباشرة.",
     "desc_shareLink": "شارك هذا الرابط مع أي شخص تريده أن يشاركك الجلسة:",
     "desc_exitSession": "إيقاف الجلسة سيؤدي إلى قطع الاتصال الخاص بك من الغرفة، ولكن ستتمكن من مواصلة العمل مع المشهد محليًا. لاحظ أن هذا لن يؤثر على الأشخاص الآخرين، وسيظلون قادرين على التعاون في إصدارهم.",
-    "shareTitle": "الانضمام إلى جلسة تعاون مباشرة على Excalidraw"
+    "shareTitle": "الانضمام إلى جلسة تعاون مباشرة على Doodly"
   },
   "errorDialog": {
     "title": "خطأ"
@@ -437,10 +430,7 @@
     "disk_button": "حفظ إلى ملف",
     "link_title": "رابط قابل للمشاركة",
     "link_details": "تصدير الملف للمشاهدة فقط.",
-    "link_button": "تصدير كرابط",
-    "excalidrawplus_description": "حفظ المشهد إلى مساحة العمل +Excalidraw الخاصة بك.",
-    "excalidrawplus_button": "تصدير",
-    "excalidrawplus_exportError": "تعذر التص несп في الوقت الحالي إلى +Excalidraw..."
+    "link_button": "تصدير كرابط"
   },
   "helpDialog": {
     "blog": "اقرأ مدونتنا",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "مسح اللوحة"
   },
-  "publishDialog": {
-    "title": "نشر المكتبة",
-    "itemName": "اسم العنصر",
-    "authorName": "اسم المؤلف",
-    "githubUsername": "اسم المستخدم في GitHub",
-    "twitterUsername": "اسم المستخدم في تويتر",
-    "libraryName": "اسم المكتبة",
-    "libraryDesc": "وصف المكتبة",
-    "website": "الموقع",
-    "placeholder": {
-      "authorName": "اسمك أو اسم المستخدم",
-      "libraryName": "اسم مكتبتك",
-      "libraryDesc": "وصف مكتبتك لمساعدة الناس على فهم استخدامها",
-      "githubHandle": "معرف GitHub (اختياري)، حتى تتمكن من تحرير المكتبة عند إرسالها للمراجعة",
-      "twitterHandle": "اسم مستخدم تويتر (اختياري)، حتى نعرف من الذي سيتم الإشارة إليه عند الترويج عبر تويتر",
-      "website": "رابط إلى موقعك الشخصي أو مكان آخر (اختياري)"
-    },
-    "errors": {
-      "required": "مطلوب",
-      "website": "أدخل عنوان URL صالح"
-    },
-    "noteDescription": "تقديم مكتبتك لتضمينها في مستودع المكتبة العامة <link></link> ليستخدمها الآخرون في رسوماتهم.",
-    "noteGuidelines": "تحتاج المكتبة إلى الموافقة أولاً. يرجى قراءة <link>المعايير</link> قبل تقديمها. ستحتاج إلى حساب GitHub للتواصل وإجراء التغييرات عند الطلب، ولكنه ليس مطلوبًا بشكل صارم.",
-    "noteLicense": "تقديمك يعني موافقتك على نشر المكتبة المقدمة تحت <link>ترخيص MIT</link>، مما يعني أن لأي شخص الحق في استخدامها دون قيود.",
-    "noteItems": "يجب أن يكون لكل عنصر مكتبة اسم خاص به ليكون قابلًا للتصفية. سيتم تضمين عناصر المكتبة التالية:",
-    "atleastOneLibItem": "يرجى تحديد عنصر مكتبة واحد على الأقل للبدء",
-    "republishWarning": "ملاحظة: بعض العناصر المحددة معينة على أنها نُشرت أو قُدمت من قبل. يجب عليك فقط إعادة إرسال العناصر عند تحديث مكتبة موجودة أو إرسالها."
-  },
-  "publishSuccessDialog": {
-    "title": "تم إرسال المكتبة",
-    "content": "شكرًا لك {{authorName}}. لقد تم إرسال مكتبتك للمراجعة. يمكنك تتبع الحالة"
-  },
   "confirmDialog": {
     "resetLibrary": "إعادة ضبط المكتبة",
     "removeItemsFromLib": "إزالة العناصر المحددة من المكتبة"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "نسخ إلى الحافظة"
     }
   },
-  "encrypted": {
-    "tooltip": "رسوماتك مشفرة من النهاية إلى النهاية، لذا لا يمكن لخوادم Excalidraw رؤيتها أبدًا.",
-    "link": "مشاركة المدونة حول التشفير من النهاية إلى النهاية في Excalidraw"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "الزاوية",
     "shapes": "الأشكال",
@@ -596,7 +551,7 @@
       "center_heading": "رسوماتك محفوظة في تخزين متصفحك.",
       "center_heading_line2": "يُمكن محُ تخزين المتصفح بشكل غير متوقع.",
       "center_heading_line3": "احفظ عملك في ملف بانتظام لتجنب فقدانه.",
-      "center_heading_plus": "هل تريد الانتقال إلى Excalidraw+ بدلاً من ذلك؟",
+      "center_heading_plus": "هل تريد الانتقال إلى Doodly بدلاً من ذلك؟",
       "menuHint": "التصدير، التفضيلات، اللغات..."
     },
     "defaults": {
@@ -629,11 +584,6 @@
         "title": "حفظ الملف على الجهاز",
         "button": "حفظ الملف على الجهاز",
         "description": "تصدير بيانات المشهد إلى ملف يمكنك الاستيراد منه لاحقًا."
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "تصدير إلى Excalidraw+",
-        "description": "حفظ المشهد إلى مساحة العمل +Excalidraw الخاصة بك."
       }
     },
     "modal": {
@@ -650,7 +600,7 @@
     }
   },
   "mermaid": {
-    "title": "Mermaid إلى Excalidraw",
+    "title": "Mermaid إلى Doodly",
     "button": "إدراج",
     "description": "",
     "syntax": "صيغة Mermaid",
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": "بحث سريع"

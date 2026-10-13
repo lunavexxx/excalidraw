@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "Vinklad",
     "fontSize": "Teckenstorlek",
     "fontFamily": "Teckensnitt",
-    "addWatermark": "Lägg till \"Skapad med Excalidraw\"",
+    "addWatermark": "Lägg till \"Skapad med Doodly\"",
     "handDrawn": "Handritad",
     "normal": "Normal",
     "code": "Kod",
@@ -107,7 +107,7 @@
     "untitled": "Namnlös",
     "name": "Namn",
     "yourName": "Ditt namn",
-    "madeWithExcalidraw": "Skapad med Excalidraw",
+    "madeWithExcalidraw": "Skapad med Doodly",
     "group": "Gruppera markering",
     "ungroup": "Avgruppera markering",
     "collaborators": "Medarbetare",
@@ -116,7 +116,6 @@
     "addToLibrary": "Lägg till i biblioteket",
     "removeFromLibrary": "Ta bort från bibliotek",
     "libraryLoadingMessage": "Laddar bibliotek…",
-    "libraries": "Bläddra i bibliotek",
     "loadingScene": "Laddar skiss…",
     "loadScene": "Ladda scen från fil",
     "align": "Justera",
@@ -138,7 +137,7 @@
     "toggleTheme": "Växla ljus/mörkt tema",
     "theme": "Tema",
     "personalLib": "Personligt bibliotek",
-    "excalidrawLib": "Excalidraw bibliotek",
+    "excalidrawLib": "Doodly bibliotek",
     "decreaseFontSize": "Minska fontstorleken",
     "increaseFontSize": "Öka fontstorleken",
     "unbindText": "Koppla bort text",
@@ -168,19 +167,16 @@
       "lockAll": "Lås alla",
       "unlockAll": "Lås upp alla"
     },
-    "statusPublished": "Publicerad",
     "sidebarLock": "Håll sidofältet öppet",
     "selectAllElementsInFrame": "Markera alla element i rutan",
     "removeAllElementsFromFrame": "Ta bort alla element från rutan",
     "eyeDropper": "Välj färg från canvas",
     "textToDiagram": "Text till diagram",
     "prompt": "Inmatning",
-    "followUs": "Följ oss",
-    "discordChat": "Discord chat",
     "zoomToFitViewport": "Zooma för att passa in i vyn",
     "zoomToFitSelection": "Zooma för att passa urval",
     "zoomToFit": "Zooma för att rymma alla element",
-    "installPWA": "Installera Excalidraw lokalt (PWA)",
+    "installPWA": "Installera Doodly lokalt (PWA)",
     "autoResize": "Aktivera automatisk skalning av text",
     "imageCropping": "Bildbeskärning",
     "unCroppedDimension": "Obeskuren dimension",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "Fäst mot objekt",
     "exitZenMode": "Gå ur zen-läge",
     "cancel": "Avbryt",
-    "saveLibNames": "Spara namn och avsluta",
     "clear": "Rensa",
     "remove": "Ta bort",
     "embed": "Växla inbäddning",
-    "publishLibrary": "Byt namn eller publicera",
     "submit": "Skicka",
     "confirm": "Bekräfta",
     "embeddableInteractionButton": "Klicka för att interagera"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Kan inte exportera tom canvas.",
     "couldNotCopyToClipboard": "Kunde inte kopiera till urklipp.",
     "decryptFailed": "Kunde inte avkryptera data.",
-    "uploadedSecurly": "Uppladdning har säkrats med kryptering från ände till ände. vilket innebär att Excalidraw server och tredje part inte kan läsa innehållet.",
+    "uploadedSecurly": "Uppladdning har säkrats med kryptering från ände till ände. vilket innebär att Doodly server och tredje part inte kan läsa innehållet.",
     "loadSceneOverridePrompt": "Laddning av extern skiss kommer att ersätta ditt befintliga innehåll. Vill du fortsätta?",
     "collabStopOverridePrompt": "Att stoppa sessionen kommer att skriva över din föregående, lokalt lagrade skiss. Är du säker?\n\n(Om du vill behålla din lokala skiss, stäng bara webbläsarfliken istället.)",
     "errorAddingToLibrary": "Kunde inte lägga till objekt i biblioteket",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Detta kommer att lägga till {{numShapes}} form(er) till ditt bibliotek. Är du säker?",
     "imageDoesNotContainScene": "Den här bilden verkar inte innehålla någon skissdata. Har du aktiverat inbäddning av skiss under export?",
     "cannotRestoreFromImage": "Skiss kunde inte återställas från denna bildfil",
-    "invalidSceneUrl": "Det gick inte att importera skiss från den angivna webbadressen. Antingen har den fel format, eller så innehåller den ingen giltig Excalidraw JSON data.",
+    "invalidSceneUrl": "Det gick inte att importera skiss från den angivna webbadressen. Antingen har den fel format, eller så innehåller den ingen giltig Doodly JSON data.",
     "resetLibrary": "Detta kommer att rensa ditt bibliotek. Är du säker?",
     "removeItemsFromsLibrary": "Ta bort {{count}} objekt från biblioteket?",
     "invalidEncryptionKey": "Krypteringsnyckeln måste vara 22 tecken. Livesamarbetet är inaktiverat.",
@@ -338,7 +332,7 @@
     "bucketfill": "Färglägg",
     "hand": "Hand (panoreringsverktyg)",
     "extraTools": "Fler verktyg",
-    "mermaidToExcalidraw": "Mermaid till Excalidraw",
+    "mermaidToExcalidraw": "Mermaid till Doodly",
     "convertElementType": "Växla formtyp"
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Om omladdning inte fungerar, försök <button>rensa canvasen.</button>",
     "clearCanvasCaveat": " Detta kommer att leda till förlust av arbete ",
     "trackedToSentry": "Felet med identifieraren {{eventId}} spårades på vårt system.",
-    "openIssueMessage": "Vi var mycket försiktiga med att inte inkludera din skissinformation om felet. Om din skiss inte är privat, vänligen överväga att följa upp på vår <button>buggspårare.</button> Vänligen inkludera information nedan genom att kopiera och klistra in i GitHub-problemet.",
     "sceneContent": "Skissinnehåll:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "Nu pågår en live-samarbetssession.",
     "desc_shareLink": "Dela denna länk med någon du vill samarbeta med:",
     "desc_exitSession": "Att avbryta sessionen kommer att koppla bort dig från rummet, men du kommer att kunna fortsätta arbeta med skissen, lokalt. Observera att detta inte påverkar andra människor, och de kommer fortfarande att kunna samarbeta på deras version.",
-    "shareTitle": "Delta i en live-samarbetssession på Excalidraw"
+    "shareTitle": "Delta i en live-samarbetssession på Doodly"
   },
   "errorDialog": {
     "title": "Fel"
@@ -437,10 +430,7 @@
     "disk_button": "Spara till fil",
     "link_title": "Delbar länk",
     "link_details": "Exportera som en skrivskyddad länk.",
-    "link_button": "Exportera till länk",
-    "excalidrawplus_description": "Spara skissen till din Excalidraw+ arbetsyta.",
-    "excalidrawplus_button": "Exportera",
-    "excalidrawplus_exportError": "Det gick inte att exportera till Excalidraw+ just nu..."
+    "link_button": "Exportera till länk"
   },
   "helpDialog": {
     "blog": "Läs vår blogg",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Rensa canvas"
   },
-  "publishDialog": {
-    "title": "Publicera bibliotek",
-    "itemName": "Objektnamn",
-    "authorName": "Upphovsmannens namn",
-    "githubUsername": "GitHub-användarnamn",
-    "twitterUsername": "Twitter-användarnamn",
-    "libraryName": "Biblioteksnamn",
-    "libraryDesc": "Biblioteksbeskrivning",
-    "website": "Webbplats",
-    "placeholder": {
-      "authorName": "Ditt namn eller användarnamn",
-      "libraryName": "Namn på ditt bibliotek",
-      "libraryDesc": "Beskrivning av ditt bibliotek för att hjälpa människor att förstå dess användning",
-      "githubHandle": "Github-användarnamn (valfritt), så att du kan redigera biblioteket när du har skickat in det för granskning",
-      "twitterHandle": "Twitter-användarnamn (valfritt), så vi vet vem att kreditera när du marknadsför på Twitter",
-      "website": "Länk till din personliga webbplats eller någon annan (valfritt)"
-    },
-    "errors": {
-      "required": "Obligatoriskt",
-      "website": "Ange en giltig URL"
-    },
-    "noteDescription": "Skicka ditt bibliotek för att inkluderas i <link>det offentliga bibliotekets arkiv</link>för andra människor att använda i sina skisser.",
-    "noteGuidelines": "Biblioteket måste godkännas manuellt först. Vänligen läs <link>riktlinjerna</link> innan du skickar in. Du behöver ett GitHub-konto för att kommunicera och göra ändringar om så önskas, men det krävs inte.",
-    "noteLicense": "Genom att skicka in godkänner du att biblioteket kommer att publiceras under <link>MIT-licens, </link>vilket kort sagt betyder att vem som helst kan använda det utan restriktioner.",
-    "noteItems": "Varje objekt måste ha sitt eget namn så att det är filtrerbart. Följande objekt kommer att inkluderas:",
-    "atleastOneLibItem": "Välj minst ett biblioteksobjekt för att komma igång",
-    "republishWarning": "Obs: några av de markerade objekten är redan markerade som publicerade/skickade. Du bör endast skicka objekt igen när du uppdaterar ett befintligt bibliotek eller inlämning."
-  },
-  "publishSuccessDialog": {
-    "title": "Bibliotek inskickat",
-    "content": "Tack {{authorName}}. Ditt bibliotek har skickats för granskning. Du kan följa status<link>här</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Återställ bibliotek",
     "removeItemsFromLib": "Ta bort markerade objekt från biblioteket"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Kopiera till urklipp"
     }
   },
-  "encrypted": {
-    "tooltip": "Dina skisser är krypterade från ände till ände så Excalidraws servrar kommer aldrig att se dem.",
-    "link": "Blogginlägg om kryptering från ände till ände i Excalidraw"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Vinkel",
     "shapes": "Former",
@@ -596,7 +551,7 @@
       "center_heading": "Dina teckningar sparas i webbläsarens lagring.",
       "center_heading_line2": "Webbläsarens lagringsutrymme kan rensas oväntat.",
       "center_heading_line3": "Spara ditt arbete till en fil regelbundet för att undvika att förlora det.",
-      "center_heading_plus": "Ville du gå till Excalidraw+ istället?",
+      "center_heading_plus": "Ville du gå till Doodly istället?",
       "menuHint": "Exportera, inställningar, språk, ..."
     },
     "defaults": {
@@ -629,11 +584,6 @@
         "title": "Spara till disk",
         "button": "Spara till disk",
         "description": "Exportera scendata till en fil från vilken du kan importera senare."
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Exportera till Excalidraw+",
-        "description": "Spara skissen till din Excalidraw+ arbetsyta."
       }
     },
     "modal": {
@@ -650,9 +600,9 @@
     }
   },
   "mermaid": {
-    "title": "Mermaid till Excalidraw",
+    "title": "Mermaid till Doodly",
     "button": "Infoga",
-    "description": "För närvarande stöds endast <flowchartLink>Flödesdiagram</flowchartLink>, <sequenceLink> Sekvensdiagram</sequenceLink>, <classLink>Klassdiagram</classLink> och <erdLink>Entitetsrelationsdiagram</erdLink>. De andra typerna kommer att återges som bild i Excalidraw.",
+    "description": "För närvarande stöds endast <flowchartLink>Flödesdiagram</flowchartLink>, <sequenceLink> Sekvensdiagram</sequenceLink>, <classLink>Klassdiagram</classLink> och <erdLink>Entitetsrelationsdiagram</erdLink>. De andra typerna kommer att återges som bild i Doodly.",
     "syntax": "Mermaid-syntax",
     "preview": "Förhandsgranska",
     "label": "Mermaid",
@@ -699,11 +649,10 @@
       "mermaidParseError": "Mermaid syntax fel"
     },
     "rateLimit": {
-      "messageLimit": "Du har nått din gräns på den fria AI-planen. Prova Excalidraw+ för mer eller kom tillbaka imorgon.",
+      "messageLimit": "Du har nått din gräns på den fria AI-planen. Prova Doodly för mer eller kom tillbaka imorgon.",
       "generalRateLimit": "Håll dina hästar, du är för snabb för oss! Vänligen vänta en stund innan du försöker igen.",
       "messageLimitInputPlaceholder": "Du har nått din meddelandegräns"
-    },
-    "upsellBtnLabel": "Uppgradera till Plus"
+    }
   },
   "quickSearch": {
     "placeholder": "Snabbsök"

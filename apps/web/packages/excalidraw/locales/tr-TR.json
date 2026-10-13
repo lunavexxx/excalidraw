@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "Köşeli ok",
     "fontSize": "Yazı tipi boyutu",
     "fontFamily": "Yazı tipi ailesi",
-    "addWatermark": "\"Excalidraw ile yapıldı\" yazısını ekle",
+    "addWatermark": "\"Doodly ile yapıldı\" yazısını ekle",
     "handDrawn": "El-yazısı",
     "normal": "Normal",
     "code": "Kod",
@@ -107,7 +107,7 @@
     "untitled": "Adsız",
     "name": "Ad",
     "yourName": "Adınız",
-    "madeWithExcalidraw": "Excalidraw ile yapıldı",
+    "madeWithExcalidraw": "Doodly ile yapıldı",
     "group": "Seçimi grup yap",
     "ungroup": "Seçilen grubu dağıt",
     "collaborators": "Ortaklar",
@@ -116,7 +116,6 @@
     "addToLibrary": "Kütüphaneye ekle",
     "removeFromLibrary": "Kütüphaneden kaldır",
     "libraryLoadingMessage": "Kütüphane yükleniyor…",
-    "libraries": "Kütüphanelere gözat",
     "loadingScene": "Sahne yükleniyor…",
     "loadScene": "Dosyadan sahne yükle",
     "align": "Hizala",
@@ -138,7 +137,7 @@
     "toggleTheme": "Aydınlık/karanlık mod",
     "theme": "Tema",
     "personalLib": "Kişisel Kitaplık",
-    "excalidrawLib": "Excalidraw Kitaplığı",
+    "excalidrawLib": "Doodly Kitaplığı",
     "decreaseFontSize": "Yazı Tipi Boyutunu Küçült",
     "increaseFontSize": "Yazı Tipi Boyutunu Büyült",
     "unbindText": "Metni çöz",
@@ -168,19 +167,16 @@
       "lockAll": "Hepsini kilitle",
       "unlockAll": "Hepsinin kilidini kaldır"
     },
-    "statusPublished": "Yayınlandı",
     "sidebarLock": "Kenar çubuğu açık kalsın",
     "selectAllElementsInFrame": "Çerçevedeki tüm bileşenleri seç",
     "removeAllElementsFromFrame": "Çerçevedeki tüm bileşenleri sil",
     "eyeDropper": "Tuvalden renk seç",
     "textToDiagram": "Yazıdan diyagrama",
     "prompt": "İstem",
-    "followUs": "Bizi takip edin",
-    "discordChat": "Discord sohbeti",
     "zoomToFitViewport": "Görüş alanına sığdırmak için yakınlaştırın",
     "zoomToFitSelection": "Seçime sığdırmak için yakınlaştırın",
     "zoomToFit": "Tüm öğeleri sığdırmak için yakınlaştırın",
-    "installPWA": "Excalidraw'ı yerel olarak yükle (PWA)",
+    "installPWA": "Doodly'ı yerel olarak yükle (PWA)",
     "autoResize": "Metni otomatik yeniden boyutlandırmayı etkinleştir",
     "imageCropping": "Görsel kırpma",
     "unCroppedDimension": "Kırpılmamış ölçüler",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "Nesnelere hizala",
     "exitZenMode": "Zen modundan çık",
     "cancel": "İptal",
-    "saveLibNames": "Adları kaydet ve çık",
     "clear": "Temizle",
     "remove": "Kaldır",
     "embed": "Yerleştirmeyi aç veya kapa",
-    "publishLibrary": "Yeniden adlandır veya yayımla",
     "submit": "Gönder",
     "confirm": "Onayla",
     "embeddableInteractionButton": "Etkileşime girmek için tıkla"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Boş tuval dışarıya aktarılamaz.",
     "couldNotCopyToClipboard": "Panoya kopyalanamıyor.",
     "decryptFailed": "Şifrelenmiş veri çözümlenemedi.",
-    "uploadedSecurly": "Yükleme uçtan uca şifreleme ile korunmaktadır. Excalidraw sunucusu ve üçüncül şahıslar içeriği okuyamayacaktır.",
+    "uploadedSecurly": "Yükleme uçtan uca şifreleme ile korunmaktadır. Doodly sunucusu ve üçüncül şahıslar içeriği okuyamayacaktır.",
     "loadSceneOverridePrompt": "Harici çizimler yüklemek mevcut olan içeriği değiştirecektir. Devam etmek istiyor musunuz?",
     "collabStopOverridePrompt": "Oturumu sonlandırmak daha önceki, yerel olarak kaydedilmiş çizimin üzerine kaydedilmesine sebep olacak. Emin misiniz?\n\n(Yerel çiziminizi kaybetmemek için tarayıcı sekmesini kapatabilirsiniz.)",
     "errorAddingToLibrary": "Öğe kütüphaneye eklenemedi",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Bu, kitaplığınıza {{numShapes}} tane şekil(ler) ekleyecek. Emin misiniz?",
     "imageDoesNotContainScene": "Bu görüntü herhangi bir sahne verisi içermiyor gibi görünüyor. Dışa aktarma sırasında sahne yerleştirmeyi etkinleştirdiniz mi?",
     "cannotRestoreFromImage": "Sahne bu resim dosyasından geri yüklenemedi",
-    "invalidSceneUrl": "Verilen bağlantıdan çalışma alanı yüklenemedi. Dosya bozuk olabilir veya geçerli bir Excalidraw JSON verisi bulundurmuyor olabilir.",
+    "invalidSceneUrl": "Verilen bağlantıdan çalışma alanı yüklenemedi. Dosya bozuk olabilir veya geçerli bir Doodly JSON verisi bulundurmuyor olabilir.",
     "resetLibrary": "Bu işlem kütüphanenizi sıfırlayacak. Emin misiniz?",
     "removeItemsFromsLibrary": "{{count}} öğe(ler) kitaplıktan kaldırılsın mı?",
     "invalidEncryptionKey": "Şifreleme anahtarı 22 karakter olmalı. Canlı işbirliği devre dışı bırakıldı.",
@@ -338,7 +332,7 @@
     "bucketfill": "",
     "hand": "El (hareket aracı)",
     "extraTools": "Daha fazla araç",
-    "mermaidToExcalidraw": "Mermaid'den Excalidraw'a",
+    "mermaidToExcalidraw": "Mermaid'den Doodly'a",
     "convertElementType": "Şekil türünü aç/kapat"
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Yenileme sonrası sorun sürüyorsa lütfen <button>tuvali temizlemeyi</button> deneyin.",
     "clearCanvasCaveat": " Bu, yaptığınız değişiklikleri sıfırlayacak ",
     "trackedToSentry": "Tanımlayıcı ile ilgili hata {{eventId}} sistemimize yakalandı.",
-    "openIssueMessage": "Sahne bilginizi hata mesajına yansıtmamak için oldukça dikkatli davrandık. Eğer sahneniz gizli değilse hatayı lütfen şuradan takip edin <button>hata takibi.</button> Lütfen aşağıya GitHub sorununa kopyalayarak ve yapıştırarak bilgi ekleyin.",
     "sceneContent": "Sahne içeriği:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "Ortak çalışma ortamı oluşturuldu.",
     "desc_shareLink": "Bu bağlantıyı birlikte çalışacağınız kişilerle paylaşabilirsiniz:",
     "desc_exitSession": "Çalışma ortamını kapattığınızda ortak çalışmadan ayrılmış olursunuz ancak kendi versiyonunuzda çalışmaya devam edebilirsiniz. Bu durumda ortak çalıştığınız diğer kişiler etkilenmeyecek, çalışma ortamındaki versiyon üzerinden çalışmaya devam edebilecekler.",
-    "shareTitle": "Excalidraw'da canlı ortak calışma oturumuna katıl"
+    "shareTitle": "Doodly'da canlı ortak calışma oturumuna katıl"
   },
   "errorDialog": {
     "title": "Hata"
@@ -437,10 +430,7 @@
     "disk_button": "Dosyaya kaydet",
     "link_title": "Paylaşılabilir bağlantı",
     "link_details": "Salt okunur bir bağlantı olarak dışa aktarın.",
-    "link_button": "Bağlantı olarak dışa aktar",
-    "excalidrawplus_description": "Sahneyi Excalidraw+ çalışma alanınıza kaydedin.",
-    "excalidrawplus_button": "Dışa aktar",
-    "excalidrawplus_exportError": "Şu anda Excalidraw+'a aktarılamadı..."
+    "link_button": "Bağlantı olarak dışa aktar"
   },
   "helpDialog": {
     "blog": "Blog'umuzu okuyun",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Tuvali temizle"
   },
-  "publishDialog": {
-    "title": "Kitaplığı yayınla",
-    "itemName": "Öğe adı",
-    "authorName": "Yazar adı",
-    "githubUsername": "GitHub kullanıcı adı",
-    "twitterUsername": "Twitter kullanıcı adı",
-    "libraryName": "Kitaplık adı",
-    "libraryDesc": "Kitaplık açıklaması",
-    "website": "Web sitesi",
-    "placeholder": {
-      "authorName": "Adınız ya da kullanıcı adınız",
-      "libraryName": "Kitaplığınızın adı",
-      "libraryDesc": "İnsanların kullanımını anlamasına yardımcı olmak için kitaplığınızın açıklaması",
-      "githubHandle": "Github bağlantısı ( tercihe bağlı), kütüphane gözden geçirme için onaylandığında düzenleyebiliesiniz diye",
-      "twitterHandle": "Twitter kullanıcı adı ( tercihe bağlı), bu sayede Twitter üzerinde paylaşıren çalışmanızı size atfedebiliriz",
-      "website": "Kişisel web sayfanızı ya da başka bir yeri bağlayın (tercihe bağlı)"
-    },
-    "errors": {
-      "required": "Gerekli",
-      "website": "Geçerli bir URL girin"
-    },
-    "noteDescription": "Kütüphanenizi diğer insanların da kullanabilmesi için <link>Ortak kütüphane deposuna</link> yükleyin.",
-    "noteGuidelines": "Önce kütüphane elle onaylanmalı. şunu okuyun <link>yönergeler</link> onaylamadan önce. gerekli olması halinde iletişim kurmak için ve değişiklik için GitHub hesabı gerekli, ama çok da illaki olmalı değil.",
-    "noteLicense": "Bunu onaylayarak, kütüphanenin şu lisansla yayınlanmasını onaylıyorsunuz <link>MIT Lisans, </link>ki bu kısaca herkesin onu kısıtlama olmaksızın kullanabileceği anlamına gelmektedir.",
-    "noteItems": "Her kütüphane kendi ismine sahip olmalı ki tarama yapabilelim. Şu kütüphane ögeleri dahil edilecek:",
-    "atleastOneLibItem": "Lütfen başlamak için en az bir tane kütüphane ögesi seçin",
-    "republishWarning": "Not: seçilen ögelerden bir kısmı zaten yayınlanmış/gönderilmiş. Yalnızca mevcut kütüphane ve gönderileri güncellerken yeniden gönderme işlemi yapmalısınız."
-  },
-  "publishSuccessDialog": {
-    "title": "Kütüphane gönderildi",
-    "content": "Teşekkürler {{authorName}}. Kütüphaneniz gözden geçirme için alındı. Durumu takip edebilirsiniz <link>burada</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Kütüphaneyi sıfırla",
     "removeItemsFromLib": "Seçilen ögeleri kütüphaneden kaldır"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Panoya kopyala"
     }
   },
-  "encrypted": {
-    "tooltip": "Çizimleriniz uçtan-uca şifrelenmiştir, Excalidraw'ın sunucuları bile onları göremez.",
-    "link": "Excalidraw'da uçtan uca şifreleme hakkında blog yazısı"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Açı",
     "shapes": "Şekiller",
@@ -629,11 +584,6 @@
         "title": "Diske kaydet",
         "button": "Diske Kaydet",
         "description": "Sahne verilerini daha sonra içe aktarabileceğiniz bir dosyaya aktarın."
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Excalidraw+'a aktar",
-        "description": "Sahneyi Excalidraw+ çalışma alanınıza kaydedin."
       }
     },
     "modal": {
@@ -650,9 +600,9 @@
     }
   },
   "mermaid": {
-    "title": "Mermaid'den Excalidraw'a",
+    "title": "Mermaid'den Doodly'a",
     "button": "Ekle",
-    "description": "Şu anda yalnızca <flowchartLink>Akış şeması</flowchartLink>, <sequenceLink> Dizi, </sequenceLink>, <classLink>Sınıf </classLink> ve <erdLink> Varlık ilişkileri</erdLink> Diyagramları desteklenmektedir. Diğer türler, Excalidraw'da görsel olarak çizilecektir.",
+    "description": "Şu anda yalnızca <flowchartLink>Akış şeması</flowchartLink>, <sequenceLink> Dizi, </sequenceLink>, <classLink>Sınıf </classLink> ve <erdLink> Varlık ilişkileri</erdLink> Diyagramları desteklenmektedir. Diğer türler, Doodly'da görsel olarak çizilecektir.",
     "syntax": "Mermaid Sözdizimi",
     "preview": "Önizleme",
     "label": "Mermaid",
@@ -699,11 +649,10 @@
       "mermaidParseError": "Mermaid sözdizim hatası"
     },
     "rateLimit": {
-      "messageLimit": "Ücretsiz plan AI kullanım limitine ulaştın. Excalidraw+ planını deneyin ya da yarın tekrar gelin.",
+      "messageLimit": "Ücretsiz plan AI kullanım limitine ulaştın. Doodly planını deneyin ya da yarın tekrar gelin.",
       "generalRateLimit": "Yavaş ol, bizim için çok hızlısın! Tekrar denemeden önce lütfen biraz bekle.",
       "messageLimitInputPlaceholder": "Mesaj limitine ulaştın"
-    },
-    "upsellBtnLabel": "Plus'a Yükselt"
+    }
   },
   "quickSearch": {
     "placeholder": "Hızlı arama"

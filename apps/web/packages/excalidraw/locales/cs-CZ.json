@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "",
     "fontSize": "Velikost písma",
     "fontFamily": "Písmo",
-    "addWatermark": "Přidat \"Vyrobeno s Excalidraw\"",
+    "addWatermark": "Přidat \"Vyrobeno s Doodly\"",
     "handDrawn": "Od ruky",
     "normal": "Normální",
     "code": "Kód",
@@ -107,7 +107,7 @@
     "untitled": "Bez názvu",
     "name": "Název",
     "yourName": "Vaše jméno",
-    "madeWithExcalidraw": "Vytvořeno v Excalidraw",
+    "madeWithExcalidraw": "Vytvořeno v Doodly",
     "group": "Sloučit výběr do skupiny",
     "ungroup": "Zrušit sloučení skupiny",
     "collaborators": "Spolupracovníci",
@@ -116,7 +116,6 @@
     "addToLibrary": "Přidat do knihovny",
     "removeFromLibrary": "Odebrat z knihovny",
     "libraryLoadingMessage": "Načítání knihovny…",
-    "libraries": "Procházet knihovny",
     "loadingScene": "Načítání scény…",
     "loadScene": "Načíst scénu ze souboru",
     "align": "Zarovnání",
@@ -168,19 +167,16 @@
       "lockAll": "Uzamknout vše",
       "unlockAll": "Odemknout vše"
     },
-    "statusPublished": "Zveřejněno",
     "sidebarLock": "Ponechat postranní panel otevřený",
     "selectAllElementsInFrame": "Vybrat všechny prvky v orámování",
     "removeAllElementsFromFrame": "Odstranit všechny prvky z orámování",
     "eyeDropper": "Vyberte barvu z plátna",
     "textToDiagram": "Z textu na diagram",
     "prompt": "Výzva",
-    "followUs": "Sledujte nás",
-    "discordChat": "Discord chat",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "Přiblížit na výběr",
     "zoomToFit": "Přiblížit na zobrazení všech prvků",
-    "installPWA": "Instalovat Excalidraw lokálně (PWA)",
+    "installPWA": "Instalovat Doodly lokálně (PWA)",
     "autoResize": "Povolit automatickou změnu velikosti textu",
     "imageCropping": "",
     "unCroppedDimension": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "Přichytávat k objektům",
     "exitZenMode": "Opustit zen mód",
     "cancel": "Zrušit",
-    "saveLibNames": "",
     "clear": "Vyčistit",
     "remove": "Odstranit",
     "embed": "Přepínač vkládání",
-    "publishLibrary": "",
     "submit": "Odeslat",
     "confirm": "Potvrdit",
     "embeddableInteractionButton": "Klikněte pro interakci"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Nelze exportovat prázdné plátno.",
     "couldNotCopyToClipboard": "Nelze zkopírovat do schránky.",
     "decryptFailed": "Nelze dešifrovat data.",
-    "uploadedSecurly": "Nahrávání je zabezpečeno koncovým šifrováním, což znamená, že server Excalidraw ani třetí strany nemohou obsah přečíst.",
+    "uploadedSecurly": "Nahrávání je zabezpečeno koncovým šifrováním, což znamená, že server Doodly ani třetí strany nemohou obsah přečíst.",
     "loadSceneOverridePrompt": "Načítání externího výkresu nahradí váš existující obsah. Přejete si pokračovat?",
     "collabStopOverridePrompt": "Zastavení relace přepíše vaše předchozí, lokálně uložené kresby. Jste si jisti?\n\n(Pokud chcete zachovat místní kresbu, jednoduše zavřete kartu prohlížeče)",
     "errorAddingToLibrary": "Položku nelze přidat do knihovny",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Tímto přidáte {{numShapes}} tvarů do tvé knihovny. Jste si jisti?",
     "imageDoesNotContainScene": "Zdá se, že tento obrázek neobsahuje žádná data o scéně. Zapnuli jste při exportu vkládání scény?",
     "cannotRestoreFromImage": "Scénu nelze obnovit z tohoto souboru obrázku",
-    "invalidSceneUrl": "Nelze importovat scénu z zadané URL. Je buď poškozená, nebo neobsahuje platná JSON data Excalidraw.",
+    "invalidSceneUrl": "Nelze importovat scénu z zadané URL. Je buď poškozená, nebo neobsahuje platná JSON data Doodly.",
     "resetLibrary": "Tímto vymažete vaši knihovnu. Jste si jisti?",
     "removeItemsFromsLibrary": "Smazat {{count}} položek z knihovny?",
     "invalidEncryptionKey": "Šifrovací klíč musí mít 22 znaků. Live spolupráce je zakázána.",
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Pokud opětovné načtení nefunguje, zkuste <button>vymazat plátno</button>.",
     "clearCanvasCaveat": " To povede ke ztrátě dat ",
     "trackedToSentry": "Chyba identifikátoru {{eventId}} byl zaznamenán v našem systému.",
-    "openIssueMessage": "Byli jsme velmi opatrní, abychom neuváděli informace o Vaší scéně. Pokud vaše scéna není soukromá, zvažte prosím sledování na našem <button>bug trackeru</button>. Uveďte prosím níže uvedené informace kopírováním a vložením do problému na GitHubu.",
     "sceneContent": "Obsah scény:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "Živá spolupráce právě probíhá.",
     "desc_shareLink": "Sdílejte tento odkaz s každým, s kým chcete spolupracovat:",
     "desc_exitSession": "Zastavením relace se odpojíte od místnosti, ale budete moci pokračovat v práci s touto scénou lokálně. Všimněte si, že to nebude mít vliv na ostatní lidi a budou stále moci spolupracovat na jejich verzi.",
-    "shareTitle": "Připojte se k aktivní spolupráci na Excalidraw"
+    "shareTitle": "Připojte se k aktivní spolupráci na Doodly"
   },
   "errorDialog": {
     "title": "Chyba"
@@ -437,10 +430,7 @@
     "disk_button": "Uložit do souboru",
     "link_title": "Odkaz pro sdílení",
     "link_details": "Exportovat jako odkaz pouze pro čtení.",
-    "link_button": "Exportovat do odkazu",
-    "excalidrawplus_description": "Uložit scénu do vašeho pracovního prostoru Excalidraw+.",
-    "excalidrawplus_button": "Exportovat",
-    "excalidrawplus_exportError": "Export do Excalidraw+ se v tuto chvíli nezdařil..."
+    "link_button": "Exportovat do odkazu"
   },
   "helpDialog": {
     "blog": "Přečtěte si náš blog",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Vymazat plátno"
   },
-  "publishDialog": {
-    "title": "Publikovat knihovnu",
-    "itemName": "Název položky",
-    "authorName": "Jméno autora",
-    "githubUsername": "GitHub uživatelské jméno",
-    "twitterUsername": "Twitter uživatelské jméno",
-    "libraryName": "Název knihovny",
-    "libraryDesc": "Popis knihovny",
-    "website": "Webová stránka",
-    "placeholder": {
-      "authorName": "Jméno nebo uživatelské jméno",
-      "libraryName": "Název vaší knihovny",
-      "libraryDesc": "Popis Vaší knihovny, který pomůže lidem pochopit její využití",
-      "githubHandle": "Github uživatelské jméno (nepovinné), abyste mohli upravovat knihovnu poté co je odeslána ke kontrole",
-      "twitterHandle": "Twitter uživatelské jméno (nepovinné), abychom věděli koho označit při propagaci na Twitteru",
-      "website": "Odkaz na Vaši osobní webovou stránku nebo jinam (nepovinné)"
-    },
-    "errors": {
-      "required": "Povinné",
-      "website": "Zadejte platnou URL adresu"
-    },
-    "noteDescription": "Odešlete svou knihovnu, pro zařazení do <link>veřejného úložiště knihoven</link>, odkud ji budou moci při kreslení využít i ostatní uživatelé.",
-    "noteGuidelines": "Knihovna musí být nejdříve ručně schválena. Přečtěte si prosím <link>pokyny</link>",
-    "noteLicense": "Odesláním souhlasíte s tím, že knihovna bude zveřejněna pod <link>MIT licencí</link>, stručně řečeno, kdokoli ji může používat bez omezení.",
-    "noteItems": "Každá položka knihovny musí mít svůj vlastní název, aby byla filtrovatelná. Následující položky knihovny budou zahrnuty:",
-    "atleastOneLibItem": "Vyberte alespoň jednu položku knihovny, kterou chcete začít",
-    "republishWarning": "Poznámka: některé z vybraných položek jsou označeny jako již zveřejněné/odeslané. Položky byste měli znovu odeslat pouze při aktualizaci existující knihovny nebo podání."
-  },
-  "publishSuccessDialog": {
-    "title": "Knihovna byla odeslána",
-    "content": "Děkujeme vám {{authorName}}. Vaše knihovna byla odeslána k posouzení. Stav můžete sledovat <link>zde</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Resetovat knihovnu",
     "removeItemsFromLib": "Odstranit vybrané položky z knihovny"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Kopírovat do schránky"
     }
   },
-  "encrypted": {
-    "tooltip": "Vaše kresby jsou end-to-end šifrované, takže servery Excalidraw je nikdy neuvidí.",
-    "link": "Blog příspěvek na end-to-end šifrování v Excalidraw"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Úhel",
     "shapes": "Tvary",
@@ -596,7 +551,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Chcete místo toho přejít na Excalidraw+?",
+      "center_heading_plus": "Chcete místo toho přejít na Doodly?",
       "menuHint": "Export, nastavení, jazyky, ..."
     },
     "defaults": {
@@ -626,11 +581,6 @@
         "description": ""
       },
       "saveToDisk": {
-        "title": "",
-        "button": "",
-        "description": ""
-      },
-      "excalidrawPlus": {
         "title": "",
         "button": "",
         "description": ""
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": "Rychlé vyhledávání"

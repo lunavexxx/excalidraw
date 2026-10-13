@@ -107,7 +107,7 @@
     "untitled": "නිර්නාමික",
     "name": "නම",
     "yourName": "ඔබගේ නම",
-    "madeWithExcalidraw": "Excalidraw සමඟ සාදන ලද",
+    "madeWithExcalidraw": "Doodly සමඟ සාදන ලද",
     "group": "කණ්ඩායම",
     "ungroup": "කණ්ඩායම් ඉවත් කරන්න",
     "collaborators": "සහයෝගිකයන්",
@@ -116,7 +116,6 @@
     "addToLibrary": "පුස්තකාලයට එක් කරන්න",
     "removeFromLibrary": "පුස්තකාලයෙන් ඉවත් කරන්න",
     "libraryLoadingMessage": "පුස්තකාලය පූරණය වෙමින් පවතී",
-    "libraries": "පුස්තකාල",
     "loadingScene": "දර්ශනය පූරණය වෙමින්",
     "loadScene": "",
     "align": "පෙළගැස්වීම",
@@ -138,7 +137,7 @@
     "toggleTheme": "තේමාව ටොගල් කරන්න",
     "theme": "",
     "personalLib": "පුද්ගලික පුස්තකාලය",
-    "excalidrawLib": "Excalidraw පුස්තකාලය",
+    "excalidrawLib": "Doodly පුස්තකාලය",
     "decreaseFontSize": "අකුරු ප්‍රමාණය අඩු කරන්න",
     "increaseFontSize": "අකුරු ප්‍රමාණය වැඩි කරන්න",
     "unbindText": "පෙළ විසන්ධි කරන්න",
@@ -168,15 +167,12 @@
       "lockAll": "සියල්ල අගුලු දමන්න",
       "unlockAll": "සියල්ල අගුලු ඉවත් කරන්න"
     },
-    "statusPublished": "ප්‍රකාශිත තත්ත්වය",
     "sidebarLock": "පැති තීරුව අගුලු",
     "selectAllElementsInFrame": "අඳින ලද රාමුවේ සියලුම අංග තෝරන්න",
     "removeAllElementsFromFrame": "රාමුවෙන් සියලුම අංග ඉවත් කරන්න",
     "eyeDropper": "අක්ෂි බිංදුකරු",
     "textToDiagram": "පෙළෙන් රූපසටහනකට",
     "prompt": "ප්‍රේරකය",
-    "followUs": "",
-    "discordChat": "",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "වස්තු ස්නැප් මාදිලිය",
     "exitZenMode": "සෙන් මාදිලියෙන් ඉවත් වන්න",
     "cancel": "අවලංගු කරන්න",
-    "saveLibNames": "",
     "clear": "පිරිසිදු",
     "remove": "ඉවත් කරන්න",
     "embed": "බිහිදැමීම",
-    "publishLibrary": "",
     "submit": "ඉදිරිපත් කරන්න",
     "confirm": "තහවුරු කරන්න",
     "embeddableInteractionButton": "බිහිදැමීමේ අන්තර්ක්‍රියා බොත්තම"
@@ -338,7 +332,7 @@
     "bucketfill": "",
     "hand": "අත",
     "extraTools": "අමතර මෙවලම්",
-    "mermaidToExcalidraw": "Mermaid වලින් Excalidraw වෙත",
+    "mermaidToExcalidraw": "Mermaid වලින් Doodly වෙත",
     "convertElementType": ""
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "කැන්වසය පිරිසිදු කිරීමේ පණිවිඩය",
     "clearCanvasCaveat": "කැන්වසය පිරිසිදු කිරීමේ සීමාව",
     "trackedToSentry": "Sentry වෙත ලුහුබඳින ලදි",
-    "openIssueMessage": "නිකුතුව විවෘත කිරීමේ පණිවිඩය",
     "sceneContent": "දර්ශන අන්තර්ගතය"
   },
   "shareDialog": {
@@ -437,10 +430,7 @@
     "disk_button": "තැටි බොත්තම",
     "link_title": "සබැඳි මාතෘකාව",
     "link_details": "සබැඳි විස්තර",
-    "link_button": "සබැඳි බොත්තම",
-    "excalidrawplus_description": "ExcalidrawPlus විස්තර",
-    "excalidrawplus_button": "ExcalidrawPlus බොත්තම",
-    "excalidrawplus_exportError": "ExcalidrawPlus නිර්යාත දෝෂය"
+    "link_button": "සබැඳි බොත්තම"
   },
   "helpDialog": {
     "blog": "බ්ලොග්",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "කැන්වසය පිරිසිදු කිරීමේ සංවාදය"
   },
-  "publishDialog": {
-    "title": "ප්‍රකාශන සංවාදය",
-    "itemName": "අයිතම නම",
-    "authorName": "කතුවරයාගේ නම",
-    "githubUsername": "GitHub පරිශීලක නම",
-    "twitterUsername": "Twitter පරිශීලක නම",
-    "libraryName": "පුස්තකාලයේ නම",
-    "libraryDesc": "පුස්තකාල විස්තර",
-    "website": "වෙබ් අඩවිය",
-    "placeholder": {
-      "authorName": "කතුවරයාගේ නම ඇතුලත් කරන්න",
-      "libraryName": "පුස්තකාලයේ නම ඇතුලත් කරන්න",
-      "libraryDesc": "පුස්තකාල විස්තර ඇතුලත් කරන්න",
-      "githubHandle": "GitHub හසුරුව ඇතුලත් කරන්න",
-      "twitterHandle": "Twitter හසුරුව ඇතුලත් කරන්න",
-      "website": "වෙබ් අඩවිය ඇතුලත් කරන්න"
-    },
-    "errors": {
-      "required": "අවශ්‍යයි",
-      "website": "වලංගු නොවන වෙබ් අඩවි URL"
-    },
-    "noteDescription": "සටහන් විස්තර",
-    "noteGuidelines": "සටහන් මාර්ගෝපදේශ",
-    "noteLicense": "සටහන් බලපත්‍රය",
-    "noteItems": "සටහන් අයිතම",
-    "atleastOneLibItem": "අවම වශයෙන් එක් පුස්තකාල අයිතමයක්",
-    "republishWarning": "නැවත ප්‍රකාශන ඇඟවීම"
-  },
-  "publishSuccessDialog": {
-    "title": "ප්‍රකාශන සාර්ථකත්ව සංවාදය",
-    "content": "ප්‍රකාශන සාර්ථකත්ව අන්තර්ගතය"
-  },
   "confirmDialog": {
     "resetLibrary": "පුස්තකාලය යළි සකස් කිරීම තහවුරු කරන්න",
     "removeItemsFromLib": "පුස්තකාලයෙන් අයිතම ඉවත් කිරීම තහවුරු කරන්න"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "PNG ලෙස ක්ලිප්බෝඩ් එකට පිටපත් කරන්න"
     }
   },
-  "encrypted": {
-    "tooltip": "ගුප්තකේතන ඉඟිය",
-    "link": "ගුප්තකේතන සබැඳිය"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "කෝණය",
     "shapes": "",
@@ -629,11 +584,6 @@
         "title": "තැටියට සුරැකීම ආවරණය",
         "button": "තැටියට සුරැකීම බොත්තම",
         "description": "තැටියට සුරැකීම විස්තර"
-      },
-      "excalidrawPlus": {
-        "title": "ExcalidrawPlus ආවරණය",
-        "button": "ExcalidrawPlus බොත්තම",
-        "description": "ExcalidrawPlus විස්තර"
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

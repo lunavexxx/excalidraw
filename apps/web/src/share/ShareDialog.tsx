@@ -16,17 +16,11 @@ import { AccessManager } from "./AccessManager";
 
 import "./ShareDialog.scss";
 
-type ShareDialogType = "share" | "collaborationOnly";
-export const shareDialogStateAtom = atom<
-  { isOpen: false } | { isOpen: true; type: ShareDialogType }
->({ isOpen: false });
-export type ShareDialogProps = {
-  handleClose: () => void;
-  onExportToBackend: () => void;
-  type: ShareDialogType;
-};
+export const shareDialogStateAtom = atom<{ isOpen: boolean }>({
+  isOpen: false,
+});
 
-const ShareDialogInner = (props: ShareDialogProps) => {
+const ShareDialogInner = (props: { handleClose: () => void }) => {
   const { t } = useI18n();
   const canvasId = useAtomValue(canvasIdAtom);
   const role = useAtomValue(canvasRoleAtom);
@@ -85,19 +79,13 @@ const ShareDialogInner = (props: ShareDialogProps) => {
         ) : (
           <p>{t("sharePanel.localDraftHint")}</p>
         )}
-        {props.type === "share" && (
-          <FilledButton
-            label={t("exportDialog.link_button")}
-            onClick={props.onExportToBackend}
-          />
-        )}
         {error && <p role="alert">{error}</p>}
       </div>
     </Dialog>
   );
 };
 
-export const ShareDialog = (props: { onExportToBackend: () => void }) => {
+export const ShareDialog = () => {
   const [state, setState] = useAtom(shareDialogStateAtom);
   const { openDialog } = useUIAppState();
   useEffect(() => {
@@ -106,10 +94,6 @@ export const ShareDialog = (props: { onExportToBackend: () => void }) => {
     }
   }, [openDialog, setState]);
   return state.isOpen ? (
-    <ShareDialogInner
-      {...props}
-      type={state.type}
-      handleClose={() => setState({ isOpen: false })}
-    />
+    <ShareDialogInner handleClose={() => setState({ isOpen: false })} />
   ) : null;
 };

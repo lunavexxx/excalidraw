@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "",
     "fontSize": "Şrift ölçüsü",
     "fontFamily": "Şrift qrupu",
-    "addWatermark": "\"Made with Excalidraw\" əlavə et",
+    "addWatermark": "\"Made with Doodly\" əlavə et",
     "handDrawn": "Əllə çəkilmiş",
     "normal": "Normal",
     "code": "Kod",
@@ -107,7 +107,7 @@
     "untitled": "Başlıqsız",
     "name": "Ad",
     "yourName": "Adınız",
-    "madeWithExcalidraw": "Excalidraw ilə hazırlanmışdır",
+    "madeWithExcalidraw": "Doodly ilə hazırlanmışdır",
     "group": "Qrup şəklində seçim",
     "ungroup": "Qrupsuz seçim",
     "collaborators": "Əməkdaşlar",
@@ -116,7 +116,6 @@
     "addToLibrary": "Kitabxanaya əlavə et",
     "removeFromLibrary": "Kitabxanadan sil",
     "libraryLoadingMessage": "Kitabxana yüklənir...",
-    "libraries": "Kitabxanalara bax",
     "loadingScene": "Səhnə yüklənir...",
     "loadScene": "Səhnəni fayldan yüklə",
     "align": "Hizala",
@@ -138,7 +137,7 @@
     "toggleTheme": "Gecə/Güzdüz rejiminə dəyiş",
     "theme": "Fon",
     "personalLib": "Şəxsi kitabxana",
-    "excalidrawLib": "Excalidraw kitabxanası",
+    "excalidrawLib": "Doodly kitabxanası",
     "decreaseFontSize": "Şrift ölçüsünü azalt",
     "increaseFontSize": "Şrift ölçüsünü artır",
     "unbindText": "Mətni çıxar",
@@ -168,15 +167,12 @@
       "lockAll": "",
       "unlockAll": ""
     },
-    "statusPublished": "",
     "sidebarLock": "",
     "selectAllElementsInFrame": "",
     "removeAllElementsFromFrame": "",
     "eyeDropper": "",
     "textToDiagram": "",
     "prompt": "",
-    "followUs": "",
-    "discordChat": "",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "Obyektlərə bərkidin",
     "exitZenMode": "Zen rejimindən çıxış",
     "cancel": "Ləğv et",
-    "saveLibNames": "",
     "clear": "Təmizlə",
     "remove": "Sil",
     "embed": "Yerləşdirməni aktiv et",
-    "publishLibrary": "",
     "submit": "Göndər",
     "confirm": "Təsdiqlə",
     "embeddableInteractionButton": "Əlaqə üçün kliklə"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Boş lövhəni ixrac etmək mümkün deyil.",
     "couldNotCopyToClipboard": "Kopyalana bilmədi.",
     "decryptFailed": "Məlumatın şifrəsini açmaq mümkün olmadı.",
-    "uploadedSecurly": "Yükləmə end-to-end şifrələmə texnologiyası ilə qorunub, yəni Excalidraw serveri və üçüncü tərəflər məzmunu oxuya bilməz.",
+    "uploadedSecurly": "Yükləmə end-to-end şifrələmə texnologiyası ilə qorunub, yəni Doodly serveri və üçüncü tərəflər məzmunu oxuya bilməz.",
     "loadSceneOverridePrompt": "Xarici rəsmin yüklənməsi mövcud məzmununuzu əvəz edəcək. Davam etmək istəyirsiniz?",
     "collabStopOverridePrompt": "Sessiyanın dayandırılması əvvəlki, yerli olaraq saxlanılan çertyojunuzun üzərinə yazılacaq. Əminsiniz?",
     "errorAddingToLibrary": "Kitabxanaya əlavə etmək mümkün olmadı",
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "",
     "clearCanvasCaveat": "",
     "trackedToSentry": "",
-    "openIssueMessage": "",
     "sceneContent": ""
   },
   "shareDialog": {
@@ -437,10 +430,7 @@
     "disk_button": "",
     "link_title": "",
     "link_details": "",
-    "link_button": "",
-    "excalidrawplus_description": "",
-    "excalidrawplus_button": "",
-    "excalidrawplus_exportError": ""
+    "link_button": ""
   },
   "helpDialog": {
     "blog": "",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": ""
   },
-  "publishDialog": {
-    "title": "",
-    "itemName": "",
-    "authorName": "",
-    "githubUsername": "",
-    "twitterUsername": "",
-    "libraryName": "",
-    "libraryDesc": "",
-    "website": "",
-    "placeholder": {
-      "authorName": "",
-      "libraryName": "",
-      "libraryDesc": "",
-      "githubHandle": "",
-      "twitterHandle": "",
-      "website": ""
-    },
-    "errors": {
-      "required": "",
-      "website": ""
-    },
-    "noteDescription": "",
-    "noteGuidelines": "",
-    "noteLicense": "",
-    "noteItems": "",
-    "atleastOneLibItem": "",
-    "republishWarning": ""
-  },
-  "publishSuccessDialog": {
-    "title": "",
-    "content": ""
-  },
   "confirmDialog": {
     "resetLibrary": "",
     "removeItemsFromLib": ""
@@ -538,10 +496,7 @@
       "copyPngToClipboard": ""
     }
   },
-  "encrypted": {
-    "tooltip": "",
-    "link": ""
-  },
+  "encrypted": {},
   "stats": {
     "angle": "",
     "shapes": "",
@@ -629,11 +584,6 @@
         "title": "",
         "button": "",
         "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "",
-        "button": "",
-        "description": ""
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

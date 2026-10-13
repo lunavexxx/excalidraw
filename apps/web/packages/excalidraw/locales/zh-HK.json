@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "",
     "fontSize": "字型大小",
     "fontFamily": "字體",
-    "addWatermark": "加入「使用 Excalidraw 製圖」水印",
+    "addWatermark": "加入「使用 Doodly 製圖」水印",
     "handDrawn": "手繪體",
     "normal": "電腦字體",
     "code": "等寬體",
@@ -107,7 +107,7 @@
     "untitled": "未命名的作品",
     "name": "",
     "yourName": "你的名稱",
-    "madeWithExcalidraw": "使用 Excalidraw 製圖",
+    "madeWithExcalidraw": "使用 Doodly 製圖",
     "group": "建立物件群組",
     "ungroup": "取消物件群組",
     "collaborators": "已連線的協作者",
@@ -116,7 +116,6 @@
     "addToLibrary": "加入作品庫",
     "removeFromLibrary": "從作品庫中移除",
     "libraryLoadingMessage": "正在載入作品庫…",
-    "libraries": "瀏覽作品庫",
     "loadingScene": "載入畫布中…",
     "loadScene": "",
     "align": "物件對齊",
@@ -168,15 +167,12 @@
       "lockAll": "",
       "unlockAll": ""
     },
-    "statusPublished": "",
     "sidebarLock": "",
     "selectAllElementsInFrame": "",
     "removeAllElementsFromFrame": "",
     "eyeDropper": "",
     "textToDiagram": "",
     "prompt": "",
-    "followUs": "",
-    "discordChat": "",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "",
     "exitZenMode": "",
     "cancel": "",
-    "saveLibNames": "",
     "clear": "",
     "remove": "",
     "embed": "",
-    "publishLibrary": "",
     "submit": "",
     "confirm": "",
     "embeddableInteractionButton": ""
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "如果重新整理頁面都係睇唔到，你可以<button>清空畫布</button>",
     "clearCanvasCaveat": "（注意：呢個動作會直接丟棄你嘅作品，並且無法復原）",
     "trackedToSentry": "",
-    "openIssueMessage": "",
     "sceneContent": ""
   },
   "shareDialog": {
@@ -437,10 +430,7 @@
     "disk_button": "",
     "link_title": "",
     "link_details": "",
-    "link_button": "",
-    "excalidrawplus_description": "",
-    "excalidrawplus_button": "",
-    "excalidrawplus_exportError": ""
+    "link_button": ""
   },
   "helpDialog": {
     "blog": "",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": ""
   },
-  "publishDialog": {
-    "title": "",
-    "itemName": "",
-    "authorName": "",
-    "githubUsername": "",
-    "twitterUsername": "",
-    "libraryName": "",
-    "libraryDesc": "",
-    "website": "",
-    "placeholder": {
-      "authorName": "",
-      "libraryName": "",
-      "libraryDesc": "",
-      "githubHandle": "",
-      "twitterHandle": "",
-      "website": ""
-    },
-    "errors": {
-      "required": "",
-      "website": ""
-    },
-    "noteDescription": "",
-    "noteGuidelines": "",
-    "noteLicense": "",
-    "noteItems": "",
-    "atleastOneLibItem": "",
-    "republishWarning": ""
-  },
-  "publishSuccessDialog": {
-    "title": "",
-    "content": ""
-  },
   "confirmDialog": {
     "resetLibrary": "",
     "removeItemsFromLib": ""
@@ -538,10 +496,7 @@
       "copyPngToClipboard": ""
     }
   },
-  "encrypted": {
-    "tooltip": "",
-    "link": ""
-  },
+  "encrypted": {},
   "stats": {
     "angle": "",
     "shapes": "",
@@ -629,11 +584,6 @@
         "title": "",
         "button": "",
         "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "",
-        "button": "",
-        "description": ""
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

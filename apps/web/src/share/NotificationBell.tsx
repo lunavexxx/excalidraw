@@ -67,10 +67,7 @@ export const NotificationBell = () => {
       ownerWindow &&
       new URLSearchParams(ownerWindow.location.search).has("manageAccess")
     ) {
-      appJotaiStore.set(shareDialogStateAtom, {
-        isOpen: true,
-        type: "collaborationOnly",
-      });
+      appJotaiStore.set(shareDialogStateAtom, { isOpen: true });
       ownerWindow.history.replaceState(null, "", ownerWindow.location.pathname);
     }
   }, []);
@@ -203,7 +200,6 @@ export const NotificationBell = () => {
                     setOpen(false);
                     appJotaiStore.set(shareDialogStateAtom, {
                       isOpen: true,
-                      type: "collaborationOnly",
                     });
                   } else {
                     ownerWindow.location.assign(

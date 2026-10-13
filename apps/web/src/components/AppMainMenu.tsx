@@ -156,6 +156,17 @@ export const AppMainMenu: React.FC<{
         <LanguageList style={{ width: "100%" }} />
       </MainMenu.ItemCustom>
       <MainMenu.DefaultItems.ChangeCanvasBackground />
+      <MainMenu.ItemCustom>
+        <div
+          style={{
+            padding: "0.5rem 0.875rem 0.25rem",
+            fontSize: "0.75rem",
+            opacity: 0.6,
+          }}
+        >
+          {t("labels.basedOnExcalidraw")}
+        </div>
+      </MainMenu.ItemCustom>
     </MainMenu>
   );
 });

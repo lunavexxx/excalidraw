@@ -1,19 +1,19 @@
 .excalidraw {
   .ExcalidrawLogo {
     --logo-icon--mobile: 1rem;
-    --logo-text--mobile: 0.75rem;
+    --logo-text--mobile: 1rem;
 
     --logo-icon--xs: 2rem;
-    --logo-text--xs: 1.5rem;
+    --logo-text--xs: 2rem;
 
     --logo-icon--small: 2.5rem;
-    --logo-text--small: 1.75rem;
+    --logo-text--small: 2.5rem;
 
     --logo-icon--normal: 3rem;
-    --logo-text--normal: 2.2rem;
+    --logo-text--normal: 3rem;
 
     --logo-icon--large: 90px;
-    --logo-text--large: 65px;
+    --logo-text--large: 76px;
 
     display: flex;
     align-items: center;
@@ -24,13 +24,11 @@
 
     .ExcalidrawLogo-icon {
       width: auto;
-      color: var(--color-logo-icon);
     }
 
     .ExcalidrawLogo-text {
       margin-left: 0.75rem;
       width: auto;
-      color: var(--color-logo-text);
     }
 
     &.is-mobile {
@@ -81,6 +79,17 @@
 
       .ExcalidrawLogo-text {
         height: var(--logo-text--large);
+      }
+    }
+  }
+
+  // 深色主题:字标反色、徽记衬白底(素材为黑墨手绘,深底上不可见)
+  &.theme--dark {
+    .ExcalidrawLogo {
+      --logo-icon-bg: #fff;
+
+      .ExcalidrawLogo-text {
+        filter: invert(1);
       }
     }
   }

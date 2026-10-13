@@ -2,26 +2,14 @@ import { getFeatureFlag } from "@excalidraw/common";
 import * as Sentry from "@sentry/browser";
 import callsites from "callsites";
 
-const SentryEnvHostnameMap: { [key: string]: string } = {
-  "excalidraw.com": "production",
-  "staging.excalidraw.com": "staging",
-  "vercel.app": "staging",
-};
-
 const SENTRY_DISABLED = import.meta.env.VITE_APP_DISABLE_SENTRY === "true";
 
-// Disable Sentry locally or inside the Docker to avoid noise/respect privacy
-const onlineEnv =
-  !SENTRY_DISABLED &&
-  Object.keys(SentryEnvHostnameMap).find(
-    (item) => window.location.hostname.indexOf(item) >= 0,
-  );
+// 未配置自有 DSN 时保持禁用(不得使用上游的 Sentry 账号)
+const dsn = SENTRY_DISABLED ? undefined : import.meta.env.VITE_APP_SENTRY_DSN;
 
 Sentry.init({
-  dsn: onlineEnv
-    ? "https://7bfc596a5bf945eda6b660d3015a5460@sentry.io/5179260"
-    : undefined,
-  environment: onlineEnv ? SentryEnvHostnameMap[onlineEnv] : undefined,
+  dsn,
+  environment: dsn ? import.meta.env.MODE : undefined,
   release: import.meta.env.VITE_APP_GIT_SHA,
   ignoreErrors: [
     "undefined is not an object (evaluating 'window.__pad.performLoop')", // Only happens on Safari, but spams our servers. Doesn't break anything

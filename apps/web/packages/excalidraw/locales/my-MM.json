@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "",
     "fontSize": "စာလုံးအရွယ်",
     "fontFamily": "စာလုံးပုံစံ",
-    "addWatermark": "\"Excalidraw ဖြင့်ဖန်တီးသည်။\" စာသားထည့်",
+    "addWatermark": "\"Doodly ဖြင့်ဖန်တီးသည်။\" စာသားထည့်",
     "handDrawn": "လက်ရေး",
     "normal": "ပုံမှန်",
     "code": "ကုဒ်",
@@ -107,7 +107,7 @@
     "untitled": "အမည်မရှိ",
     "name": "အမည်",
     "yourName": "သင့်အမည်",
-    "madeWithExcalidraw": "Excalidraw ဖြင့်ဖန်တီးသည်။",
+    "madeWithExcalidraw": "Doodly ဖြင့်ဖန်တီးသည်။",
     "group": "အုပ်စုဖွဲ့",
     "ungroup": "အုပ်စုဖျက်သိမ်း",
     "collaborators": "ပူးပေါင်းပါဝင်သူများ",
@@ -116,7 +116,6 @@
     "addToLibrary": "မှတ်တမ်းတင်",
     "removeFromLibrary": "မှတ်တမ်းမှထုတ်",
     "libraryLoadingMessage": "မှတ်တမ်းအား တင်သွင်းနေသည်…",
-    "libraries": "စာကြည့်တိုက်တွင်ရှာဖွေပါ",
     "loadingScene": "မြင်ကွင်းဖော်နေသည်…",
     "loadScene": "",
     "align": "ချိန်ညှိ",
@@ -168,15 +167,12 @@
       "lockAll": "",
       "unlockAll": ""
     },
-    "statusPublished": "",
     "sidebarLock": "",
     "selectAllElementsInFrame": "",
     "removeAllElementsFromFrame": "",
     "eyeDropper": "",
     "textToDiagram": "",
     "prompt": "",
-    "followUs": "",
-    "discordChat": "",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "",
     "exitZenMode": "ဇင်မြင်ကွင်းမှထွက်",
     "cancel": "",
-    "saveLibNames": "",
     "clear": "",
     "remove": "",
     "embed": "",
-    "publishLibrary": "",
     "submit": "",
     "confirm": "",
     "embeddableInteractionButton": ""
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "ကားချပ်အလွတ်အားထုတ်ယူ၍မရပါ။",
     "couldNotCopyToClipboard": "",
     "decryptFailed": "အချက်အလက်ဖော်ယူ၍မရပါ။",
-    "uploadedSecurly": "တင်သွင်းအချက်အလက်များအား နှစ်ဘက်စွန်းတိုင်လျှို့ဝှက်စနစ်အသုံးပြု၍လုံခြုံစွာထိန်းသိမ်းထားပါသဖြင့် Excalidraw ဆာဗာနှင့်ဆက်စပ်အဖွဲ့အစည်းများပင်လျှင်မဖတ်ရှုနိုင်ပါ။",
+    "uploadedSecurly": "တင်သွင်းအချက်အလက်များအား နှစ်ဘက်စွန်းတိုင်လျှို့ဝှက်စနစ်အသုံးပြု၍လုံခြုံစွာထိန်းသိမ်းထားပါသဖြင့် Doodly ဆာဗာနှင့်ဆက်စပ်အဖွဲ့အစည်းများပင်လျှင်မဖတ်ရှုနိုင်ပါ။",
     "loadSceneOverridePrompt": "လက်ရှိရေးဆွဲထားသမျှအား ပြင်ပမှတင်သွင်းသောပုံနှင့်အစားထိုးပါမည်။ ဆက်လက်ဆောင်ရွက်လိုပါသလား။",
     "collabStopOverridePrompt": "",
     "errorAddingToLibrary": "",
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "အသစ်ပြန်လည်မရယူနိုင်ပါက ထပ်မံကြိုးစားကြည့်ရန်<button>ကားချပ်အား ရှင်းလင်းပါ။</button>",
     "clearCanvasCaveat": " ရေးဆွဲထားသည်များ ဆုံးရှုံးနိုင်သည် ",
     "trackedToSentry": "ချို့ယွင်းမှုသတ်မှတ်ချက် {{eventId}} အားစနစ်အတွင်းခြေရာကောက်ပြီးပါပြီ။",
-    "openIssueMessage": "ချို့ယွင်းမှုမှတ်တမ်းတွင် အရေးကြီးအချက်အလက်များပါဝင်မှုမရှိစေရန်အထူးသတိပြုပါသည်။ မပါဝင်ပါက ဆက်လက်ဆောင်ရွက်ရန် <button>ချို့ယွင်းမှုအားခြေရာကောက်ပါ။</button> အောက်ပါအချက်အလက်များအား Github တွင် Issue အနေဖြင့်ဖြည့်သွင်းဖော်ပြပေးပါ။",
     "sceneContent": "မြင်ကွင်းပါအချက်အလက်။ ။"
   },
   "shareDialog": {
@@ -437,10 +430,7 @@
     "disk_button": "",
     "link_title": "",
     "link_details": "",
-    "link_button": "",
-    "excalidrawplus_description": "",
-    "excalidrawplus_button": "",
-    "excalidrawplus_exportError": ""
+    "link_button": ""
   },
   "helpDialog": {
     "blog": "",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": ""
   },
-  "publishDialog": {
-    "title": "",
-    "itemName": "",
-    "authorName": "",
-    "githubUsername": "",
-    "twitterUsername": "",
-    "libraryName": "",
-    "libraryDesc": "",
-    "website": "",
-    "placeholder": {
-      "authorName": "",
-      "libraryName": "",
-      "libraryDesc": "",
-      "githubHandle": "",
-      "twitterHandle": "",
-      "website": ""
-    },
-    "errors": {
-      "required": "",
-      "website": ""
-    },
-    "noteDescription": "",
-    "noteGuidelines": "",
-    "noteLicense": "",
-    "noteItems": "",
-    "atleastOneLibItem": "",
-    "republishWarning": ""
-  },
-  "publishSuccessDialog": {
-    "title": "",
-    "content": ""
-  },
   "confirmDialog": {
     "resetLibrary": "",
     "removeItemsFromLib": ""
@@ -538,10 +496,7 @@
       "copyPngToClipboard": ""
     }
   },
-  "encrypted": {
-    "tooltip": "ရေးဆွဲထားသောပုံများအား နှစ်ဘက်စွန်းတိုင်လျှို့ဝှက်ထားသဖြင့် Excalidraw ၏ဆာဗာများပင်လျှင်မြင်တွေ့ရမည်မဟုတ်ပါ။",
-    "link": ""
-  },
+  "encrypted": {},
   "stats": {
     "angle": "ထောင့်",
     "shapes": "",
@@ -629,11 +584,6 @@
         "title": "",
         "button": "",
         "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "",
-        "button": "",
-        "description": ""
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

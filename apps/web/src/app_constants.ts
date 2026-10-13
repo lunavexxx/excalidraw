@@ -38,11 +38,6 @@ export enum WS_SUBTYPES {
   USER_VISIBLE_SCENE_BOUNDS = "USER_VISIBLE_SCENE_BOUNDS",
 }
 
-export const FIREBASE_STORAGE_PREFIXES = {
-  shareLinkFiles: `/files/shareLinks`,
-  collabFiles: `/files/rooms`,
-};
-
 export const ROOM_ID_BYTES = 10;
 
 export const STORAGE_KEYS = {
@@ -61,11 +56,3 @@ export const STORAGE_KEYS = {
   // do not use apart from migrations
   __LEGACY_LOCAL_STORAGE_LIBRARY: "excalidraw-library",
 } as const;
-
-export const COOKIES = {
-  AUTH_STATE_COOKIE: "excplus-auth",
-} as const;
-
-export const isExcalidrawPlusSignedUser = document.cookie.includes(
-  COOKIES.AUTH_STATE_COOKIE,
-);

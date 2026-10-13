@@ -144,7 +144,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       Sitemap({
-        hostname: "https://excalidraw.com",
+        hostname: "https://mochixxx.cc",
         outDir: "build",
         changefreq: "monthly",
         // its static in public folder
@@ -240,10 +240,10 @@ export default defineConfig(({ mode }) => {
           maximumFileSizeToCacheInBytes: 2.3 * 1024 ** 2, // 2.3MB
         },
         manifest: {
-          short_name: "Excalidraw",
-          name: "Excalidraw",
+          short_name: "Doodly",
+          name: "Doodly",
           description:
-            "Excalidraw is a whiteboard tool that lets you easily sketch diagrams that have a hand-drawn feel to them.",
+            "Doodly 是一款手绘风格的协作白板,让你轻松画出带有手绘质感的图表与草图,支持多人实时协作。",
           icons: [
             {
               src: "android-chrome-192x192.png",
@@ -267,7 +267,7 @@ export default defineConfig(({ mode }) => {
             },
           ],
           start_url: "/",
-          id: "excalidraw",
+          id: "doodly",
           display: "standalone",
           theme_color: "#121212",
           background_color: "#ffffff",

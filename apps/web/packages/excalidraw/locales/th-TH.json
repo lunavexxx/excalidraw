@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "ลูกศรหักมุม",
     "fontSize": "ขนาดตัวอักษร",
     "fontFamily": "แบบตัวอักษร",
-    "addWatermark": "เพิ่มลายน้ำ \"สร้างด้วย Excalidraw\"",
+    "addWatermark": "เพิ่มลายน้ำ \"สร้างด้วย Doodly\"",
     "handDrawn": "ลายมือ",
     "normal": "ปกติ",
     "code": "โค้ด",
@@ -107,7 +107,7 @@
     "untitled": "ไม่มีชื่อ",
     "name": "ชื่อ",
     "yourName": "ชื่อของคุณ",
-    "madeWithExcalidraw": "เพิ่มลายน้ำ \"สร้างด้วย Excalidraw\"",
+    "madeWithExcalidraw": "เพิ่มลายน้ำ \"สร้างด้วย Doodly\"",
     "group": "จัดกลุ่ม",
     "ungroup": "ยกเลิกการจัดกลุ่ม",
     "collaborators": "ผู้ทำงานร่วมกัน",
@@ -116,7 +116,6 @@
     "addToLibrary": "เพิ่มไปในคลัง",
     "removeFromLibrary": "นำออกจากคลัง",
     "libraryLoadingMessage": "กำลังโหลดคลัง...",
-    "libraries": "เรียกดูไลบรารี",
     "loadingScene": "กำลังโหลดฉาก",
     "loadScene": "โหลดฉากจากไฟล์",
     "align": "จัดตำแหน่ง",
@@ -138,7 +137,7 @@
     "toggleTheme": "สลับธีมสว่าง/มืด",
     "theme": "ธีม",
     "personalLib": "คลังของฉัน",
-    "excalidrawLib": "คลังของ Excalidraw",
+    "excalidrawLib": "คลังของ Doodly",
     "decreaseFontSize": "ลดขนาดตัวอักษร",
     "increaseFontSize": "เพิ่มขนาดตัวอักษร",
     "unbindText": "ยกเลิกการผูกติด",
@@ -168,15 +167,12 @@
       "lockAll": "ล็อกทั้งหมด",
       "unlockAll": "ปลดล็อกทั้งหมด"
     },
-    "statusPublished": "เผยแพร่",
     "sidebarLock": "ปิดแถบด้านข้างเอาไว้",
     "selectAllElementsInFrame": "เลือกองค์ประกอบทั้งหมดในกรอบ",
     "removeAllElementsFromFrame": "ลบองค์ประกอบทั้งหมดในกรอบ",
     "eyeDropper": "เลือกสีผืนผ้าใบ",
     "textToDiagram": "ข้อความเป็นภาพ",
     "prompt": "พรอมต์",
-    "followUs": "ติดตามเรา",
-    "discordChat": "แชทดิสคอร์ด",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "",
     "exitZenMode": "ออกจากโหมด Zen",
     "cancel": "ยกเลิก",
-    "saveLibNames": "",
     "clear": "เคลียร์",
     "remove": "ลบ",
     "embed": "สลับการฝัง",
-    "publishLibrary": "",
     "submit": "ตกลง",
     "confirm": "ยืนยัน",
     "embeddableInteractionButton": "คลิกเพื่อปฏิสัมพันธ์"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "ไม่สามารถนำออกจากผืนผ้าใบที่ว่างเปล่าได้",
     "couldNotCopyToClipboard": "ไม่สามารถคัดลอกไปยังคลิปบอร์ดได้",
     "decryptFailed": "ไม่สามารถถอดรหัสข้อมูลได้",
-    "uploadedSecurly": "การอัพโหลดได้ถูกเข้ารหัสแบบ end-to-end หมายความว่าเซิร์ฟเวอร์ของ Excalidraw และบุคคลอื่นไม่สามารถอ่านข้อมูลได้",
+    "uploadedSecurly": "การอัพโหลดได้ถูกเข้ารหัสแบบ end-to-end หมายความว่าเซิร์ฟเวอร์ของ Doodly และบุคคลอื่นไม่สามารถอ่านข้อมูลได้",
     "loadSceneOverridePrompt": "",
     "collabStopOverridePrompt": "",
     "errorAddingToLibrary": "ไม่สามารถเพิ่มรายการเข้าไปในคลังได้",
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "ถ้าโหลดไม่ได้ ให้ลอง <button>เคลียร์ผืนผ้าใบ</button>",
     "clearCanvasCaveat": "",
     "trackedToSentry": "",
-    "openIssueMessage": "",
     "sceneContent": ""
   },
   "shareDialog": {
@@ -437,10 +430,7 @@
     "disk_button": "บันทึกเป็นไฟล์",
     "link_title": "ลิงก์ที่สามารถแชร์ได้",
     "link_details": "",
-    "link_button": "ส่งออกไปยังไฟล์",
-    "excalidrawplus_description": "",
-    "excalidrawplus_button": "ส่งออก",
-    "excalidrawplus_exportError": "ไม่สามารถส่งออกไปที่ Excalidraw+ ได้ในขณะนี้"
+    "link_button": "ส่งออกไปยังไฟล์"
   },
   "helpDialog": {
     "blog": "อ่านบล็อกของพวกเรา",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "ล้างผืนผ้าใบ"
   },
-  "publishDialog": {
-    "title": "",
-    "itemName": "ชื่อสิ่งของ",
-    "authorName": "ชื่อเจ้าของ",
-    "githubUsername": "ชื่อผู้ใช้ GitHub",
-    "twitterUsername": "ชื่อผู้ใช้ Twitter",
-    "libraryName": "ชื่อไลบรารี่",
-    "libraryDesc": "",
-    "website": "เว็บไซต์",
-    "placeholder": {
-      "authorName": "",
-      "libraryName": "",
-      "libraryDesc": "",
-      "githubHandle": "",
-      "twitterHandle": "",
-      "website": ""
-    },
-    "errors": {
-      "required": "จำเป็น",
-      "website": "ป้อน URL ที่ถูกต้อง"
-    },
-    "noteDescription": "",
-    "noteGuidelines": "",
-    "noteLicense": "",
-    "noteItems": "",
-    "atleastOneLibItem": "",
-    "republishWarning": ""
-  },
-  "publishSuccessDialog": {
-    "title": "",
-    "content": ""
-  },
   "confirmDialog": {
     "resetLibrary": "รีเซ็ตคลัง",
     "removeItemsFromLib": ""
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "คัดลอกไปยังคลิปบอร์ด"
     }
   },
-  "encrypted": {
-    "tooltip": "",
-    "link": ""
-  },
+  "encrypted": {},
   "stats": {
     "angle": "องศา",
     "shapes": "รูปร่าง",
@@ -629,11 +584,6 @@
         "title": "บันทึกไปยังดิสก์",
         "button": "บันทึกไปยังดิสก์",
         "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "นำออกไปยัง Excalidraw+",
-        "description": ""
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": "อัปเกรดบัญชีเป็นแบบ Plus"
+    }
   },
   "quickSearch": {
     "placeholder": "ค้นหาด่วน"

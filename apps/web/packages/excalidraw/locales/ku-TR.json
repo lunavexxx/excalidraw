@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "",
     "fontSize": "قەبارەی فۆنت",
     "fontFamily": "خێزانی فۆنت",
-    "addWatermark": "زیادبکە \"Made with Excalidraw\"",
+    "addWatermark": "زیادبکە \"Made with Doodly\"",
     "handDrawn": "دەست کێشراو",
     "normal": "ئاسایی",
     "code": "کۆد",
@@ -107,7 +107,7 @@
     "untitled": "بێ ناونیشان",
     "name": "ناو",
     "yourName": "ناوەکەت",
-    "madeWithExcalidraw": "دروستکراوە بە Excalidraw",
+    "madeWithExcalidraw": "دروستکراوە بە Doodly",
     "group": "دیاریکردنی گروپ",
     "ungroup": "گروپی دیاریکراوەکان لابەرە",
     "collaborators": "هاوکارەکان",
@@ -116,7 +116,6 @@
     "addToLibrary": "زیادکردن بۆ کتێبخانە",
     "removeFromLibrary": "لابردن لە کتێبخانە",
     "libraryLoadingMessage": "...بارکردنی کتێبخانە",
-    "libraries": "گەڕانی کتێبخانە",
     "loadingScene": "...بارکردنی دیمەنەکە",
     "loadScene": "",
     "align": "لاچەنکردن",
@@ -138,7 +137,7 @@
     "toggleTheme": "",
     "theme": "",
     "personalLib": "کتێبخانەی کەسی",
-    "excalidrawLib": "کتێبخانەی Excalidraw",
+    "excalidrawLib": "کتێبخانەی Doodly",
     "decreaseFontSize": "کەمکردنەوەی قەبارەی فۆنت",
     "increaseFontSize": "زایدکردنی قەبارەی فۆنت",
     "unbindText": "دەقەکە جیابکەرەوە",
@@ -168,15 +167,12 @@
       "lockAll": "قفڵکردنی هەموو",
       "unlockAll": "کردنەوەی قفلی هەمووی"
     },
-    "statusPublished": "بڵاوکراوەتەوە",
     "sidebarLock": "هێشتنەوەی شریتی لا بە کراوەیی",
     "selectAllElementsInFrame": "هەموو توخمەکانی ناو چوارچێوەکە دیاری بکە",
     "removeAllElementsFromFrame": "هەموو توخمەکانی ناو چوارچێوەکە لابەرە",
     "eyeDropper": "ڕەنگێک لەسەر تابلۆکە هەڵبژێرە",
     "textToDiagram": "",
     "prompt": "",
-    "followUs": "",
-    "discordChat": "",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "",
     "exitZenMode": "بەجێهێشتنی دۆخی زێن",
     "cancel": "هەڵوەشاندنەوە",
-    "saveLibNames": "",
     "clear": "خاوێنکردنەوە",
     "remove": "لابردن",
     "embed": "",
-    "publishLibrary": "",
     "submit": "پێشکەشکردن",
     "confirm": "دوپاتکردنەوە",
     "embeddableInteractionButton": ""
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "ناتوانرێت تابلۆی بەتاڵ هەناردەبکرێت.",
     "couldNotCopyToClipboard": "ناتوانرا لەبەربگیرێتەوە بۆ تەختەنوس",
     "decryptFailed": "ناتوانرا داتاکان شیبکرێتەوە",
-    "uploadedSecurly": "بارکردنەکە بە کۆدکردنی کۆتایی بۆ کۆتایی پارێزراوە، ئەمەش واتە سێرڤەری Excalidraw و لایەنی سێیەم ناتوانن ناوەڕۆکەکە بخوێننەوە.",
+    "uploadedSecurly": "بارکردنەکە بە کۆدکردنی کۆتایی بۆ کۆتایی پارێزراوە، ئەمەش واتە سێرڤەری Doodly و لایەنی سێیەم ناتوانن ناوەڕۆکەکە بخوێننەوە.",
     "loadSceneOverridePrompt": "بارکردنی وێنەکێشانی دەرەکی جێگەی ناوەڕۆکی بەردەستت دەگرێتەوە. دەتەوێت بەردەوام بیت؟",
     "collabStopOverridePrompt": "وەستاندنی دانیشتنەکە وێنەکێشانی پێشووت دەنووسێتەوە کە لە ناوخۆدا هەڵگیراوە. ئایا دڵنیایت?\n\n(ئەگەر دەتەوێت وێنەکێشانی ناوخۆیی خۆت بهێڵیتەوە، لەبری ئەوە تەنها تابی وێبگەڕەکە دابخە).",
     "errorAddingToLibrary": "نەیتوانی بڕگە زیاد بکات بۆ کتێبخانە",
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "ئەگەر دووبارە بارکردنەوە کار ناکات، هەوڵبدە <button>خاوێنکردنەوەی تابلۆکە.</button>",
     "clearCanvasCaveat": " ئەمە دەبێتە هۆی لەدەستدانی ئەوەی کە کردوتە ",
     "trackedToSentry": "هەڵەکە لەگەڵ ناسێنەری {{eventId}} لەسەر سیستەمەکەمان بەدواداچوونی بۆ کرا.",
-    "openIssueMessage": "ئێمە زۆر وریا بووین کە زانیارییەکانی دیمەنەکەت لەسەر هەڵەکە نەخەینەڕوو. ئەگەر دیمەنەکەت تایبەت نییە، تکایە بیر لە بەدواداچوون بکەنەوە بۆ ئێمە <button>شوێنپێهەڵگری هەڵە.</button> تکایە ئەم زانیارییانەی خوارەوە کۆپی بکە و لە بەشی کێشەکانی Github دایبنێ.",
     "sceneContent": "پێکهاتەی ناو دیمەنەکە:"
   },
   "shareDialog": {
@@ -437,10 +430,7 @@
     "disk_button": "پاشەکەوت بکە بۆ فایل",
     "link_title": "بەستەری هاوبەشیپێکردن",
     "link_details": "ناردن وەک بەستەری تەنها-خوێندنەوە.",
-    "link_button": "هەناردەکردن بۆ بەستەر",
-    "excalidrawplus_description": "دیمەنەکە لە شوێنی کارکردنی Excalidraw+ هەڵبگرە.",
-    "excalidrawplus_button": "هەناردەکردن",
-    "excalidrawplus_exportError": "لەم ساتەدا نەتوانرا هەناردە بکرێت بۆ Excalidrow+..."
+    "link_button": "هەناردەکردن بۆ بەستەر"
   },
   "helpDialog": {
     "blog": "بلۆگەکەمان بخوێنەوە",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "تابلۆکە خاوێن بکەرەوە"
   },
-  "publishDialog": {
-    "title": "پێشکەشکردنی کتێبخانە",
-    "itemName": "ناوی بڕگە",
-    "authorName": "ناوی نوسەر",
-    "githubUsername": "ناوی بەکارهێنەری Github",
-    "twitterUsername": "ناوی بەکارهێنەری Twitter",
-    "libraryName": "ناوی کتێبخانە",
-    "libraryDesc": "وەسفی کتێبخانە",
-    "website": "ماڵپەڕ",
-    "placeholder": {
-      "authorName": "ناوەکات یاخود ناوی بەکارهێنەر",
-      "libraryName": "ناوی کتێبخانەکەت",
-      "libraryDesc": "وەسفی کتێبخانەکەت بۆ یارمەتیدانی خەڵک بۆ تێگەیشتن لە بەکارهێنانی",
-      "githubHandle": "ناوی GitHub (ئارەزوومەندانە)، بۆیە دەتوانیت دەستکاری کتێبخانەکە بکەیت کاتێک پێشکەش دەکرێت بۆ پێداچوونەوە",
-      "twitterHandle": "ناوی بەکارهێنەری تویتەر (ئارەزوومەندانە)، بۆیە بزانین لەکاتی بانگەشەکردن لە ڕێگەی تویتەرەوە کریدت بۆ کێ بکەین",
-      "website": "لینکی ماڵپەڕی تایبەتی خۆت یان شوێنێکی تر (ئارەزومەندانە)"
-    },
-    "errors": {
-      "required": "داواکراوە",
-      "website": "URLێکی دروست تێبنووسە"
-    },
-    "noteDescription": "کتێبخانەکەت بنێرە بۆ ئەوەی بخرێتە ناو <link>کۆگای کتێبخانەی گشتی</link>بۆ ئەوەی کەسانی تر لە وێنەکێشانەکانیاندا بەکاری بهێنن.",
-    "noteGuidelines": "کتێبخانەکە پێویستە سەرەتا بە دەست پەسەند بکرێت. تکایە بفەرمو بە خوێندنەوەی <link>ڕێنماییەکان</link> پێش پێشکەشکردن. پێویستت بە ئەژمێری GitHub دەبێت بۆ پەیوەندیکردن و گۆڕانکاری ئەگەر داوای لێکرا، بەڵام بە توندی پێویست نییە.",
-    "noteLicense": "بە پێشکەشکردن، تۆ ڕەزامەندیت لەسەر بڵاوکردنەوەی کتێبخانەکە بەپێی <link>مۆڵەتی MIT، </link>کە بە کورتی مانای ئەوەیە کە هەرکەسێک دەتوانێت بە بێ سنوور بەکاری بهێنێت",
-    "noteItems": "هەر شتێکی کتێبخانە دەبێت ناوی تایبەتی خۆی هەبێت بۆ ئەوەی بتوانرێت فلتەر بکرێت. ئەم بابەتانەی کتێبخانانەی خوارەوە لەخۆدەگرێت:",
-    "atleastOneLibItem": "تکایە بەلایەنی کەمەوە یەک بڕگەی کتێبخانە دیاریبکە بۆ دەستپێکردن",
-    "republishWarning": "تێبینی: هەندێک لە ئایتمە دیاریکراوەکان نیشانکراون وەک ئەوەی پێشتر بڵاوکراونەتەوە/نێردراون. تەنها پێویستە شتەکان دووبارە پێشکەش بکەیتەوە لە کاتی نوێکردنەوەی کتێبخانەیەکی هەبوو یان پێشکەشکردن."
-  },
-  "publishSuccessDialog": {
-    "title": "کتێبخانە پێشکەش کرا",
-    "content": "سوپاس {{authorName}}. کتێبخانەکەت پێشکەش کراوە بۆ پێداچوونەوە. دەتوانیت بەدواداچوون بۆ دۆخەکە بکەیت<link>لێرە</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "ڕێکخستنەوەی کتێبخانە",
     "removeItemsFromLib": "لابردنی ئایتمە دیاریکراوەکان لە کتێبخانە"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "له‌به‌ری بگره‌وه‌ بۆ ته‌خته‌نووس"
     }
   },
-  "encrypted": {
-    "tooltip": "وێنەکێشانەکانت لە کۆتاییەوە بۆ کۆتایی کۆد کراون بۆیە سێرڤەرەکانی ئێکسکالیدرا هەرگیز نایانبینن.",
-    "link": "بلۆگ پۆست لەسەر کۆدکردنی کۆتای بۆ کۆتای لە ئێکسکالیدرەو"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "گۆشە",
     "shapes": "",
@@ -596,7 +551,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "ویستت بڕۆیت بۆ Excalidraw+?",
+      "center_heading_plus": "ویستت بڕۆیت بۆ Doodly?",
       "menuHint": "هەناردەکردن، ڕێکخستنەکان، زمانەکان، ..."
     },
     "defaults": {
@@ -626,11 +581,6 @@
         "description": ""
       },
       "saveToDisk": {
-        "title": "",
-        "button": "",
-        "description": ""
-      },
-      "excalidrawPlus": {
         "title": "",
         "button": "",
         "description": ""
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

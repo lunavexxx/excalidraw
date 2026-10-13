@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "Seta dobrada",
     "fontSize": "Tamanho da fonte",
     "fontFamily": "Família da fonte",
-    "addWatermark": "Adicionar \"Feito com Excalidraw\"",
+    "addWatermark": "Adicionar \"Feito com Doodly\"",
     "handDrawn": "Manuscrito",
     "normal": "Normal",
     "code": "Código",
@@ -107,7 +107,7 @@
     "untitled": "Sem título",
     "name": "Nome",
     "yourName": "Seu nome",
-    "madeWithExcalidraw": "Feito com Excalidraw",
+    "madeWithExcalidraw": "Feito com Doodly",
     "group": "Agrupar seleção",
     "ungroup": "Desagrupar seleção",
     "collaborators": "Colaboradores",
@@ -116,7 +116,6 @@
     "addToLibrary": "Adicionar à biblioteca",
     "removeFromLibrary": "Remover da biblioteca",
     "libraryLoadingMessage": "Carregando biblioteca…",
-    "libraries": "Procurar bibliotecas",
     "loadingScene": "Carregando cena…",
     "loadScene": "Carregar cenário de arquivo",
     "align": "Alinhamento",
@@ -138,7 +137,7 @@
     "toggleTheme": "Alternar tema claro/escuro",
     "theme": "Tema",
     "personalLib": "Biblioteca Pessoal",
-    "excalidrawLib": "Biblioteca do Excalidraw",
+    "excalidrawLib": "Biblioteca do Doodly",
     "decreaseFontSize": "Diminuir o tamanho da fonte",
     "increaseFontSize": "Aumentar o tamanho da fonte",
     "unbindText": "Desvincular texto",
@@ -168,19 +167,16 @@
       "lockAll": "Bloquear tudo",
       "unlockAll": "Desbloquear tudo"
     },
-    "statusPublished": "Publicado",
     "sidebarLock": "Manter barra lateral aberta",
     "selectAllElementsInFrame": "Selecionar todos os elementos no quadro",
     "removeAllElementsFromFrame": "Remover todos os elementos do quadro",
     "eyeDropper": "Escolher cor da tela",
     "textToDiagram": "Texto para diagrama",
     "prompt": "Prompt",
-    "followUs": "Siga-nos",
-    "discordChat": "Discord",
     "zoomToFitViewport": "Zoom para caber na tela",
     "zoomToFitSelection": "Ampliar para ajustar a seleção",
     "zoomToFit": "Ampliar para encaixar todos os elementos",
-    "installPWA": "Instalar excalidraw localmente (PWA)",
+    "installPWA": "Instalar doodly localmente (PWA)",
     "autoResize": "Habilitar redimensionamento automático de texto",
     "imageCropping": "Recorte de imagem",
     "unCroppedDimension": "Dimensão sem recortes",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "Encaixar em objetos",
     "exitZenMode": "Sair do modo zen",
     "cancel": "Cancelar",
-    "saveLibNames": "Salvar nome(s) e sair",
     "clear": "Limpar",
     "remove": "Remover",
     "embed": "Alternar incorporação",
-    "publishLibrary": "Renomear ou publicar",
     "submit": "Enviar",
     "confirm": "Confirmar",
     "embeddableInteractionButton": "Clique para interagir"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Não é possível exportar uma tela vazia.",
     "couldNotCopyToClipboard": "Não foi possível copiar para a área de transferência.",
     "decryptFailed": "Não foi possível descriptografar os dados.",
-    "uploadedSecurly": "O upload foi protegido com criptografia de ponta a ponta, o que significa que o servidor do Excalidraw e terceiros não podem ler o conteúdo.",
+    "uploadedSecurly": "O upload foi protegido com criptografia de ponta a ponta, o que significa que o servidor do Doodly e terceiros não podem ler o conteúdo.",
     "loadSceneOverridePrompt": "Carregar um desenho externo substituirá o seu conteúdo existente. Deseja continuar?",
     "collabStopOverridePrompt": "Ao interromper a sessão, você substituirá seu desenho anterior, armazenado localmente. Você tem certeza?\n\n(Se você deseja manter seu desenho local, simplesmente feche a aba do navegador.)",
     "errorAddingToLibrary": "Não foi possível adicionar o item à biblioteca",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Isso adicionará {{numShapes}} forma(s) à sua biblioteca. Tem certeza?",
     "imageDoesNotContainScene": "Esta imagem parece não conter dados de cenas. Você ativou a incorporação da cena durante a exportação?",
     "cannotRestoreFromImage": "Não foi possível restaurar a cena deste arquivo de imagem",
-    "invalidSceneUrl": "Não foi possível importar a cena da URL fornecida. Ela está incompleta ou não contém dados JSON válidos do Excalidraw.",
+    "invalidSceneUrl": "Não foi possível importar a cena da URL fornecida. Ela está incompleta ou não contém dados JSON válidos do Doodly.",
     "resetLibrary": "Isto limpará a sua biblioteca. Você tem certeza?",
     "removeItemsFromsLibrary": "Excluir {{count}} item(ns) da biblioteca?",
     "invalidEncryptionKey": "A chave de encriptação deve ter 22 caracteres. A colaboração ao vivo está desabilitada.",
@@ -338,7 +332,7 @@
     "bucketfill": "",
     "hand": "Mão (ferramenta de rolagem)",
     "extraTools": "Mais ferramentas",
-    "mermaidToExcalidraw": "Mermaid para Excalidraw",
+    "mermaidToExcalidraw": "Mermaid para Doodly",
     "convertElementType": "Alternar tipo de forma"
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Se recarregar a página não funcionar, tente <button>limpando a tela.</button>",
     "clearCanvasCaveat": " Isso resultará em perda de trabalho ",
     "trackedToSentry": "O erro com o identificador {{eventId}} foi rastreado no nosso sistema.",
-    "openIssueMessage": "Fomos muito cautelosos para não incluir suas informações de cena no erro. Se sua cena não for privada, por favor, considere seguir nosso <button>rastreador de bugs.</button> Por favor, inclua informações abaixo, copiando e colando para a issue do GitHub.",
     "sceneContent": "Conteúdo da cena:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "A sessão de colaboração ao vivo está agora em andamento.",
     "desc_shareLink": "Compartilhe este link com qualquer pessoa com quem você queira colaborar:",
     "desc_exitSession": "Interrompendo a sessão você irá se desconectar da sala, mas você poderá continuar trabalhando com a cena localmente. Observe que isso não afetará outras pessoas, e elas ainda poderão colaborar em suas versões.",
-    "shareTitle": "Participe de uma sessão ao vivo de colaboração no Excalidraw"
+    "shareTitle": "Participe de uma sessão ao vivo de colaboração no Doodly"
   },
   "errorDialog": {
     "title": "Erro"
@@ -437,10 +430,7 @@
     "disk_button": "Salvar em um arquivo",
     "link_title": "Link compartilhável",
     "link_details": "Exportar como link de somente leitura.",
-    "link_button": "Exportar link",
-    "excalidrawplus_description": "Salvar a cena na sua área de trabalho Excalidraw+.",
-    "excalidrawplus_button": "Exportar",
-    "excalidrawplus_exportError": "Não é possível exportar para o Excalidraw+ neste momento..."
+    "link_button": "Exportar link"
   },
   "helpDialog": {
     "blog": "Leia o nosso blog",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Limpar a tela"
   },
-  "publishDialog": {
-    "title": "Publicar biblioteca",
-    "itemName": "Nome do item",
-    "authorName": "Nome do autor",
-    "githubUsername": "Nome de usuário do GitHub",
-    "twitterUsername": "Nome de usuário do Twitter",
-    "libraryName": "Nome da Biblioteca",
-    "libraryDesc": "Descrição da biblioteca",
-    "website": "Site",
-    "placeholder": {
-      "authorName": "Seu nome ou nome de usuário",
-      "libraryName": "Nome da sua biblioteca",
-      "libraryDesc": "Descrição para ajudar as pessoas a entenderem o uso da sua biblioteca",
-      "githubHandle": "Identificador do GitHub (opcional), para que você possa editar a biblioteca depois de enviar para revisão",
-      "twitterHandle": "Nome de usuário do Twitter (opcional), para que saibamos quem deve ser creditado se promovermos no Twitter",
-      "website": "Link para o seu site pessoal ou outro lugar (opcional)"
-    },
-    "errors": {
-      "required": "Obrigatório",
-      "website": "Informe uma URL válida"
-    },
-    "noteDescription": "Envie sua biblioteca para ser incluída no <link>repositório de biblioteca pública</link>para outras pessoas usarem em seus desenhos.",
-    "noteGuidelines": "A biblioteca precisa ser aprovada manualmente primeiro. Por favor, leia o <link>orientações</link> antes de enviar. Você precisará de uma conta do GitHub para se comunicar e fazer alterações quando solicitado, mas não é estritamente necessário.",
-    "noteLicense": "Ao enviar, você concorda que a biblioteca será publicada sob a <link>Licença MIT, </link>o que, em suma, significa que qualquer pessoa pode utilizá-los sem restrições.",
-    "noteItems": "Cada item da biblioteca deve ter seu próprio nome para que seja filtrável. Os seguintes itens da biblioteca serão incluídos:",
-    "atleastOneLibItem": "Por favor, selecione pelo menos um item da biblioteca para começar",
-    "republishWarning": "Nota: alguns dos itens selecionados estão marcados como já publicado/enviado. Você só deve reenviar itens ao atualizar uma biblioteca existente ou submissão."
-  },
-  "publishSuccessDialog": {
-    "title": "Biblioteca enviada",
-    "content": "Obrigado {{authorName}}. Sua biblioteca foi enviada para análise. Você pode acompanhar o status <link>aqui</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Redefinir biblioteca",
     "removeItemsFromLib": "Remover itens selecionados da biblioteca"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Copiar para a área de transferência"
     }
   },
-  "encrypted": {
-    "tooltip": "Seus desenhos são criptografados de ponta a ponta, então os servidores do Excalidraw nunca os verão.",
-    "link": "Publicação de blog com criptografia de ponta a ponta no Excalidraw"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Ângulo",
     "shapes": "Formas",
@@ -596,7 +551,7 @@
       "center_heading": "Seus desenhos estão salvos no armazenamento do seu navegador.",
       "center_heading_line2": "O armazenamento do navegador pode ser apagado inesperadamente.",
       "center_heading_line3": "Salve seu trabalho em um arquivo regularmente para evitar perdê-lo.",
-      "center_heading_plus": "Você queria ir para o Excalidraw+ em vez disso?",
+      "center_heading_plus": "Você queria ir para o Doodly em vez disso?",
       "menuHint": "Exportar, preferências, idiomas..."
     },
     "defaults": {
@@ -629,11 +584,6 @@
         "title": "Salvar no computador",
         "button": "Salvar no computador",
         "description": "Exportar os dados da cena para um arquivo que você poderá importar mais tarde."
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Exportar para Excalidraw+",
-        "description": "Salvar a cena na sua área de trabalho Excalidraw+."
       }
     },
     "modal": {
@@ -650,9 +600,9 @@
     }
   },
   "mermaid": {
-    "title": "Mermaid para Excalidraw",
+    "title": "Mermaid para Doodly",
     "button": "Inserir",
-    "description": "Atualmente, apenas <flowchartLink>fluxogramas</flowchartLink>, <sequenceLink>sequências</sequenceLink>, <classLink>classes</classLink> e <erdLink>diagramas de relacionamento de entidades</erdLink> são suportados. Outros tipos serão mostrados como imagens no Excalidraw.",
+    "description": "Atualmente, apenas <flowchartLink>fluxogramas</flowchartLink>, <sequenceLink>sequências</sequenceLink>, <classLink>classes</classLink> e <erdLink>diagramas de relacionamento de entidades</erdLink> são suportados. Outros tipos serão mostrados como imagens no Doodly.",
     "syntax": "Sintaxe em Mermaid",
     "preview": "Visualizar",
     "label": "Mermaid",
@@ -699,11 +649,10 @@
       "mermaidParseError": "Erro de sintaxe Mermaid"
     },
     "rateLimit": {
-      "messageLimit": "Você atingiu o limite de IA no plano gratuito. Experimente o Excalidraw+ para mais ou tente novamente amanhã.",
+      "messageLimit": "Você atingiu o limite de IA no plano gratuito. Experimente o Doodly para mais ou tente novamente amanhã.",
       "generalRateLimit": "Vai com calma, colega! Espere um momento antes de tentar novamente.",
       "messageLimitInputPlaceholder": "Você atingiu seu limite de mensagens"
-    },
-    "upsellBtnLabel": "Atualize para o Plus"
+    }
   },
   "quickSearch": {
     "placeholder": "Busca rápida"

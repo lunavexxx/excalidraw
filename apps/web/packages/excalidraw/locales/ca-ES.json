@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "Fletxa de colzes",
     "fontSize": "Mida de lletra",
     "fontFamily": "Tipus de lletra",
-    "addWatermark": "Afegeix-hi «Fet amb Excalidraw»",
+    "addWatermark": "Afegeix-hi «Fet amb Doodly»",
     "handDrawn": "Dibuixat a mà",
     "normal": "Normal",
     "code": "Codi",
@@ -107,7 +107,7 @@
     "untitled": "Sense títol",
     "name": "Nom",
     "yourName": "El vostre nom",
-    "madeWithExcalidraw": "Fet amb Excalidraw",
+    "madeWithExcalidraw": "Fet amb Doodly",
     "group": "Agrupa la selecció",
     "ungroup": "Desagrupa la selecció",
     "collaborators": "Col·laboradors",
@@ -116,7 +116,6 @@
     "addToLibrary": "Afegir a la biblioteca",
     "removeFromLibrary": "Eliminar de la biblioteca",
     "libraryLoadingMessage": "S'està carregant la biblioteca…",
-    "libraries": "Explora les biblioteques",
     "loadingScene": "S'està carregant l'escena…",
     "loadScene": "Carrega una escena des d'un fitxer",
     "align": "Alinea",
@@ -138,7 +137,7 @@
     "toggleTheme": "Alternar tema clar i fosc",
     "theme": "Tema",
     "personalLib": "Biblioteca personal",
-    "excalidrawLib": "Biblioteca d'Excalidraw",
+    "excalidrawLib": "Biblioteca d'Doodly",
     "decreaseFontSize": "Redueix la mida de la lletra",
     "increaseFontSize": "Augmenta la mida de la lletra",
     "unbindText": "Desvincular el text",
@@ -168,19 +167,16 @@
       "lockAll": "Bloca-ho tot",
       "unlockAll": "Desbloca-ho tot"
     },
-    "statusPublished": "Publicat",
     "sidebarLock": "Manté la barra lateral oberta",
     "selectAllElementsInFrame": "Selecciona tots els elements del marc",
     "removeAllElementsFromFrame": "Elimina tots els elements del marc",
     "eyeDropper": "Tria un color del llenç",
     "textToDiagram": "Text a diagrama",
     "prompt": "Prompt",
-    "followUs": "Seguiu-nos",
-    "discordChat": "Xat de Discord",
     "zoomToFitViewport": "Amplia per adaptar-se a la finestra",
     "zoomToFitSelection": "Zoom per veure la selecció",
     "zoomToFit": "Zoom per veure tots els elements",
-    "installPWA": "Instal·la Excalidraw localment (PWA)",
+    "installPWA": "Instal·la Doodly localment (PWA)",
     "autoResize": "Activa la redimensió de text automàtica",
     "imageCropping": "Retallar la imatge",
     "unCroppedDimension": "Dimensió sense retallar",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "Ajusta als objectes",
     "exitZenMode": "Surt de mode zen",
     "cancel": "Cancel·la",
-    "saveLibNames": "",
     "clear": "Neteja",
     "remove": "Suprimeix",
     "embed": "Commuta incrustació",
-    "publishLibrary": "",
     "submit": "Envia",
     "confirm": "Confirma",
     "embeddableInteractionButton": "Feu clic per interactuar"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "No es pot exportar un llenç buit.",
     "couldNotCopyToClipboard": "No s'ha pogut copiar al porta-retalls.",
     "decryptFailed": "No s'ha pogut desencriptar.",
-    "uploadedSecurly": "La càrrega s'ha assegurat amb xifratge punta a punta, cosa que significa que el servidor Excalidraw i tercers no poden llegir el contingut.",
+    "uploadedSecurly": "La càrrega s'ha assegurat amb xifratge punta a punta, cosa que significa que el servidor Doodly i tercers no poden llegir el contingut.",
     "loadSceneOverridePrompt": "Si carregas aquest dibuix extern, substituirá el que tens. Vols continuar?",
     "collabStopOverridePrompt": "Aturar la sessió provocarà la sobreescriptura del dibuix previ, que hi ha desat en l'emmagatzematge local. N'esteu segur?\n\n(Si voleu conservar el dibuix local, tanqueu la pentanya del navegador en comptes d'aturar la sessió).",
     "errorAddingToLibrary": "No s'ha pogut afegir l'element a la biblioteca",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Això afegirà {{numShapes}} forma(es) a la vostra biblioteca. Estàs segur?",
     "imageDoesNotContainScene": "Aquesta imatge no sembla contenir cap dada d'escena. Heu activat l'incrustació de l'escena durant l'exportació?",
     "cannotRestoreFromImage": "L’escena no s’ha pogut restaurar des d’aquest fitxer d’imatge",
-    "invalidSceneUrl": "No s'ha pogut importar l'escena des de l'adreça URL proporcionada. Està malformada o no conté dades Excalidraw JSON vàlides.",
+    "invalidSceneUrl": "No s'ha pogut importar l'escena des de l'adreça URL proporcionada. Està malformada o no conté dades Doodly JSON vàlides.",
     "resetLibrary": "Això buidarà la biblioteca. N'esteu segur?",
     "removeItemsFromsLibrary": "Suprimir {{count}} element(s) de la biblioteca?",
     "invalidEncryptionKey": "La clau d'encriptació ha de tenir 22 caràcters. La col·laboració en directe està desactivada.",
@@ -338,7 +332,7 @@
     "bucketfill": "",
     "hand": "Mà (eina de desplaçament)",
     "extraTools": "Més eines",
-    "mermaidToExcalidraw": "Mermaid a Excalidraw",
+    "mermaidToExcalidraw": "Mermaid a Doodly",
     "convertElementType": ""
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Si la recàrrega no funciona, proveu <button>esborrar el llenç.</button>",
     "clearCanvasCaveat": " Això resultarà en la pèrdua de feina ",
     "trackedToSentry": "L'error amb l'identificador {{eventId}} s'ha rastrejat en el nostre sistema.",
-    "openIssueMessage": "Anàvem amb molta cura de no incloure la informació de la vostra escena en l'error. Si l'escena no és privada, podeu fer-ne el seguiment al nostre <button>rastrejador d'errors.</button> Incloeu la informació a continuació copiant i enganxant a GitHub Issues.",
     "sceneContent": "Contingut de l'escena:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "La sessió de col·laboració en directe està en marxa.",
     "desc_shareLink": "Comparteix aquest enllaç amb qualsevol persona amb qui vulgueu col·laborar:",
     "desc_exitSession": "Si atureu la sessió, us desconectareu de la sala, però podreu continuar treballant amb el dibuix localment. Tingues en compte que això no afectarà a altres persones, i encara podran col·laborar en la seva versió.",
-    "shareTitle": "Uniu-vos a una sessió de col·laboració en directe a Excalidraw"
+    "shareTitle": "Uniu-vos a una sessió de col·laboració en directe a Doodly"
   },
   "errorDialog": {
     "title": "Error"
@@ -437,10 +430,7 @@
     "disk_button": "Desa en un fitxer",
     "link_title": "Enllaç per a compartir",
     "link_details": "Exporta com a un enllaç de només lectura.",
-    "link_button": "Exporta a un enllaç",
-    "excalidrawplus_description": "Desa l'escena en el vostre espai de treball Excalidraw+.",
-    "excalidrawplus_button": "Exporta",
-    "excalidrawplus_exportError": "No és possible exportar a Excalidraw+ ara mateix..."
+    "link_button": "Exporta a un enllaç"
   },
   "helpDialog": {
     "blog": "Llegiu el nostre blog",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Neteja el llenç"
   },
-  "publishDialog": {
-    "title": "Publica la biblioteca",
-    "itemName": "Nom de l'element",
-    "authorName": "Nom de l'autor/a",
-    "githubUsername": "Nom d'usuari de GitHub",
-    "twitterUsername": "Nom d'usuari de Twitter",
-    "libraryName": "Nom de la biblioteca",
-    "libraryDesc": "Descripció de la biblioteca",
-    "website": "Lloc web",
-    "placeholder": {
-      "authorName": "Nom o usuari",
-      "libraryName": "Nom de la vostra biblioteca",
-      "libraryDesc": "Descripció de la biblioteca per a ajudar a la gent a entendre'n el funcionament",
-      "githubHandle": "Identificador de GitHub (opcional), per tal que pugueu editar la biblioteca una vegada enviada per a ser revisada",
-      "twitterHandle": "Usuari de twitter (opcional), per tal que puguem donar-vos crèdit quan fem la promoció a Twitter",
-      "website": "Enllaç al vostre lloc web personal o a qualsevol altre (opcional)"
-    },
-    "errors": {
-      "required": "Requerit",
-      "website": "Introduïu una URL vàlida"
-    },
-    "noteDescription": "Envieu la vostra biblioteca perquè sigui inclosa al <link>repositori públic</link>per tal que altres persones puguin fer-ne ús en els seus dibuixos.",
-    "noteGuidelines": "La biblioteca ha de ser aprovada manualment. Si us plau, llegiu les <link>directrius</link> abans d'enviar-hi res. Necessitareu un compte de GitHub per a comunicar i fer-hi canvis si cal, però no és requisit imprescindible.",
-    "noteLicense": "Quan l'envieu, accepteu que la biblioteca sigui publicada sota la <link>llicència MIT, </link>que, en resum, vol dir que qualsevol persona pot fer-ne ús sense restriccions.",
-    "noteItems": "Cada element de la biblioteca ha de tenir el seu propi nom per tal que sigui filtrable. S'hi inclouran els elements següents:",
-    "atleastOneLibItem": "Si us plau, seleccioneu si més no un element de la biblioteca per a començar",
-    "republishWarning": "Nota: alguns dels elements seleccionats s'han marcat com a publicats/enviats. Només hauríeu de reenviar elements quan actualitzeu una biblioteca existent."
-  },
-  "publishSuccessDialog": {
-    "title": "Biblioteca enviada",
-    "content": "Gràcies, {{authorName}}. La vostra biblioteca ha estat enviada per a ser revisada. Podeu comprovar-ne l'estat<link>aquí</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Restableix la biblioteca",
     "removeItemsFromLib": "Suprimeix els elements seleccionats de la llibreria"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Copieu al porta-retalls"
     }
   },
-  "encrypted": {
-    "tooltip": "Els vostres dibuixos estan xifrats de punta a punta de manera que els servidors d’Excalidraw no els veuran mai.",
-    "link": "Article del blog sobre encriptació d'extrem a extrem a Excalidraw"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Angle",
     "shapes": "Formes",
@@ -596,7 +551,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Vols anar a Excalidraw+ en comptes?",
+      "center_heading_plus": "Vols anar a Doodly en comptes?",
       "menuHint": "Exportar, preferències, llenguatges..."
     },
     "defaults": {
@@ -629,11 +584,6 @@
         "title": "Deseu al disc",
         "button": "Deseu al disc",
         "description": "Exporta les dades de l'escena a un fitxer des del qual podràs importar-les més tard."
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Exporta a Excalidraw+",
-        "description": "Desa l'escena al teu espai de treball d'Excalidraw+."
       }
     },
     "modal": {
@@ -650,7 +600,7 @@
     }
   },
   "mermaid": {
-    "title": "Mermaid a Excalidraw",
+    "title": "Mermaid a Doodly",
     "button": "Inseriu",
     "description": "",
     "syntax": "Sintaxi de Mermaid",
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": "Cerca ràpida"

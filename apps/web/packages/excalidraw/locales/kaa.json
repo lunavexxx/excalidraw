@@ -107,7 +107,7 @@
     "untitled": "Atamasız",
     "name": "Ataması",
     "yourName": "Atıńız",
-    "madeWithExcalidraw": "Excalidraw járdeminde islengen",
+    "madeWithExcalidraw": "Doodly járdeminde islengen",
     "group": "",
     "ungroup": "",
     "collaborators": "Qatnasıwshılar",
@@ -116,7 +116,6 @@
     "addToLibrary": "Kitapxanaǵa qosıw",
     "removeFromLibrary": "Kitapxanadan alıp taslaw",
     "libraryLoadingMessage": "Kitapxana júklenbekte…",
-    "libraries": "Kitapxanalardı kóriw",
     "loadingScene": "Saxna júklenbekte…",
     "loadScene": "",
     "align": "",
@@ -138,7 +137,7 @@
     "toggleTheme": "",
     "theme": "",
     "personalLib": "Jeke kitapxana",
-    "excalidrawLib": "Excalidraw kitapxanası",
+    "excalidrawLib": "Doodly kitapxanası",
     "decreaseFontSize": "Shrift ólshemin kishireytiw",
     "increaseFontSize": "Shrift ólshemin úlkeytiw",
     "unbindText": "",
@@ -168,15 +167,12 @@
       "lockAll": "Barlıǵın qulıplaw",
       "unlockAll": "Barlıǵın qulıptan shıǵarıw"
     },
-    "statusPublished": "",
     "sidebarLock": "",
     "selectAllElementsInFrame": "",
     "removeAllElementsFromFrame": "",
     "eyeDropper": "",
     "textToDiagram": "",
     "prompt": "",
-    "followUs": "",
-    "discordChat": "",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "",
     "exitZenMode": "",
     "cancel": "Biykarlaw",
-    "saveLibNames": "",
     "clear": "Tazalaw",
     "remove": "Óshiriw",
     "embed": "",
-    "publishLibrary": "",
     "submit": "Jiberiw",
     "confirm": "Tastıyıqlaw",
     "embeddableInteractionButton": ""
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "",
     "clearCanvasCaveat": "",
     "trackedToSentry": "",
-    "openIssueMessage": "",
     "sceneContent": ""
   },
   "shareDialog": {
@@ -437,10 +430,7 @@
     "disk_button": "Faylǵa saqlaw",
     "link_title": "",
     "link_details": "",
-    "link_button": "Siltemege eksportlaw",
-    "excalidrawplus_description": "",
-    "excalidrawplus_button": "Eksportlaw",
-    "excalidrawplus_exportError": ""
+    "link_button": "Siltemege eksportlaw"
   },
   "helpDialog": {
     "blog": "Biziń blogtı oqıń",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": ""
   },
-  "publishDialog": {
-    "title": "",
-    "itemName": "",
-    "authorName": "Avtor atı",
-    "githubUsername": "GitHub paydalanıwshı atı",
-    "twitterUsername": "Twitter paydalanıwshı atı",
-    "libraryName": "Kitapxana ataması",
-    "libraryDesc": "",
-    "website": "Veb-sayt",
-    "placeholder": {
-      "authorName": "Atıńız yamasa paydalanıwshı atı",
-      "libraryName": "",
-      "libraryDesc": "",
-      "githubHandle": "",
-      "twitterHandle": "",
-      "website": ""
-    },
-    "errors": {
-      "required": "",
-      "website": ""
-    },
-    "noteDescription": "",
-    "noteGuidelines": "",
-    "noteLicense": "",
-    "noteItems": "",
-    "atleastOneLibItem": "",
-    "republishWarning": ""
-  },
-  "publishSuccessDialog": {
-    "title": "",
-    "content": ""
-  },
   "confirmDialog": {
     "resetLibrary": "Kitapxananı qayta ornatıw",
     "removeItemsFromLib": ""
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Almasıw buferine kóshirip alıw"
     }
   },
-  "encrypted": {
-    "tooltip": "",
-    "link": ""
-  },
+  "encrypted": {},
   "stats": {
     "angle": "",
     "shapes": "",
@@ -629,11 +584,6 @@
         "title": "Diskke saqlaw",
         "button": "Diskke saqlaw",
         "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "",
-        "button": "",
-        "description": ""
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

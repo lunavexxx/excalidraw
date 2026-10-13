@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "",
     "fontSize": "Skriftstorleik",
     "fontFamily": "Skrifttype",
-    "addWatermark": "Legg til «Laga med Excalidraw»",
+    "addWatermark": "Legg til «Laga med Doodly»",
     "handDrawn": "Handteikna",
     "normal": "",
     "code": "Kode",
@@ -107,7 +107,7 @@
     "untitled": "Utan namn",
     "name": "Namn",
     "yourName": "Namnet ditt",
-    "madeWithExcalidraw": "Laga med Excalidraw",
+    "madeWithExcalidraw": "Laga med Doodly",
     "group": "Grupper utval",
     "ungroup": "Avgrupper utval",
     "collaborators": "Samarbeidarar",
@@ -116,7 +116,6 @@
     "addToLibrary": "Legg til i bibliotek",
     "removeFromLibrary": "Fjern frå bibliotek",
     "libraryLoadingMessage": "Laster bibliotek…",
-    "libraries": "Blad gjennom bibliotek",
     "loadingScene": "Laster scene…",
     "loadScene": "",
     "align": "Juster",
@@ -138,7 +137,7 @@
     "toggleTheme": "",
     "theme": "",
     "personalLib": "Personleg bibliotek",
-    "excalidrawLib": "Excalidraw-bibliotek",
+    "excalidrawLib": "Doodly-bibliotek",
     "decreaseFontSize": "Gjer skriftstorleik mindre",
     "increaseFontSize": "Gjer skriftstorleik større",
     "unbindText": "Avbind tekst",
@@ -168,15 +167,12 @@
       "lockAll": "",
       "unlockAll": ""
     },
-    "statusPublished": "",
     "sidebarLock": "",
     "selectAllElementsInFrame": "",
     "removeAllElementsFromFrame": "",
     "eyeDropper": "",
     "textToDiagram": "",
     "prompt": "",
-    "followUs": "Følg oss",
-    "discordChat": "Discord chat",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "",
     "exitZenMode": "Avslutt zen-modus",
     "cancel": "Avbryt",
-    "saveLibNames": "",
     "clear": "Tøm",
     "remove": "Fjern",
     "embed": "",
-    "publishLibrary": "",
     "submit": "Send inn",
     "confirm": "Stadfest",
     "embeddableInteractionButton": ""
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Kan ikkje eksportere eit tomt lerret.",
     "couldNotCopyToClipboard": "",
     "decryptFailed": "Kunne ikkje dekryptere data.",
-    "uploadedSecurly": "Opplastinga er kryptert og er ikkje mogleg å lese av Excalidraw-serveren eller tredjepartar.",
+    "uploadedSecurly": "Opplastinga er kryptert og er ikkje mogleg å lese av Doodly-serveren eller tredjepartar.",
     "loadSceneOverridePrompt": "Innlasting av ekstern teikning erstattar ditt eksisterande innhald. Ynskjer du å fortsette?",
     "collabStopOverridePrompt": "Viss du avsluttar økta overskriv du den førre, lokalt lagra teikninga di. Er du sikker?\n\n(Ønsker du å halde fram med denne? Då er det berre å lukke denne fana.)",
     "errorAddingToLibrary": "Kunne ikkje legge elementet i biblioteket",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Dette vil legge til {{numShapes}} form(er) i biblioteket ditt. Er du sikker?",
     "imageDoesNotContainScene": "Dette biletet ser ikkje ut til å ha noko scenedata. Har du skrutt på innbygging av scene medan eksporteringa heldt på?",
     "cannotRestoreFromImage": "Scena kunne ikkje gjenopprettast frå denne biletfila",
-    "invalidSceneUrl": "Kunne ikkje hente noko scene frå den URL-en. Ho er anten øydelagd eller inneheld ikkje gyldig Excalidraw JSON-data.",
+    "invalidSceneUrl": "Kunne ikkje hente noko scene frå den URL-en. Ho er anten øydelagd eller inneheld ikkje gyldig Doodly JSON-data.",
     "resetLibrary": "Dette vil fjerne alt innhald frå biblioteket. Er du sikker?",
     "removeItemsFromsLibrary": "Slette {{count}} element frå biblioteket?",
     "invalidEncryptionKey": "Krypteringsnøkkelen må ha 22 teikn. Sanntidssamarbeid er deaktivert.",
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Om ny sidelasting ikkje fungerer, prøv <button>å tømme lerretet.</button>",
     "clearCanvasCaveat": " Dette vil føre til tap av arbeid ",
     "trackedToSentry": "Feilen med identifikator {{eventId}} vart logga i systemet vårt.",
-    "openIssueMessage": "Vi er veldig nøye med å ikkje inkludere scene-opplysingane dine i feilmeldinga. Viss scena di ikkje er privat kan du vurdere å følge opp i <button>feilrapporteringssystemet vårt.</button> Ta med opplysingane nedanfor ved å kopiere og lime inn i GitHub-saka.",
     "sceneContent": "Scene-innhald:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "Sanntids-samarbeidsøkt er no i gang.",
     "desc_shareLink": "Del denne lenka med dei du vil samarbeide med:",
     "desc_exitSession": "Dersom du avsluttar økta blir du kopla frå rommet, men du kan halde fram med å arbeide med scena lokalt. Ver merksam på at dette ikkje vil påverke andre personar, og desse vil framleis ha moglegheit til å samarbeide på deira eigen versjon.",
-    "shareTitle": "Bli med på eit sanntidssamarbeid på Excalidraw"
+    "shareTitle": "Bli med på eit sanntidssamarbeid på Doodly"
   },
   "errorDialog": {
     "title": "Feil"
@@ -437,10 +430,7 @@
     "disk_button": "Lagre til fil",
     "link_title": "Deleleg lenke",
     "link_details": "Eksporter som skrivebeskytta lenke.",
-    "link_button": "Eksporter til lenke",
-    "excalidrawplus_description": "Lagre scena til Excalidraw+-arbeidsområdet ditt.",
-    "excalidrawplus_button": "Eksporter",
-    "excalidrawplus_exportError": "Kunne ikkje eksportere til Excalidraw+ akkurat no..."
+    "link_button": "Eksporter til lenke"
   },
   "helpDialog": {
     "blog": "Les bloggen vår",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Tøm lerretet"
   },
-  "publishDialog": {
-    "title": "Publiser bibliotek",
-    "itemName": "Elementnamn",
-    "authorName": "Eigaren sitt namn",
-    "githubUsername": "GitHub-brukarnamn",
-    "twitterUsername": "Twitter-brukarnamn",
-    "libraryName": "Biblioteknamn",
-    "libraryDesc": "Bibliotekskildring",
-    "website": "Nettstad",
-    "placeholder": {
-      "authorName": "Namnet eller brukarnamnet ditt",
-      "libraryName": "Namnet på biblioteket ditt",
-      "libraryDesc": "Skildring av biblioteket ditt sånn at andre forstår bruken av det",
-      "githubHandle": "GitHub-brukarnamn (valfritt), slik at du kan redigere bibiloteket når det er sendt inn til vurdering",
-      "twitterHandle": "Twitter-brukarnamn (valfritt), så vi veit kven vi skal kreditere på Twitter",
-      "website": "Lenke til den personlege nettstaden din eller ein anna stad (valfritt)"
-    },
-    "errors": {
-      "required": "Kravt",
-      "website": "Fyll inn ein gyldig URL"
-    },
-    "noteDescription": "Send inn biblioteket ditt til inkludering i <link>den offentlege bibliotek-kjeldekoda</link>slik at andre kan bruke det i teikningane deira.",
-    "noteGuidelines": "Biblioteket må godkjennast manuelt fyrst. Ver vennleg å lese <link>retningslinjene</link> før du sender inn. Du kjem til å trenge ein GitHub-konto for å kommunisere og gjere endringar dersom kravt, men det er ikkje strengt naudsynt.",
-    "noteLicense": "Ved å sende inn godkjenner du at biblioteket vert publisert under <link>MIT-lisensen, </link>som kort sagt betyr at kven som helst kan bruke det utan avgrensingar.",
-    "noteItems": "Kvart bibliotekselement må ha eit eige namn, slik at det er mogleg å filtrere. Dei følgande bibliotekselementa blir inkludert:",
-    "atleastOneLibItem": "Ver vennleg å markere minst eitt bibliotekselement for å starte",
-    "republishWarning": ""
-  },
-  "publishSuccessDialog": {
-    "title": "Bibliotek innsendt",
-    "content": "Tusen takk {{authorName}}! Biblioteket ditt har blitt sendt inn til gjennomgang. Du kan halde styr på status<link>her</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Tilbakestill bibliotek",
     "removeItemsFromLib": "Fjern valde element frå biblioteket"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": ""
     }
   },
-  "encrypted": {
-    "tooltip": "Teikningane dine er ende-til-ende-krypterte slik at Excalidraw sine serverar aldri får sjå dei.",
-    "link": "Blogginnlegg om ende-til-ende-kryptering i Excalidraw"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Vinkel",
     "shapes": "",
@@ -629,11 +584,6 @@
         "title": "",
         "button": "",
         "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "",
-        "button": "",
-        "description": ""
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

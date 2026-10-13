@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "Прямокутна стрілка",
     "fontSize": "Розмір шрифту",
     "fontFamily": "Шрифт",
-    "addWatermark": "Додати \"Зроблено з Excalidraw\"",
+    "addWatermark": "Додати \"Зроблено з Doodly\"",
     "handDrawn": "Ручний апарат",
     "normal": "Звичайний",
     "code": "Код",
@@ -107,7 +107,7 @@
     "untitled": "Без назви",
     "name": "Ім’я",
     "yourName": "Ваше ім’я",
-    "madeWithExcalidraw": "Зроблено з Excalidraw",
+    "madeWithExcalidraw": "Зроблено з Doodly",
     "group": "Групувати виділене",
     "ungroup": "Розгрупувати виділене",
     "collaborators": "Співавтори",
@@ -116,7 +116,6 @@
     "addToLibrary": "Додати до бібліотеки",
     "removeFromLibrary": "Видалити з бібліотеки",
     "libraryLoadingMessage": "Завантаження бібліотеки…",
-    "libraries": "Всі бібліотеки",
     "loadingScene": "Завантаження сцени…",
     "loadScene": "Завантажити сцену з файлу",
     "align": "Вирівнювання",
@@ -138,7 +137,7 @@
     "toggleTheme": "Перемикати світлу/темну теми",
     "theme": "Тема",
     "personalLib": "Персональна бібліотека",
-    "excalidrawLib": "Бібліотека Excalidraw",
+    "excalidrawLib": "Бібліотека Doodly",
     "decreaseFontSize": "Зменшити розмір шрифту",
     "increaseFontSize": "Збільшити розмір шрифту",
     "unbindText": "Відв'язати текст",
@@ -168,19 +167,16 @@
       "lockAll": "Заблокувати все",
       "unlockAll": "Розблокувати все"
     },
-    "statusPublished": "Опубліковано",
     "sidebarLock": "Не закривати бокове меню",
     "selectAllElementsInFrame": "Обрати всі елементи у фреймі",
     "removeAllElementsFromFrame": "Видалити всі елементи з фрейму",
     "eyeDropper": "Вибрати колір з полотна",
     "textToDiagram": "Діаграма з тексту",
     "prompt": "Запит",
-    "followUs": "Підписатися",
-    "discordChat": "Чат в Discord",
     "zoomToFitViewport": "Збільшити до розміру перегляду",
     "zoomToFitSelection": "Збільшити, щоб відповідати виділенню",
     "zoomToFit": "Збільшити, щоб умістити всі елементи",
-    "installPWA": "Встановити Excalidraw локально (PWA)",
+    "installPWA": "Встановити Doodly локально (PWA)",
     "autoResize": "Увімкнути автоматичне змінення розміру тексту",
     "imageCropping": "Обрізка зображення",
     "unCroppedDimension": "Необрізаний розмір",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "Прив'язати до об'єктів",
     "exitZenMode": "Вийти з дзен-режиму",
     "cancel": "Скасувати",
-    "saveLibNames": "",
     "clear": "Очистити",
     "remove": "Видалити",
     "embed": "Перемкнути вкладення",
-    "publishLibrary": "Перейменувати або опублікувати",
     "submit": "Надіслати",
     "confirm": "Підтвердити",
     "embeddableInteractionButton": "Натисніть для взаємодії"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Не вийшло експортувати пусте полотно.",
     "couldNotCopyToClipboard": "Не вдалося скопіювати до буфера обміну.",
     "decryptFailed": "Не вдалося розшифрувати дані.",
-    "uploadedSecurly": "Це завантаження було захищене наскрізним шифруванням, а це означає що сервер Excalidraw та інші не зможуть прочитати вміст.",
+    "uploadedSecurly": "Це завантаження було захищене наскрізним шифруванням, а це означає що сервер Doodly та інші не зможуть прочитати вміст.",
     "loadSceneOverridePrompt": "Завантаження зовнішнього креслення замінить ваш наявний контент. Продовжити?",
     "collabStopOverridePrompt": "Зупинка сесії перезапише ваш попередній, локально збережений малюнок. Ви впевнені?\n\n(Якщо ви хочете зберегти локальний малюнок, просто закрийте замість нього вкладку браузера.)",
     "errorAddingToLibrary": "Не вдалося додати елемент до бібліотеки",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Це призведе до додавання {{numShapes}} фігур до вашої бібліотеки. Ви впевнені?",
     "imageDoesNotContainScene": "Виглядає ніби зображення не містить корисної інформації. Ви увімкнули вбудовування сцени при експорті?",
     "cannotRestoreFromImage": "Сцена не може бути відновлена з цього файлу зображення",
-    "invalidSceneUrl": "Не вдалося імпортувати сцену з наданого URL. Він або недоформований, або не містить дійсних даних Excalidraw JSON.",
+    "invalidSceneUrl": "Не вдалося імпортувати сцену з наданого URL. Він або недоформований, або не містить дійсних даних Doodly JSON.",
     "resetLibrary": "Це призведе до очищення бібліотеки. Ви впевнені?",
     "removeItemsFromsLibrary": "Видалити {{count}} елемент(ів) з бібліотеки?",
     "invalidEncryptionKey": "Ключ шифрування повинен бути довжиною до 22 символів. Спільну роботу вимкнено.",
@@ -338,7 +332,7 @@
     "bucketfill": "Заливка",
     "hand": "Рука (інструмент для панорамування)",
     "extraTools": "Інші інструменти",
-    "mermaidToExcalidraw": "Mermaid у Excalidraw",
+    "mermaidToExcalidraw": "Mermaid у Doodly",
     "convertElementType": ""
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Якщо перезавантаження не допоможе, спробуйте <button>очистити полотно.</button>",
     "clearCanvasCaveat": " Це призведе до втрати роботи ",
     "trackedToSentry": "Помилка з ідентифікатором {{eventId}} було відслідковано в нашій системі.",
-    "openIssueMessage": "Ми були дуже обережні, щоб не включати інформацію про ваші сцени в текст помилки. Якщо ваша сцена не була приватна, будь ласка, розгляньте можливість продовження на нашому <button>трекер помилок.</button> Будь ласка, додайте інформацію нижче, скопіюючи і вставляючи у GitHub issue.",
     "sceneContent": "Вміст сцени:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "Сесія спільної роботи над кресленням триває.",
     "desc_shareLink": "Поділіться цим посиланням з будь-ким для спільної роботи:",
     "desc_exitSession": "Зупинка сесії відключить вас від кімнати, але ви зможете продовжити роботу з полотном локально. Зверніть увагу, що це не вплине на інших людей, і вони все одно зможуть працювати над їх версією.",
-    "shareTitle": "Приєднатися до сеансу спільної роботи на Excalidraw"
+    "shareTitle": "Приєднатися до сеансу спільної роботи на Doodly"
   },
   "errorDialog": {
     "title": "Помилка"
@@ -437,10 +430,7 @@
     "disk_button": "Зберегти до файлу",
     "link_title": "Доступ за посиланням",
     "link_details": "Експортувати як посилання тільки для читання.",
-    "link_button": "Експортувати у посилання",
-    "excalidrawplus_description": "Збережіть сцену у вашому обліковому записі Excalidraw+.",
-    "excalidrawplus_button": "Експортувати",
-    "excalidrawplus_exportError": "Не вдалося експортувати у Excalidraw+..."
+    "link_button": "Експортувати у посилання"
   },
   "helpDialog": {
     "blog": "Наш блог",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Очистити полотно"
   },
-  "publishDialog": {
-    "title": "Опублікувати бібліотеку",
-    "itemName": "Назва елементу",
-    "authorName": "Ім'я автора",
-    "githubUsername": "Ім'я користувача Github",
-    "twitterUsername": "Ім'я користувача Twitter",
-    "libraryName": "Назва бібліотеки",
-    "libraryDesc": "Опис бібліотеки",
-    "website": "Вебсайт",
-    "placeholder": {
-      "authorName": "Ваше ім'я або ім'я користувача",
-      "libraryName": "Назва вашої бібліотеки",
-      "libraryDesc": "Опис вашої бібліотеки, щоб допомогти людям зрозуміти її використання",
-      "githubHandle": "Ім'я користувача в GitHub (необов'язково), щоб ви могли редагувати бібліотеку під час перевірки",
-      "twitterHandle": "Ім'я користувача у Twitter (необов'язково), щоб ми могли згадати вас під час промоції у Twitter",
-      "website": "Посилання на ваш особистий сайт або інший сайт (опціонально)"
-    },
-    "errors": {
-      "required": "Обов’язково",
-      "website": "Введіть дійсну URL-адресу"
-    },
-    "noteDescription": "Подати бібліотеку, щоб вона була включена до <link>публічного репозиторія бібліотек</link>для інших людей, для використання у їхніх полотнах.",
-    "noteGuidelines": "Спочатку бібліотека повинна бути підтверджена. Будь ласка, прочитайте <link>настанови</link> перед відправкою. Вам знадобиться обліковий запис на GitHub, щоб колаборувати та вносити зміни, але це не обов'язково.",
-    "noteLicense": "Публікуючи, ви погоджуєтеся, що бібліотека буде опублікована під <link>Ліцензія MIT, </link>, простими словами, це означає що нею зможе користуватися будь-хто без обмежень.",
-    "noteItems": "Кожен об'єкт в бібліотеці повинен мати назву, це потрібно для пошуку та фільтрування. Наступні об'єкти бібліотеки будуть включені:",
-    "atleastOneLibItem": "Будь ласка, виберіть принаймні один елемент бібліотеки, щоб почати",
-    "republishWarning": "Зауважте, деякі з вибраних елементів позначені як вже опубліковані/надіслані. Ви повинні повторно надсилати елементи тільки при оновленні вже опублікованої бібліотеки чи при публікації бібліотеки."
-  },
-  "publishSuccessDialog": {
-    "title": "Бібліотека відправлена",
-    "content": "Дякуємо, {{authorName}}. Ваша бібліотека була відправлена для розгляду. Ви можете відстежувати статус<link>тут</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Очистити бібліотеку",
     "removeItemsFromLib": "Видалити вибрані елементи з бібліотеки"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Копіювати в буфер обміну"
     }
   },
-  "encrypted": {
-    "tooltip": "Ваші креслення захищені наскрізним шифруванням — сервери Excalidraw ніколи їх не побачать.",
-    "link": "Допис у блозі на наскрізному шифруванні в Excalidraw"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Кут",
     "shapes": "Форми",
@@ -596,7 +551,7 @@
       "center_heading": "Ваші малюнки зберігаються у сховищі браузера.",
       "center_heading_line2": "Дані, збережені в браузері, можуть бути несподівано видалені.",
       "center_heading_line3": "Регулярно зберігайте свою роботу у файл, щоб не втратити її.",
-      "center_heading_plus": "Чи бажаєте перейти до Excalidraw+?",
+      "center_heading_plus": "Чи бажаєте перейти до Doodly?",
       "menuHint": "Експорт, налаштування, мови, ..."
     },
     "defaults": {
@@ -629,11 +584,6 @@
         "title": "Зберегти на диск",
         "button": "Зберегти на диск",
         "description": "Експорт даних сцени в файл, з якого можна імпортувати пізніше."
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Експортувати до Excalidraw+",
-        "description": "Зберегти сцену до робочого простору Excalidraw+."
       }
     },
     "modal": {
@@ -650,9 +600,9 @@
     }
   },
   "mermaid": {
-    "title": "Mermaid у Excalidraw",
+    "title": "Mermaid у Doodly",
     "button": "Вставити",
-    "description": "Наразі підтримуються лише діаграми типів <flowchartLink>Flowchart</flowchartLink>, <sequenceLink>Sequence</sequenceLink>, <classLink>Class</classLink> та <erdLink>Entity Relationship</erdLink>. Інші типи будуть показані в Excalidraw як зображення.",
+    "description": "Наразі підтримуються лише діаграми типів <flowchartLink>Flowchart</flowchartLink>, <sequenceLink>Sequence</sequenceLink>, <classLink>Class</classLink> та <erdLink>Entity Relationship</erdLink>. Інші типи будуть показані в Doodly як зображення.",
     "syntax": "Синтаксис Mermaid",
     "preview": "Попередній перегляд",
     "label": "Mermaid",
@@ -699,11 +649,10 @@
       "mermaidParseError": "Помилка синтаксису Mermaid"
     },
     "rateLimit": {
-      "messageLimit": "Ви вичерпали ліміт AI на безплатному плані. Спробуйте Excalidraw+ або поверніться завтра.",
+      "messageLimit": "Ви вичерпали ліміт AI на безплатному плані. Спробуйте Doodly або поверніться завтра.",
       "generalRateLimit": "Притримайте коней, ви надто поспішаєте! Зачекайте трохи, перш ніж спробувати ще раз.",
       "messageLimitInputPlaceholder": "Ви досягли вашого ліміту повідомлень"
-    },
-    "upsellBtnLabel": "Перейти на Plus"
+    }
   },
   "quickSearch": {
     "placeholder": "Швидкий пошук"

@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "",
     "fontSize": "Размер на шрифта",
     "fontFamily": "Семейство шрифтове",
-    "addWatermark": "Добави \"Направено с Excalidraw\"",
+    "addWatermark": "Добави \"Направено с Doodly\"",
     "handDrawn": "Нарисувано на ръка",
     "normal": "Нормален",
     "code": "Код",
@@ -107,7 +107,7 @@
     "untitled": "Неозаглавено",
     "name": "Име",
     "yourName": "Вашето име",
-    "madeWithExcalidraw": "Направено с Excalidraw",
+    "madeWithExcalidraw": "Направено с Doodly",
     "group": "Групирай селекцията",
     "ungroup": "Спри групирането на селекцията",
     "collaborators": "Сътрудници",
@@ -116,7 +116,6 @@
     "addToLibrary": "Добавяне към библиотеката",
     "removeFromLibrary": "Премахване от библиотеката",
     "libraryLoadingMessage": "Зареждане на библиотеката…",
-    "libraries": "Разглеждане на библиотеките",
     "loadingScene": "Зареждане на сцена…",
     "loadScene": "Зареди сцена от файл",
     "align": "Подравняване",
@@ -138,7 +137,7 @@
     "toggleTheme": "Превключване на светла/тъмна тема",
     "theme": "Тема",
     "personalLib": "Лична Библиотека",
-    "excalidrawLib": "Excalidraw Библиотека",
+    "excalidrawLib": "Doodly Библиотека",
     "decreaseFontSize": "Намали размера на шрифта",
     "increaseFontSize": "Увеличи размера на шрифта",
     "unbindText": "",
@@ -168,15 +167,12 @@
       "lockAll": "Заключи всички",
       "unlockAll": "Отключи всички"
     },
-    "statusPublished": "Публикувани",
     "sidebarLock": "",
     "selectAllElementsInFrame": "Избери всички елементи в рамка",
     "removeAllElementsFromFrame": "Премахни всички елементи от рамка",
     "eyeDropper": "Избери цвят от платното",
     "textToDiagram": "Текст към диаграма",
     "prompt": "",
-    "followUs": "Последвайте ни",
-    "discordChat": "Дискорд чат",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "Приближи селекцията",
     "zoomToFit": "Приближи всички елементи",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "Прилепване към обекти",
     "exitZenMode": "Спиране на режим Зен",
     "cancel": "Отмени",
-    "saveLibNames": "",
     "clear": "Изчисти",
     "remove": "Премахване",
     "embed": "Включи вмъкване",
-    "publishLibrary": "",
     "submit": "Изпрати",
     "confirm": "Потвърждаване",
     "embeddableInteractionButton": "Натисни, за да взаимодействаш"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Не може да се експортира празно платно.",
     "couldNotCopyToClipboard": "Не можем да копираме в клипбоарда.",
     "decryptFailed": "Данните не можаха да се дешифрират.",
-    "uploadedSecurly": "Качването е защитено с криптиране от край до край, което означава, че сървърът Excalidraw и трети страни не могат да четат съдържанието.",
+    "uploadedSecurly": "Качването е защитено с криптиране от край до край, което означава, че сървърът Doodly и трети страни не могат да четат съдържанието.",
     "loadSceneOverridePrompt": "Зареждането на външна рисунка ще презапише настоящото ви съдържание. Желаете ли да продължите?",
     "collabStopOverridePrompt": "Прекратяването на сесията ще презапише предишната, локално запазена, рисунка. Сигурни ли сте?\n\n(Ако искате да продължите с локалната рисунка, просто затворете таба на браузъра.)",
     "errorAddingToLibrary": "Не можем да заредим от библиотеката",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Ще се добавят {{numShapes}} фигура(и) във вашата библиотека. Сигурни ли сте?",
     "imageDoesNotContainScene": "Това изображение не изглежда да съдържа каквито и да е данни за сцена. Искате ли да включите вмъкване на сцени при изнасяне?",
     "cannotRestoreFromImage": "Не може да бъде възстановена сцена от този файл",
-    "invalidSceneUrl": "Неуспешно поставяне на сцена от предоставения линк. Той е или неправилно оформен, или не съдържа валидни Excalidraw JSON данни.",
+    "invalidSceneUrl": "Неуспешно поставяне на сцена от предоставения линк. Той е или неправилно оформен, или не съдържа валидни Doodly JSON данни.",
     "resetLibrary": "Това ще изчисти библиотеката ви. Сигурни ли сте?",
     "removeItemsFromsLibrary": "Изтрий {{count}} елемент(а) от библиотеката?",
     "invalidEncryptionKey": "Ключът за енкрипция трябва да е от 22 знака. Сътрудничеството на живо е изключено.",
@@ -338,7 +332,7 @@
     "bucketfill": "",
     "hand": "",
     "extraTools": "Още инструменти",
-    "mermaidToExcalidraw": "Mermaid към Excalidraw",
+    "mermaidToExcalidraw": "Mermaid към Doodly",
     "convertElementType": ""
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Ако презареждането не работи, опитайте <button>изчистване на платното.</button>",
     "clearCanvasCaveat": " Това ще доведе до загуба на работа ",
     "trackedToSentry": "Грешката с идентификатор {{eventId}} беше проследен в нашата система.",
-    "openIssueMessage": "Бяхме много предпазливи да не включите информацията за вашата сцена при грешката. Ако сцената ви не е частна, моля, помислете за последващи действия на нашата <button>тракер за грешки.</button> Моля, включете информация по-долу, като я копирате и добавите в GitHub.",
     "sceneContent": "Съдържание на сцената:"
   },
   "shareDialog": {
@@ -437,10 +430,7 @@
     "disk_button": "Запази като файл",
     "link_title": "Връзка за споделяне",
     "link_details": "",
-    "link_button": "",
-    "excalidrawplus_description": "",
-    "excalidrawplus_button": "Експорт",
-    "excalidrawplus_exportError": ""
+    "link_button": ""
   },
   "helpDialog": {
     "blog": "Прочетете нашия блог",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Изчисти платното"
   },
-  "publishDialog": {
-    "title": "Публикувай библиотека",
-    "itemName": "Име",
-    "authorName": "Авторско име",
-    "githubUsername": "GitHub потребителско име",
-    "twitterUsername": "Twitter потребителско име",
-    "libraryName": "Име на библиотеката",
-    "libraryDesc": "Описание на библиотеката",
-    "website": "Уебсайт",
-    "placeholder": {
-      "authorName": "Името или потребителското Ви име",
-      "libraryName": "Име на библиотеката Ви",
-      "libraryDesc": "Описание на библиотеката ви, за да помогнете на хората да разберат приложенията ѝ",
-      "githubHandle": "",
-      "twitterHandle": "",
-      "website": ""
-    },
-    "errors": {
-      "required": "Задължително",
-      "website": "Въведете валиден URL адрес"
-    },
-    "noteDescription": "",
-    "noteGuidelines": "",
-    "noteLicense": "",
-    "noteItems": "",
-    "atleastOneLibItem": "",
-    "republishWarning": ""
-  },
-  "publishSuccessDialog": {
-    "title": "",
-    "content": ""
-  },
   "confirmDialog": {
     "resetLibrary": "Нулирай библиотека",
     "removeItemsFromLib": ""
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Копиране в клипборда"
     }
   },
-  "encrypted": {
-    "tooltip": "Вашите рисунки са криптирани от край до край, така че сървърите на Excalidraw няма да могат да ги виждат.",
-    "link": ""
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Ъгъл",
     "shapes": "",
@@ -629,11 +584,6 @@
         "title": "Запази към диск",
         "button": "Запази към диск",
         "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Експортирай към Excalidraw+",
-        "description": "Запази сцената към Excalidraw+ работното място."
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "直角箭頭",
     "fontSize": "字型大小",
     "fontFamily": "字型系列",
-    "addWatermark": "加上「以 Excalidraw 製作」浮水印",
+    "addWatermark": "加上「以 Doodly 製作」浮水印",
     "handDrawn": "手寫",
     "normal": "一般",
     "code": "代碼",
@@ -107,7 +107,7 @@
     "untitled": "無標題",
     "name": "名稱",
     "yourName": "你的名稱",
-    "madeWithExcalidraw": "以 Excalidraw 製作",
+    "madeWithExcalidraw": "以 Doodly 製作",
     "group": "建立群組",
     "ungroup": "取消群組",
     "collaborators": "協作者",
@@ -116,7 +116,6 @@
     "addToLibrary": "加入資料庫",
     "removeFromLibrary": "從資料庫中移除",
     "libraryLoadingMessage": "資料庫讀取中…",
-    "libraries": "瀏覽資料庫",
     "loadingScene": "場景讀取中…",
     "loadScene": "從檔案載入場景",
     "align": "對齊",
@@ -138,7 +137,7 @@
     "toggleTheme": "切換淺色/深色主題",
     "theme": "主題",
     "personalLib": "個人資料庫",
-    "excalidrawLib": "Excalidraw 資料庫",
+    "excalidrawLib": "Doodly 資料庫",
     "decreaseFontSize": "縮小文字",
     "increaseFontSize": "放大文字",
     "unbindText": "取消綁定文字",
@@ -168,19 +167,16 @@
       "lockAll": "全部鎖定",
       "unlockAll": "全部解鎖"
     },
-    "statusPublished": "已發布",
     "sidebarLock": "側欄維持開啟",
     "selectAllElementsInFrame": "選取框架內的所有元素",
     "removeAllElementsFromFrame": "從框架內移除所有元素",
     "eyeDropper": "從畫布中選取顏色",
     "textToDiagram": "文字轉圖表",
     "prompt": "提示詞",
-    "followUs": "追蹤我們",
-    "discordChat": "Discord 聊天室",
     "zoomToFitViewport": "縮放至符合 viewport",
     "zoomToFitSelection": "縮放至符合選取區",
     "zoomToFit": "縮放至顯示所有元素",
-    "installPWA": "於本機安裝 Excalidraw (PWA)",
+    "installPWA": "於本機安裝 Doodly (PWA)",
     "autoResize": "啟用文字自動縮放",
     "imageCropping": "圖片剪裁",
     "unCroppedDimension": "未剪裁尺寸",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "吸附至物件",
     "exitZenMode": "離開專注模式",
     "cancel": "取消",
-    "saveLibNames": "儲存名稱並離開",
     "clear": "清除",
     "remove": "刪除",
     "embed": "切換嵌入",
-    "publishLibrary": "重新命名或發布",
     "submit": "送出",
     "confirm": "確認",
     "embeddableInteractionButton": "點擊以互動"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "無法輸出空白的 canvas。",
     "couldNotCopyToClipboard": "無法複製到剪貼簿",
     "decryptFailed": "無法解密資料。",
-    "uploadedSecurly": "上傳已通過 end-to-end 加密，Excalidraw 伺服器和第三方無法皆讀取其內容。",
+    "uploadedSecurly": "上傳已通過 end-to-end 加密，Doodly 伺服器和第三方無法皆讀取其內容。",
     "loadSceneOverridePrompt": "讀取外部圖樣將取代目前的內容。是否要繼續？",
     "collabStopOverridePrompt": "停止連線將覆蓋您先前於本機儲存的繪圖進度，是否確認？\n\n（如要保留原有的本機繪圖進度，直接關閉瀏覽器分頁即可。）",
     "errorAddingToLibrary": "無法於此資料庫加入項目",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "這將會將 {{numShapes}} 個圖形加入你的資料庫，你確定嗎？",
     "imageDoesNotContainScene": "此圖檔中未包含場景資料。輸出檔案時是否有包含場景資料？",
     "cannotRestoreFromImage": "無法由此檔案回復場景。",
-    "invalidSceneUrl": "無法由提供的 URL 匯入場景。可能是發生異常，或未包含有效的 Excalidraw JSON 資料。",
+    "invalidSceneUrl": "無法由提供的 URL 匯入場景。可能是發生異常，或未包含有效的 Doodly JSON 資料。",
     "resetLibrary": "這會清除您的資料庫，是否確定？",
     "removeItemsFromsLibrary": "從資料庫刪除 {{count}} 項？",
     "invalidEncryptionKey": "加密鍵必須為22字元。即時協作已停用。",
@@ -338,7 +332,7 @@
     "bucketfill": "油漆桶填充工具",
     "hand": "手形（平移工具）",
     "extraTools": "更多工具",
-    "mermaidToExcalidraw": "Mermaid 至 Excalidraw",
+    "mermaidToExcalidraw": "Mermaid 至 Doodly",
     "convertElementType": "切換形狀類型"
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "若重新載入仍無法解決問題，嘗試<button>清除 canvas。</button>",
     "clearCanvasCaveat": "此動作將造成目前的作品被移除。",
     "trackedToSentry": "此錯誤與其識別碼{{eventId}}將由系統記錄。",
-    "openIssueMessage": "我們將謹慎處理，你的作品內容不會被包含在錯誤報告中。若你的作品不需保持私密，請考慮使用我們的<button>bug tracker。</button>請將下列資訊複製貼上至 GitHub issue 中。",
     "sceneContent": "作品內容："
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "即時協作連線正在進行中。",
     "desc_shareLink": "將此連結分享給欲協作的對象：",
     "desc_exitSession": "停止連線將中斷你與協作會議室的連結，但你仍可於本機編輯此作品。意指停止連線後你的編輯不會被先前共同協作的人看見，且他們可繼續共同協作另一個版本。",
-    "shareTitle": "加入 Excalidraw 上的即時協作會議室"
+    "shareTitle": "加入 Doodly 上的即時協作會議室"
   },
   "errorDialog": {
     "title": "錯誤"
@@ -437,10 +430,7 @@
     "disk_button": "儲存至檔案",
     "link_title": "可共享連結",
     "link_details": "匯出為唯讀連結",
-    "link_button": "匯出為連結",
-    "excalidrawplus_description": "將此場景儲存至你的 Excalidraw+ 工作區",
-    "excalidrawplus_button": "輸出",
-    "excalidrawplus_exportError": "目前無法輸出至 Excalidraw+"
+    "link_button": "匯出為連結"
   },
   "helpDialog": {
     "blog": "閱讀部落格",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "清除畫布"
   },
-  "publishDialog": {
-    "title": "發布資料庫",
-    "itemName": "項目名稱",
-    "authorName": "作者名稱",
-    "githubUsername": "GitHub 帳號",
-    "twitterUsername": "Twitter 帳號",
-    "libraryName": "資料庫名稱",
-    "libraryDesc": "資料庫說明",
-    "website": "網站",
-    "placeholder": {
-      "authorName": "您的名稱或帳號",
-      "libraryName": "您的資料庫名稱",
-      "libraryDesc": "提供您的資料庫說明以利他人理解其用途",
-      "githubHandle": "Github handle（選填），填寫後您可編輯已送出待審查的資料庫",
-      "twitterHandle": "Twitter 帳號（選填），填寫後若我們在 Twitter 推廣時可提及您",
-      "website": "您個人網站或其他網站的連結（選填）"
-    },
-    "errors": {
-      "required": "必填",
-      "website": "請輸入有效的 URL"
-    },
-    "noteDescription": "送出您的資料庫後將被包含於<link>公開資料庫 repository</link>以利他人在其繪圖中使用。",
-    "noteGuidelines": "資料庫需先經人工審查。請閱讀<link>說明文件</link>再送出。若需溝通與修改時要透過 GitHub 帳號來進行，但並非強制需求。",
-    "noteLicense": "送出即代表您同意此資料庫將發布時使用 <link>MIT 授權，</link>簡單來說是指任何人都能不受限制的使用。",
-    "noteItems": "每個資料庫項目都有獨立的名稱故可篩選。會包含下列資料庫項目：",
-    "atleastOneLibItem": "請選擇至少一項資料庫項目",
-    "republishWarning": "注意：部分選取中的物件先前已發布/送出過。建議僅在要更新現存資料庫或已送出的物件時才重新送出這些物件。"
-  },
-  "publishSuccessDialog": {
-    "title": "資料庫已送出",
-    "content": "感謝 {{authorName}} 。您的資料庫已送出待審查。您可查看目前狀態<link>在此</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "重設資料庫",
     "removeItemsFromLib": "從資料庫移除所選的項目"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "複製至剪貼簿"
     }
   },
-  "encrypted": {
-    "tooltip": "你的作品已使用 end-to-end 方式加密，Excalidraw 的伺服器也無法取得其內容。",
-    "link": "Excalidraw 端到端加密的相關部落格文章"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "角度",
     "shapes": "形狀",
@@ -596,7 +551,7 @@
       "center_heading": "你的繪圖已儲存在瀏覽器的儲存空間中。",
       "center_heading_line2": "瀏覽器儲存空間可能會意外地被清除。",
       "center_heading_line3": "請定期將作品儲存為檔案，以避免遺失。",
-      "center_heading_plus": "您是否是要前往 Excalidraw+ ？",
+      "center_heading_plus": "您是否是要前往 Doodly ？",
       "menuHint": "輸出、偏好設定、語言..."
     },
     "defaults": {
@@ -629,11 +584,6 @@
         "title": "儲存至硬碟",
         "button": "儲存至硬碟",
         "description": "將場景匯出為可供匯入的檔案"
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "匯出至 Excalidraw+",
-        "description": "將此場景儲存至您的 Excalidraw+ 工作區"
       }
     },
     "modal": {
@@ -650,9 +600,9 @@
     }
   },
   "mermaid": {
-    "title": "Mermaid 至 Excalidraw",
+    "title": "Mermaid 至 Doodly",
     "button": "插入",
-    "description": "目前僅支援 <flowchartLink>Flowchart</flowchartLink> 、 <sequenceLink>Sequence</sequenceLink> 及 <classLink>Class </classLink> 圖表。其餘檔案類型在 Excalidraw 將會以圖像呈現。",
+    "description": "目前僅支援 <flowchartLink>Flowchart</flowchartLink> 、 <sequenceLink>Sequence</sequenceLink> 及 <classLink>Class </classLink> 圖表。其餘檔案類型在 Doodly 將會以圖像呈現。",
     "syntax": "Mermaid 語法",
     "preview": "預覽",
     "label": "Mermaid",
@@ -699,11 +649,10 @@
       "mermaidParseError": "Mermaid 語法錯誤"
     },
     "rateLimit": {
-      "messageLimit": "你已達到免費方案的 AI 使用上限。請試用 Excalidraw+ 以取得更多額度，或明天再試。",
+      "messageLimit": "你已達到免費方案的 AI 使用上限。請試用 Doodly 以取得更多額度，或明天再試。",
       "generalRateLimit": "別心急，你的操作速度太快了！請稍等片刻後再試。",
       "messageLimitInputPlaceholder": "你已達到訊息上限"
-    },
-    "upsellBtnLabel": "升級至 Plus"
+    }
   },
   "quickSearch": {
     "placeholder": "快速搜尋"

@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "",
     "fontSize": "Betűméret",
     "fontFamily": "Betűkészlet család",
-    "addWatermark": "Add hozzá, hogy \"Excalidraw-val készült\"",
+    "addWatermark": "Add hozzá, hogy \"Doodly-val készült\"",
     "handDrawn": "Kézzel rajzolt",
     "normal": "Normál",
     "code": "Kód",
@@ -107,7 +107,7 @@
     "untitled": "Névtelen",
     "name": "Név",
     "yourName": "Neved",
-    "madeWithExcalidraw": "Excalidraw-val készült",
+    "madeWithExcalidraw": "Doodly-val készült",
     "group": "Csoportosítás",
     "ungroup": "Csoportbontás",
     "collaborators": "Közreműködők",
@@ -116,7 +116,6 @@
     "addToLibrary": "Hozzáadás a könyvtárhoz",
     "removeFromLibrary": "Eltávólítás a könyvtárból",
     "libraryLoadingMessage": "Könyvtár betöltése…",
-    "libraries": "Könyvtárak böngészése",
     "loadingScene": "Jelenet betöltése…",
     "loadScene": "Betöltés fájlból",
     "align": "Igazítás",
@@ -138,7 +137,7 @@
     "toggleTheme": "Világos/sötét háttér kapcsoló",
     "theme": "Téma",
     "personalLib": "Személyes könyvtár",
-    "excalidrawLib": "Excalidraw könyvtár",
+    "excalidrawLib": "Doodly könyvtár",
     "decreaseFontSize": "Betűméret csökkentése",
     "increaseFontSize": "Betűméret növelése",
     "unbindText": "Szövegkötés feloldása",
@@ -168,15 +167,12 @@
       "lockAll": "Összes zárolása",
       "unlockAll": "Összes feloldása"
     },
-    "statusPublished": "Közzétéve",
     "sidebarLock": "Oldalsó sáv nyitva tartása",
     "selectAllElementsInFrame": "",
     "removeAllElementsFromFrame": "",
     "eyeDropper": "",
     "textToDiagram": "Szövegből diagram",
     "prompt": "Egyéb",
-    "followUs": "Kövess minket",
-    "discordChat": "Discord chat",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "Nagyítás a kijelölés méretére",
     "zoomToFit": "Az összes elem látótérbe hozása",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "Objektumhoz illeszt",
     "exitZenMode": "Kilépés a letisztult módból",
     "cancel": "Mégsem",
-    "saveLibNames": "",
     "clear": "Kiűrítés",
     "remove": "Eltávolítás",
     "embed": "Beágyazás be/ki",
-    "publishLibrary": "",
     "submit": "Elküldés",
     "confirm": "Megerősítés",
     "embeddableInteractionButton": "Interakció Kattintással"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Üres vászont nem lehet exportálni.",
     "couldNotCopyToClipboard": "Nem lehet a vágólapra másolni.",
     "decryptFailed": "Nem sikerült visszafejteni a titkosított adatot.",
-    "uploadedSecurly": "A feltöltést végpontok közötti titkosítással biztosítottuk, ami azt jelenti, hogy egy harmadik fél nem tudja megnézni a tartalmát, beleértve az Excalidraw szervereit is.",
+    "uploadedSecurly": "A feltöltést végpontok közötti titkosítással biztosítottuk, ami azt jelenti, hogy egy harmadik fél nem tudja megnézni a tartalmát, beleértve az Doodly szervereit is.",
     "loadSceneOverridePrompt": "A betöltött külső rajz felül fogja írnia meglévőt. Szeretnéd folytatni?",
     "collabStopOverridePrompt": "A munkamenet leállítása felül fogja írni az előzőleg helyben tárolt rajzot. Biztosan ezt akarod?\n(Ha meg akarod tartani a helyben tárolt rajzot, egyszerűen csak zárd be a böngésző fület)",
     "errorAddingToLibrary": "A tétel nem addható hozzá a könyvtárhoz",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Ez a művelet {{numShapes}} formát fog hozzáadni a könyvtáradhoz. Biztos vagy benne?",
     "imageDoesNotContainScene": "Úgy tűnik, hogy ez a kép nem tartalmaz jelenetadatokat. Engedélyezted a jelenetbeágyazást az exportálás során?",
     "cannotRestoreFromImage": "A jelenet visszaállítása nem sikerült ebből a kép fájlból",
-    "invalidSceneUrl": "Nem sikerült importálni a jelenetet a megadott URL-ről. Rossz formátumú, vagy nem tartalmaz érvényes Excalidraw JSON-adatokat.",
+    "invalidSceneUrl": "Nem sikerült importálni a jelenetet a megadott URL-ről. Rossz formátumú, vagy nem tartalmaz érvényes Doodly JSON-adatokat.",
     "resetLibrary": "Ezzel törlöd a könyvtárát. biztos vagy ebben?",
     "removeItemsFromsLibrary": "{{count}} elemet törölsz a könyvtárból?",
     "invalidEncryptionKey": "A titkosítási kulcsnak 22 karakterből kell állnia. Az élő együttműködés le van tiltva.",
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Ha az újratöltés nem működik, próbáld <button>letörölni a vászont.</button>",
     "clearCanvasCaveat": " Ezzel az eddigi munka elveszik ",
     "trackedToSentry": "A hibakód azonosítóval {{eventId}} nyomon van követve a rendszerünkben.",
-    "openIssueMessage": "Vigyáztunk arra, hogy a jelenthez tartozó információ ne jelenjen meg a hibaüzenetben. Ha a jeleneted nem bizalmas, kérjük add hozzá a <button>hibakövető rendszerünkhöz.</button> Kérjük, másolja be az alábbi információkat a GitHub problémába.",
     "sceneContent": "Jelenet tartalma:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "Az élő együttműködési munkamenet folyamatban van.",
     "desc_shareLink": "Ossza meg ezt a linket bárkivel, akivel együtt szeretne működni:",
     "desc_exitSession": "Az munkamenet leállítása kilépteti önt a szobából, de folytathatja a munkát a saját gépén. Vegye figyelembe, hogy ez nem érinti más emberek munkáját és ők továbbra is együttműködhetnek a saját változatukon.",
-    "shareTitle": "Csatlakozás egy élő együttműködési munkamenethez az Excalidraw-ban"
+    "shareTitle": "Csatlakozás egy élő együttműködési munkamenethez az Doodly-ban"
   },
   "errorDialog": {
     "title": "Hiba"
@@ -437,10 +430,7 @@
     "disk_button": "Mentés fájlba",
     "link_title": "Megosztható hivatkozás",
     "link_details": "Exportálás csak olvasható hivatkozásként.",
-    "link_button": "Exportálás hivatkozásba",
-    "excalidrawplus_description": "Mentse el a jelenetet az Excalidraw+ munkaterületére.",
-    "excalidrawplus_button": "Exportálás",
-    "excalidrawplus_exportError": "Jelenleg nem lehet exportálni az Excalidraw+-ba..."
+    "link_button": "Exportálás hivatkozásba"
   },
   "helpDialog": {
     "blog": "Olvasd a blogunkat",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Rajzvászon alaphelyzetbe"
   },
-  "publishDialog": {
-    "title": "Könyvtár közzététele",
-    "itemName": "Tétel neve",
-    "authorName": "Szerző neve",
-    "githubUsername": "GitHub felhasználónév",
-    "twitterUsername": "Twitter felhasználónév",
-    "libraryName": "Könyvtár neve",
-    "libraryDesc": "Könyvtár leírása",
-    "website": "Weboldal",
-    "placeholder": {
-      "authorName": "Neved vagy felhasználóneved",
-      "libraryName": "A könyvtárad neve",
-      "libraryDesc": "A könyvtárad használatát segítő leírás",
-      "githubHandle": "GitHub-handle(opcionális), így szerkesztheted a könyvtárat, miután elküldted ellenőrzésre",
-      "twitterHandle": "Twitter-felhasználónév (opcionális), így tudjuk, kinek kell jóváírni a Twitteren keresztüli reklámozást",
-      "website": "Hivatkozás személyes webhelyedre vagy máshová (nem kötelező)"
-    },
-    "errors": {
-      "required": "Kötelező",
-      "website": "Adj meg egy érvényes URL-t"
-    },
-    "noteDescription": "Küld be könyvtáradat, hogy bekerüljön a <link>nyilvános könyvtár tárolóba</link>hogy mások is felhasználhassák a rajzaikban.",
-    "noteGuidelines": "A könyvtárat először manuálisan kell jóváhagyni. Kérjük, olvassa el a <link>segédletet</link> benyújtása előtt. Szüksége lesz egy GitHub-fiókra a kommunikációhoz és a módosításokhoz, ha kérik, de ez nem feltétlenül szükséges.",
-    "noteLicense": "A beküldéssel elfogadja, hogy a könyvtár a következő alatt kerül közzétételre <link>MIT Licensz </link>ami röviden azt jelenti, hogy bárki korlátozás nélkül használhatja őket.",
-    "noteItems": "Minden könyvtárelemnek saját nevével kell rendelkeznie, hogy szűrhető legyen. A következő könyvtári tételek kerülnek bele:",
-    "atleastOneLibItem": "A kezdéshez válassz ki legalább egy könyvtári elemet",
-    "republishWarning": ""
-  },
-  "publishSuccessDialog": {
-    "title": "A könyvtár beküldve",
-    "content": "Köszönjük {{authorName}}. Könyvtáradat elküldtük felülvizsgálatra. Nyomon követheted az állapotot<link>itt</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Könyvtár alaphelyzetbe állítása",
     "removeItemsFromLib": "A kiválasztott elemek eltávolítása a könyvtárból"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Vágólapra másolás"
     }
   },
-  "encrypted": {
-    "tooltip": "A rajzaidat végpontok közötti titkosítással tároljuk, tehát az Excalidraw szervereiről se tud más belenézni.",
-    "link": "Blogbejegyzés a végpontok közötti titkosításról az Excalidraw-ban"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Szög",
     "shapes": "Alakzatok",
@@ -629,11 +584,6 @@
         "title": "",
         "button": "",
         "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "",
-        "button": "",
-        "description": ""
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": "Frissítés Plus csomagra"
+    }
   },
   "quickSearch": {
     "placeholder": "Gyorskeresés"

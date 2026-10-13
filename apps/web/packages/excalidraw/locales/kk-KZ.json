@@ -116,7 +116,6 @@
     "addToLibrary": "",
     "removeFromLibrary": "",
     "libraryLoadingMessage": "",
-    "libraries": "",
     "loadingScene": "",
     "loadScene": "",
     "align": "",
@@ -168,15 +167,12 @@
       "lockAll": "",
       "unlockAll": ""
     },
-    "statusPublished": "",
     "sidebarLock": "",
     "selectAllElementsInFrame": "",
     "removeAllElementsFromFrame": "",
     "eyeDropper": "",
     "textToDiagram": "",
     "prompt": "",
-    "followUs": "",
-    "discordChat": "",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "",
     "exitZenMode": "",
     "cancel": "",
-    "saveLibNames": "",
     "clear": "",
     "remove": "",
     "embed": "",
-    "publishLibrary": "",
     "submit": "",
     "confirm": "",
     "embeddableInteractionButton": ""
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "",
     "clearCanvasCaveat": "",
     "trackedToSentry": "",
-    "openIssueMessage": "",
     "sceneContent": ""
   },
   "shareDialog": {
@@ -437,10 +430,7 @@
     "disk_button": "Файлға сақтау",
     "link_title": "Ортақ сілтеме",
     "link_details": "Тек оқуға арналған сілтеме ретінде экспорттау.",
-    "link_button": "Сілтемеге экспорттау",
-    "excalidrawplus_description": "Сахнаны өзіңіздің Excalidraw+ жұмыс кеңістігінде сақтаңыз.",
-    "excalidrawplus_button": "Экспорт",
-    "excalidrawplus_exportError": "Қазіргі уақытта Excalidraw+ үшін экспорттау мүмкін емес..."
+    "link_button": "Сілтемеге экспорттау"
   },
   "helpDialog": {
     "blog": "Біздің блогты оқу",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": ""
   },
-  "publishDialog": {
-    "title": "",
-    "itemName": "",
-    "authorName": "",
-    "githubUsername": "",
-    "twitterUsername": "",
-    "libraryName": "",
-    "libraryDesc": "",
-    "website": "",
-    "placeholder": {
-      "authorName": "",
-      "libraryName": "",
-      "libraryDesc": "",
-      "githubHandle": "",
-      "twitterHandle": "",
-      "website": ""
-    },
-    "errors": {
-      "required": "",
-      "website": ""
-    },
-    "noteDescription": "",
-    "noteGuidelines": "",
-    "noteLicense": "",
-    "noteItems": "",
-    "atleastOneLibItem": "",
-    "republishWarning": ""
-  },
-  "publishSuccessDialog": {
-    "title": "",
-    "content": ""
-  },
   "confirmDialog": {
     "resetLibrary": "",
     "removeItemsFromLib": ""
@@ -538,10 +496,7 @@
       "copyPngToClipboard": ""
     }
   },
-  "encrypted": {
-    "tooltip": "Сіздің сызбаларыңыз өтпелі шифрлеу арқылы шифрланған, сондықтан Excalidraw серверлері оларды ешқашан көрмейді.",
-    "link": "Excalidraw қолданатын өтпелі шифрлеу туралы блог жазбасы"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Бұрыш",
     "shapes": "",
@@ -629,11 +584,6 @@
         "title": "",
         "button": "",
         "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "",
-        "button": "",
-        "description": ""
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

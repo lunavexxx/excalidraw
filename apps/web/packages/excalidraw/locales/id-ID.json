@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "Panah siku",
     "fontSize": "Ukuran font",
     "fontFamily": "Jenis font",
-    "addWatermark": "Tambahkan \"Dibuat dengan Excalidraw\"",
+    "addWatermark": "Tambahkan \"Dibuat dengan Doodly\"",
     "handDrawn": "Tulisan tangan",
     "normal": "Normal",
     "code": "Kode",
@@ -107,7 +107,7 @@
     "untitled": "Tanpa judul",
     "name": "Nama",
     "yourName": "Nama Anda",
-    "madeWithExcalidraw": "Dibuat dengan Excalidraw",
+    "madeWithExcalidraw": "Dibuat dengan Doodly",
     "group": "Kelompokan pilihan",
     "ungroup": "Pisahkan pilihan",
     "collaborators": "Kolaborator",
@@ -116,7 +116,6 @@
     "addToLibrary": "Tambahkan ke pustaka",
     "removeFromLibrary": "Hapus dari pustaka",
     "libraryLoadingMessage": "Memuat pustaka…",
-    "libraries": "Telusur pustaka",
     "loadingScene": "Memuat pemandangan…",
     "loadScene": "Muat dari file",
     "align": "Perataan",
@@ -138,7 +137,7 @@
     "toggleTheme": "Toggle tema terang/gelap",
     "theme": "Tema",
     "personalLib": "Pustaka Pribadi",
-    "excalidrawLib": "Pustaka Excalidraw",
+    "excalidrawLib": "Pustaka Doodly",
     "decreaseFontSize": "Kecilkan ukuran font",
     "increaseFontSize": "Besarkan ukuran font",
     "unbindText": "Lepas teks",
@@ -168,19 +167,16 @@
       "lockAll": "Kuncikan semua",
       "unlockAll": "Lepas semua"
     },
-    "statusPublished": "Telah terbit",
     "sidebarLock": "Biarkan sidebar tetap terbuka",
     "selectAllElementsInFrame": "Pilih semua unsur di bingkai",
     "removeAllElementsFromFrame": "Hapus semua unsur dari bingkai",
     "eyeDropper": "Ambil warna dari kanvas",
     "textToDiagram": "Teks menjadi diagram",
     "prompt": "Prompt",
-    "followUs": "Ikuti kami",
-    "discordChat": "Obrolan Discord",
     "zoomToFitViewport": "Perbesar agar sesuai dengan viewport",
     "zoomToFitSelection": "Memperbesar agar sesuai dengan pilihan",
     "zoomToFit": "Memperbesar agar unsur pas semua",
-    "installPWA": "Install Excalidraw secara lokal (PWA)",
+    "installPWA": "Install Doodly secara lokal (PWA)",
     "autoResize": "Mengaktifkan pengubahan ukuran teks secara otomatis",
     "imageCropping": "Pemangkasan gambar",
     "unCroppedDimension": "Dimensi yang tidak dipotong",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "Snap to objects",
     "exitZenMode": "Keluar dari mode zen",
     "cancel": "Batal",
-    "saveLibNames": "Simpan nama dan keluar",
     "clear": "Hapus",
     "remove": "Hapus",
     "embed": "Mati/nyala penyematan",
-    "publishLibrary": "Ubah nama atau publikasikan",
     "submit": "Kirimkan",
     "confirm": "Konfirmasi",
     "embeddableInteractionButton": "Pencet untuk interaksi"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Tidak bisa mengekspor kanvas kosong",
     "couldNotCopyToClipboard": "Tidak bisa menyalin ke papan klip.",
     "decryptFailed": "Tidak dapat mengdekripsi data.",
-    "uploadedSecurly": "Pengunggahan ini telah diamankan menggunakan enkripsi end-to-end, artinya server Excalidraw dan pihak ketiga tidak data membaca nya",
+    "uploadedSecurly": "Pengunggahan ini telah diamankan menggunakan enkripsi end-to-end, artinya server Doodly dan pihak ketiga tidak data membaca nya",
     "loadSceneOverridePrompt": "Memuat gambar external akan mengganti konten Anda yang ada. Apakah Anda ingin melanjutkan?",
     "collabStopOverridePrompt": "Menghentikan sesi akan menimpa gambar Anda yang tersimpan secara lokal. Anda yakin?\n\n(Jika Anda ingin menyimpan gambar lokal Anda, gantinya cukup tutup tab browser.)",
     "errorAddingToLibrary": "Tidak dapat menambahkan item ke pustaka",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Ini akan menambahkan {{numShapes}} bentuk ke pustaka Anda. Anda yakin?",
     "imageDoesNotContainScene": "Gambar ini tampaknya tidak ada data pemandangan. Apakah penyematan pemandangan sudah diaktifkan saat ekspor?",
     "cannotRestoreFromImage": "Pemandangan tidak dapat dipulihkan dari file gambar ini",
-    "invalidSceneUrl": "Tidak dapat impor pemandangan dari URL. Kemungkinan URL itu rusak atau tidak berisi data JSON Excalidraw yang valid.",
+    "invalidSceneUrl": "Tidak dapat impor pemandangan dari URL. Kemungkinan URL itu rusak atau tidak berisi data JSON Doodly yang valid.",
     "resetLibrary": "Ini akan menghapus pustaka Anda. Anda yakin?",
     "removeItemsFromsLibrary": "Hapus {{count}} item dari pustaka?",
     "invalidEncryptionKey": "Sandi enkripsi harus 22 karakter. Kolaborasi langsung dinonaktifkan.",
@@ -338,7 +332,7 @@
     "bucketfill": "Isi warna (Ember)",
     "hand": "Tangan (alat panning)",
     "extraTools": "Alat-alat lain",
-    "mermaidToExcalidraw": "Mermaid menjadi Excalidraw",
+    "mermaidToExcalidraw": "Mermaid menjadi Doodly",
     "convertElementType": "Beralih jenis bentuk"
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Jika memuat ulang tidak bekerja, cobalah <button>bersihkan canvas.</button>",
     "clearCanvasCaveat": " Ini akan menghasilkan hilangnya pekerjaan ",
     "trackedToSentry": "Kesalahan dengan pengidentifikasi {{eventId}} dilacak di sistem kami.",
-    "openIssueMessage": "Kami sangat berhati-hati untuk tidak menyertakan informasi pemandangan Anda pada kesalahan. Jika pemandangan Anda tidak bersifat pribadi, mohon pertimbangkan menindak lanjut pada <button>pelacak bug.</button> Mohon sertakan informasi dibawah ini dengan menyalin dan menempelkan di Github issue.",
     "sceneContent": "Pemandangan konten:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "Sesi kolaborasi sedang berlangsung sekarang.",
     "desc_shareLink": "Bagikan tautan ini dengan siapa pun yang Anda inginkan untuk kolaborasi bersama:",
     "desc_exitSession": "Menghentikan sesi akan memutuskan hubungan Anda dari ruangan, tetapi Anda dapat melanjutkan bekerja dengan pemandangan Anda secara lokal. Perhatikan bahwa ini tidak memengaruhi orang lain, dan mereka masih dapat berkolaborasi pada versi mereka.",
-    "shareTitle": "Gabung sesi kolaborasi langsung di Excalidraw"
+    "shareTitle": "Gabung sesi kolaborasi langsung di Doodly"
   },
   "errorDialog": {
     "title": "Kesalahan"
@@ -437,10 +430,7 @@
     "disk_button": "Simpan ke file",
     "link_title": "Tautan",
     "link_details": "Ekspor sebagai tautan yang hanya dibaca.",
-    "link_button": "Ekspor ke tautan",
-    "excalidrawplus_description": "Simpan pemandangan ke ruang kerja Excalidraw+ Anda.",
-    "excalidrawplus_button": "Ekspor",
-    "excalidrawplus_exportError": "Tidak dapat ekspor ke Excalidraw+ saat ini..."
+    "link_button": "Ekspor ke tautan"
   },
   "helpDialog": {
     "blog": "Baca blog kami",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Hapus kanvas"
   },
-  "publishDialog": {
-    "title": "Terbitkan pustaka",
-    "itemName": "Nama item",
-    "authorName": "Nama pembuat",
-    "githubUsername": "Nama pengguna github",
-    "twitterUsername": "Nama pengguna Twitter",
-    "libraryName": "Nama Pustaka",
-    "libraryDesc": "Deskripsi pustaka",
-    "website": "Situs Web",
-    "placeholder": {
-      "authorName": "Nama atau nama pengguna Anda",
-      "libraryName": "Nama dari pustaka Anda",
-      "libraryDesc": "Deskripsi pustaka Anda untuk membantu orang mengerti penggunaannya",
-      "githubHandle": "Akun GitHub (opsional), jadi Anda dapat mengubah pustaka ketika diserahkan untuk review",
-      "twitterHandle": "Nama pengguna Twitter (opsional), jadi kami tahu siapa dipuji ketika mempromosikannya melalui Twitter",
-      "website": "Hubungkan ke situs personal Anda atau lainnya (opsional)"
-    },
-    "errors": {
-      "required": "Dibutuhkan",
-      "website": "Masukkan URL valid"
-    },
-    "noteDescription": "Kirimkan pustaka Anda untuk disertakan di <link>repositori pustaka publik</link>untuk orang lain menggunakannya dalam gambar mereka.",
-    "noteGuidelines": "Pustaka butuh disetujui secara manual terlebih dahulu. Baca <link>pedoman</link> sebelum mengirim. Anda butuh akun GitHub untuk berkomunikasi dan membuat perubahan jika dibutuhkan, tetapi tidak wajib dibutukan.",
-    "noteLicense": "Dengan mengkirimkannya, Anda setuju pustaka akan diterbitkan dibawah <link>Lisensi MIT, </link>yang artinya siapa pun dapat menggunakannya tanpa batasan.",
-    "noteItems": "Setiap item pustaka harus memiliki nama, sehingga bisa disortir. Item pustaka di bawah ini akan dimasukan:",
-    "atleastOneLibItem": "Pilih setidaknya satu item pustaka untuk mulai",
-    "republishWarning": "Catatan: beberapa item yang dipilih telah ditandai sebagai sudah dipublikasikan/diserahkan. Anda hanya dapat menyerahkan kembali item-item ketika memperbarui pustaka atau pengumpulan."
-  },
-  "publishSuccessDialog": {
-    "title": "Pustaka telah dikirm",
-    "content": "Terima kasih {{authorName}}. pustaka Anda telah diserahkan untuk ditinjau ulang. Anda dapat cek statusnya<link>di sini</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Reset pustaka",
     "removeItemsFromLib": "Hapus item yang dipilih dari pustaka"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Salin ke papan klip"
     }
   },
-  "encrypted": {
-    "tooltip": "Gambar anda terenkripsi end-to-end sehingga server Excalidraw tidak akan pernah dapat melihatnya.",
-    "link": "Pos blog tentang enkripsi ujung ke ujung di Excalidraw"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Sudut",
     "shapes": "Bentuk",
@@ -596,7 +551,7 @@
       "center_heading": "Gambar anda disimpan di penyimpanan browser anda.",
       "center_heading_line2": "Penyimpanan browser dapat terhapus secara tidak terduga.",
       "center_heading_line3": "Simpan pekerjaan anda ke file secara berkala agar tidak hilang.",
-      "center_heading_plus": "Apa Anda ingin berpindah ke Excalidraw+?",
+      "center_heading_plus": "Apa Anda ingin berpindah ke Doodly?",
       "menuHint": "Ekspor, preferensi, bahasa, ..."
     },
     "defaults": {
@@ -629,11 +584,6 @@
         "title": "Simpan ke disk",
         "button": "Simpan ke disk",
         "description": "Ekspor data pemandangan ke file yang dapat Anda dapat impor nanti."
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Ekspor ke Excalidraw+",
-        "description": "Simpan pemandangan ke ruang kerja Excalidraw+ Anda."
       }
     },
     "modal": {
@@ -650,9 +600,9 @@
     }
   },
   "mermaid": {
-    "title": "Mermaid menjadi Excalidraw",
+    "title": "Mermaid menjadi Doodly",
     "button": "Sisipkan",
-    "description": "Saat ini hanya Diagram  Diagram Alir  ,  Urutan  ,  Kelas  , dan  Hubungan Entitas  yang didukung. Jenis lainnya akan dirender sebagai gambar di Excalidraw .",
+    "description": "Saat ini hanya Diagram  Diagram Alir  ,  Urutan  ,  Kelas  , dan  Hubungan Entitas  yang didukung. Jenis lainnya akan dirender sebagai gambar di Doodly .",
     "syntax": "Syntax Mermaid",
     "preview": "Pratinjau",
     "label": "Mermaid",
@@ -699,11 +649,10 @@
       "mermaidParseError": "Kesalahan sintaks Mermaid"
     },
     "rateLimit": {
-      "messageLimit": "Anda telah mencapai batas AI pada paket gratis. Coba Excalidraw + untuk akses lebih atau kembali lagi besok.",
+      "messageLimit": "Anda telah mencapai batas AI pada paket gratis. Coba Doodly + untuk akses lebih atau kembali lagi besok.",
       "generalRateLimit": "Tunggu sebentar, Anda terlalu cepat! Harap tunggu sejenak sebelum mencoba lagi.",
       "messageLimitInputPlaceholder": "Anda telah mencapai batas pesan anda"
-    },
-    "upsellBtnLabel": "Tingkatkan ke Plus"
+    }
   },
   "quickSearch": {
     "placeholder": "Pencarian Cepat"

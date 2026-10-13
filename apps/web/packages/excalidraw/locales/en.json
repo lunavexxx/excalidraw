@@ -30,6 +30,7 @@
     "textColor": "Text color",
     "changeStroke": "Change stroke color",
     "background": "Background",
+    "basedOnExcalidraw": "Based on the open-source Excalidraw project",
     "changeBackground": "Change background color",
     "fill": "Fill",
     "strokeWidth": "Stroke width",
@@ -73,7 +74,7 @@
     "arrowtype_elbowed": "Elbow arrow",
     "fontSize": "Font size",
     "fontFamily": "Font family",
-    "addWatermark": "Add \"Made with Excalidraw\"",
+    "addWatermark": "Add \"Made with Doodly\"",
     "handDrawn": "Hand-drawn",
     "normal": "Normal",
     "code": "Code",
@@ -108,7 +109,7 @@
     "untitled": "Untitled",
     "name": "Name",
     "yourName": "Your name",
-    "madeWithExcalidraw": "Made with Excalidraw",
+    "madeWithExcalidraw": "Made with Doodly",
     "group": "Group selection",
     "ungroup": "Ungroup selection",
     "collaborators": "Collaborators",
@@ -117,7 +118,6 @@
     "addToLibrary": "Add to library",
     "removeFromLibrary": "Remove from library",
     "libraryLoadingMessage": "Loading library…",
-    "libraries": "Browse libraries",
     "loadingScene": "Loading scene…",
     "loadScene": "Load scene from file",
     "align": "Align",
@@ -139,7 +139,7 @@
     "toggleTheme": "Toggle light/dark theme",
     "theme": "Theme",
     "personalLib": "Personal Library",
-    "excalidrawLib": "Excalidraw Library",
+    "excalidrawLib": "Doodly Library",
     "decreaseFontSize": "Decrease font size",
     "increaseFontSize": "Increase font size",
     "unbindText": "Unbind text",
@@ -169,19 +169,16 @@
       "lockAll": "Lock all",
       "unlockAll": "Unlock all"
     },
-    "statusPublished": "Published",
     "sidebarLock": "Keep sidebar open",
     "selectAllElementsInFrame": "Select all elements in frame",
     "removeAllElementsFromFrame": "Remove all elements from frame",
     "eyeDropper": "Pick color from canvas",
     "textToDiagram": "Text to diagram",
     "prompt": "Prompt",
-    "followUs": "Follow us",
-    "discordChat": "Discord chat",
     "zoomToFitViewport": "Zoom to fit in viewport",
     "zoomToFitSelection": "Zoom to fit selection",
     "zoomToFit": "Zoom to fit all elements",
-    "installPWA": "Install Excalidraw locally (PWA)",
+    "installPWA": "Install Doodly locally (PWA)",
     "autoResize": "Enable text auto-resizing",
     "imageCropping": "Image cropping",
     "unCroppedDimension": "Uncropped dimension",
@@ -258,11 +255,9 @@
     "objectsSnapMode": "Snap to objects",
     "exitZenMode": "Exit zen mode",
     "cancel": "Cancel",
-    "saveLibNames": "Save name(s) and exit",
     "clear": "Clear",
     "remove": "Remove",
     "embed": "Toggle embedding",
-    "publishLibrary": "Rename or publish",
     "submit": "Submit",
     "confirm": "Confirm",
     "embeddableInteractionButton": "Click to interact"
@@ -276,7 +271,7 @@
     "cannotExportEmptyCanvas": "Cannot export empty canvas.",
     "couldNotCopyToClipboard": "Couldn't copy to clipboard.",
     "decryptFailed": "Couldn't decrypt data.",
-    "uploadedSecurly": "The upload has been secured with end-to-end encryption, which means that Excalidraw server and third parties can't read the content.",
+    "uploadedSecurly": "The upload has been secured with end-to-end encryption, which means that Doodly server and third parties can't read the content.",
     "loadSceneOverridePrompt": "Loading external drawing will replace your existing content. Do you wish to continue?",
     "collabStopOverridePrompt": "Stopping the session will overwrite your previous, locally stored drawing. Are you sure?\n\n(If you want to keep your local drawing, simply close the browser tab instead.)",
     "errorAddingToLibrary": "Couldn't add item to the library",
@@ -284,7 +279,7 @@
     "confirmAddLibrary": "This will add {{numShapes}} shape(s) to your library. Are you sure?",
     "imageDoesNotContainScene": "This image does not seem to contain any scene data. Have you enabled scene embedding during export?",
     "cannotRestoreFromImage": "Scene couldn't be restored from this image file",
-    "invalidSceneUrl": "Couldn't import scene from the supplied URL. It's either malformed, or doesn't contain valid Excalidraw JSON data.",
+    "invalidSceneUrl": "Couldn't import scene from the supplied URL. It's either malformed, or doesn't contain valid Doodly JSON data.",
     "resetLibrary": "This will clear your library. Are you sure?",
     "removeItemsFromsLibrary": "Delete {{count}} item(s) from library?",
     "invalidEncryptionKey": "Encryption key must be of 22 characters. Live collaboration is disabled.",
@@ -345,7 +340,7 @@
     "bucketfill": "Bucket fill",
     "hand": "Hand (panning tool)",
     "extraTools": "More tools",
-    "mermaidToExcalidraw": "Mermaid to Excalidraw",
+    "mermaidToExcalidraw": "Mermaid to Doodly",
     "convertElementType": "Toggle shape type"
   },
   "bucketfill": {
@@ -418,7 +413,6 @@
     "clearCanvasMessage": "If reloading doesn't work, try <button>clearing the canvas</button>.",
     "clearCanvasCaveat": " This will result in loss of work ",
     "trackedToSentry": "The error with identifier {{eventId}} was tracked on our system.",
-    "openIssueMessage": "We were very cautious not to include your scene information on the error. If your scene is not private, please consider following up on our <button>bug tracker</button>. Please include information below by copying and pasting into the GitHub issue.",
     "sceneContent": "Scene content:"
   },
   "shareDialog": {
@@ -432,7 +426,7 @@
     "desc_inProgressIntro": "Live-collaboration session is now in progress.",
     "desc_shareLink": "Share this link with anyone you want to collaborate with:",
     "desc_exitSession": "Stopping the session will disconnect you from the room, but you'll be able to continue working with the scene, locally. Note that this won't affect other people, and they'll still be able to collaborate on their version.",
-    "shareTitle": "Join a live collaboration session on Excalidraw"
+    "shareTitle": "Join a live collaboration session on Doodly"
   },
   "errorDialog": {
     "title": "Error"
@@ -447,10 +441,7 @@
     "disk_button": "Save to file",
     "link_title": "Shareable link",
     "link_details": "Export as a read-only link.",
-    "link_button": "Export to Link",
-    "excalidrawplus_description": "Save the scene to your Excalidraw+ workspace.",
-    "excalidrawplus_button": "Export",
-    "excalidrawplus_exportError": "Couldn't export to Excalidraw+ at this moment..."
+    "link_button": "Export to Link"
   },
   "helpDialog": {
     "blog": "Read our blog",
@@ -488,38 +479,6 @@
   "clearCanvasDialog": {
     "title": "Clear canvas"
   },
-  "publishDialog": {
-    "title": "Publish library",
-    "itemName": "Item name",
-    "authorName": "Author name",
-    "githubUsername": "GitHub username",
-    "twitterUsername": "Twitter username",
-    "libraryName": "Library name",
-    "libraryDesc": "Library description",
-    "website": "Website",
-    "placeholder": {
-      "authorName": "Your name or username",
-      "libraryName": "Name of your library",
-      "libraryDesc": "Description of your library to help people understand its usage",
-      "githubHandle": "GitHub handle (optional), so you can edit the library once submitted for review",
-      "twitterHandle": "Twitter username (optional), so we know who to credit when promoting over Twitter",
-      "website": "Link to your personal website or elsewhere (optional)"
-    },
-    "errors": {
-      "required": "Required",
-      "website": "Enter a valid URL"
-    },
-    "noteDescription": "Submit your library to be included in the <link>public library repository</link> for other people to use in their drawings.",
-    "noteGuidelines": "The library needs to be manually approved first. Please read the <link>guidelines</link> before submitting. You will need a GitHub account to communicate and make changes if requested, but it is not strictly required.",
-    "noteLicense": "By submitting, you agree the library will be published under the <link>MIT License</link>, which in short means anyone can use them without restrictions.",
-    "noteItems": "Each library item must have its own name so it's filterable. The following library items will be included:",
-    "atleastOneLibItem": "Please select at least one library item to get started",
-    "republishWarning": "Note: some of the selected items are marked as already published/submitted. You should only resubmit items when updating an existing library or submission."
-  },
-  "publishSuccessDialog": {
-    "title": "Library submitted",
-    "content": "Thank you {{authorName}}. Your library has been submitted for review. You can track the status <link>here</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Reset library",
     "removeItemsFromLib": "Remove selected items from library"
@@ -548,10 +507,7 @@
       "copyPngToClipboard": "Copy to clipboard"
     }
   },
-  "encrypted": {
-    "tooltip": "Your drawings are end-to-end encrypted so Excalidraw's servers will never see them.",
-    "link": "Blog post on end-to-end encryption in Excalidraw"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Angle",
     "shapes": "Shapes",
@@ -605,8 +561,8 @@
     "app": {
       "center_heading": "Your drawings are saved in your browser's storage.",
       "center_heading_line2": "Browser storage can be cleared unexpectedly.",
-      "center_heading_line3": "Save your work to a file regularly to avoid losing it.",
-      "center_heading_plus": "Did you want to go to the Excalidraw+ instead?",
+      "center_heading_line3": "Log in and your drawings will be saved to the cloud automatically.",
+      "center_heading_cloud": "Your drawings are automatically saved to the cloud.",
       "menuHint": "Export, preferences, languages, ..."
     },
     "defaults": {
@@ -639,11 +595,6 @@
         "title": "Save to disk",
         "button": "Save to disk",
         "description": "Export the scene data to a file from which you can import later."
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Export to Excalidraw+",
-        "description": "Save the scene to your Excalidraw+ workspace."
       }
     },
     "modal": {
@@ -660,9 +611,9 @@
     }
   },
   "mermaid": {
-    "title": "Mermaid to Excalidraw",
+    "title": "Mermaid to Doodly",
     "button": "Insert",
-    "description": "Currently only <flowchartLink>Flowchart</flowchartLink>, <sequenceLink>Sequence</sequenceLink>, <classLink>Class</classLink>, and <erdLink>Entity Relationship</erdLink> Diagrams are supported. The other types will be rendered as image in Excalidraw.",
+    "description": "Currently only <flowchartLink>Flowchart</flowchartLink>, <sequenceLink>Sequence</sequenceLink>, <classLink>Class</classLink>, and <erdLink>Entity Relationship</erdLink> Diagrams are supported. The other types will be rendered as image in Doodly.",
     "syntax": "Mermaid Syntax",
     "preview": "Preview",
     "label": "Mermaid",
@@ -709,11 +660,10 @@
       "mermaidParseError": "Mermaid syntax error"
     },
     "rateLimit": {
-      "messageLimit": "You've hit your AI limit on the free plan. Try out Excalidraw+ for more or come back tomorrow.",
+      "messageLimit": "You've hit your AI limit on the free plan. Come back tomorrow.",
       "generalRateLimit": "Hold your horses, you're too fast for us! Please wait a moment before trying again.",
       "messageLimitInputPlaceholder": "You've reached your message limit"
-    },
-    "upsellBtnLabel": "Upgrade to Plus"
+    }
   },
   "quickSearch": {
     "placeholder": "Quick search"

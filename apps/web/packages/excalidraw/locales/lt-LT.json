@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "",
     "fontSize": "Šrifto dydis",
     "fontFamily": "Šriftas",
-    "addWatermark": "Sukurta su Excalidraw",
+    "addWatermark": "Sukurta su Doodly",
     "handDrawn": "Ranka rašytas",
     "normal": "Normalus",
     "code": "Kodas",
@@ -107,7 +107,7 @@
     "untitled": "",
     "name": "",
     "yourName": "Jūsų vardas",
-    "madeWithExcalidraw": "Sukurta su Excalidraw",
+    "madeWithExcalidraw": "Sukurta su Doodly",
     "group": "Grupuoti pasirinkimą",
     "ungroup": "Išgrupuoti pasirinkimą",
     "collaborators": "Bendradarbiautojai",
@@ -116,7 +116,6 @@
     "addToLibrary": "Pridėti į biblioteką",
     "removeFromLibrary": "Pašalinti iš bibliotekos",
     "libraryLoadingMessage": "",
-    "libraries": "Naršyti bibliotekas",
     "loadingScene": "",
     "loadScene": "",
     "align": "Lygiuoti",
@@ -168,15 +167,12 @@
       "lockAll": "",
       "unlockAll": ""
     },
-    "statusPublished": "",
     "sidebarLock": "",
     "selectAllElementsInFrame": "",
     "removeAllElementsFromFrame": "",
     "eyeDropper": "",
     "textToDiagram": "",
     "prompt": "",
-    "followUs": "",
-    "discordChat": "",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "",
     "exitZenMode": "Išeiti iš „Zen“ režimo",
     "cancel": "Atšaukti",
-    "saveLibNames": "",
     "clear": "Išvalyti",
     "remove": "Pašalinti",
     "embed": "",
-    "publishLibrary": "",
     "submit": "Pateikti",
     "confirm": "Patvirtinti",
     "embeddableInteractionButton": ""
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Tai įtrauks {{numShapes}} figūrą/-as į tavo biblioteką. Ar tikrai to nori?",
     "imageDoesNotContainScene": "Panašu, jog šis paveiksliukas neturi scenos duomenų. Ar yra įjuntas scenos įtraukimas ekportavimo metu?",
     "cannotRestoreFromImage": "Nepavyko atstatyti scenos iš šio nuotraukos failo",
-    "invalidSceneUrl": "Nepavyko suimportuoti scenos iš pateiktos nuorodos (URL). Ji arba blogai suformatuota, arba savyje neturi teisingų Excalidraw JSON duomenų.",
+    "invalidSceneUrl": "Nepavyko suimportuoti scenos iš pateiktos nuorodos (URL). Ji arba blogai suformatuota, arba savyje neturi teisingų Doodly JSON duomenų.",
     "resetLibrary": "Tai išvalys tavo biblioteką. Ar tikrai to nori?",
     "removeItemsFromsLibrary": "Ištrinti {{count}} elementą/-us iš bibliotekos?",
     "invalidEncryptionKey": "Šifravimo raktas turi būti iš 22 simbolių. Redagavimas gyvai yra išjungtas.",
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "",
     "clearCanvasCaveat": "",
     "trackedToSentry": "",
-    "openIssueMessage": "",
     "sceneContent": ""
   },
   "shareDialog": {
@@ -437,10 +430,7 @@
     "disk_button": "Įrašyti į failą",
     "link_title": "Nuoroda dalinimuisi",
     "link_details": "",
-    "link_button": "",
-    "excalidrawplus_description": "",
-    "excalidrawplus_button": "Eksportuoti",
-    "excalidrawplus_exportError": ""
+    "link_button": ""
   },
   "helpDialog": {
     "blog": "",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Išvalyti drobę"
   },
-  "publishDialog": {
-    "title": "Paviešinti biblioteką",
-    "itemName": "Elemento pavadinimas",
-    "authorName": "Autoriaus vardas",
-    "githubUsername": "Github spalyvardis",
-    "twitterUsername": "Twitter slapyvardis",
-    "libraryName": "Bibliotekos pavadinimas",
-    "libraryDesc": "Bibliotekos aprašas",
-    "website": "Tinklalapis",
-    "placeholder": {
-      "authorName": "Tavo vardas arba spalyvardis",
-      "libraryName": "Tavo bibliotekos pavadinimas",
-      "libraryDesc": "Tavo bibliotekos aprašas, padėti žmonėms geriau suprasti jos paskirtį",
-      "githubHandle": "",
-      "twitterHandle": "",
-      "website": ""
-    },
-    "errors": {
-      "required": "Privalomas",
-      "website": "Įveskite teisingą nuorodą (URL)"
-    },
-    "noteDescription": "Pateik savo biblioteką, jog ji galėtų būti įtraukta į <link></link>jog kiti žmonės galėtų tai naudoti savo piešiniuose.",
-    "noteGuidelines": "Visų pirma, biblioteka turi būti rankiniu būdu patvirtinta. Prašome paskaityti <link>gairės</link>",
-    "noteLicense": "<link>MIT licencija, </link>",
-    "noteItems": "",
-    "atleastOneLibItem": "",
-    "republishWarning": ""
-  },
-  "publishSuccessDialog": {
-    "title": "Biblioteka pateikta",
-    "content": "Ačiū {{authorName}}. Tavo biblioteka buvo pateikta peržiūrai. Gali sekti būseną<link>čia</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Atstatyti biblioteką",
     "removeItemsFromLib": "Pašalinti pasirinktus elementus iš bibliotekos"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": ""
     }
   },
-  "encrypted": {
-    "tooltip": "",
-    "link": ""
-  },
+  "encrypted": {},
   "stats": {
     "angle": "",
     "shapes": "",
@@ -629,11 +584,6 @@
         "title": "",
         "button": "",
         "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "",
-        "button": "",
-        "description": ""
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

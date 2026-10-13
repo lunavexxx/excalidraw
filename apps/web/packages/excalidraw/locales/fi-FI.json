@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "",
     "fontSize": "Kirjasinkoko",
     "fontFamily": "Kirjasintyyppi",
-    "addWatermark": "Lisää \"Tehty Excalidrawilla\"",
+    "addWatermark": "Lisää \"Tehty Doodlyilla\"",
     "handDrawn": "Käsinpiirretty",
     "normal": "Tavallinen",
     "code": "Koodi",
@@ -107,7 +107,7 @@
     "untitled": "Nimetön",
     "name": "Nimi",
     "yourName": "Nimesi",
-    "madeWithExcalidraw": "Tehty Excalidrawilla",
+    "madeWithExcalidraw": "Tehty Doodlyilla",
     "group": "Ryhmitä valinta",
     "ungroup": "Pura valittu ryhmä",
     "collaborators": "Yhteistyökumppanit",
@@ -116,7 +116,6 @@
     "addToLibrary": "Lisää kirjastoon",
     "removeFromLibrary": "Poista kirjastosta",
     "libraryLoadingMessage": "Ladataan kirjastoa…",
-    "libraries": "Selaa kirjastoja",
     "loadingScene": "Ladataan työtä…",
     "loadScene": "",
     "align": "Tasaa",
@@ -138,7 +137,7 @@
     "toggleTheme": "",
     "theme": "Teema",
     "personalLib": "Oma kirjasto",
-    "excalidrawLib": "Excalidraw kirjasto",
+    "excalidrawLib": "Doodly kirjasto",
     "decreaseFontSize": "Pienennä kirjasinkokoa",
     "increaseFontSize": "Kasvata kirjasinkokoa",
     "unbindText": "Irroita teksti",
@@ -168,15 +167,12 @@
       "lockAll": "Lukitse kaikki",
       "unlockAll": "Poista lukitus kaikista"
     },
-    "statusPublished": "Julkaistu",
     "sidebarLock": "Pidä sivupalkki avoinna",
     "selectAllElementsInFrame": "",
     "removeAllElementsFromFrame": "",
     "eyeDropper": "",
     "textToDiagram": "Teksti kaavioksi",
     "prompt": "",
-    "followUs": "Seuraa meitä",
-    "discordChat": "Discord-keskustelu",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "",
     "exitZenMode": "Poistu zen-tilasta",
     "cancel": "Peruuta",
-    "saveLibNames": "",
     "clear": "Pyyhi",
     "remove": "Poista",
     "embed": "",
-    "publishLibrary": "",
     "submit": "Lähetä",
     "confirm": "Vahvista",
     "embeddableInteractionButton": ""
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Tyhjää piirtoaluetta ei voi viedä.",
     "couldNotCopyToClipboard": "Leikepöydälle vieminen epäonnistui.",
     "decryptFailed": "Salauksen purkaminen epäonnistui.",
-    "uploadedSecurly": "Lähetys on turvattu päästä-päähän-salauksella. Excalidrawin palvelin ja kolmannet osapuolet eivät voi lukea sisältöä.",
+    "uploadedSecurly": "Lähetys on turvattu päästä-päähän-salauksella. Doodlyin palvelin ja kolmannet osapuolet eivät voi lukea sisältöä.",
     "loadSceneOverridePrompt": "Ulkopuolisen piirroksen lataaminen korvaa nykyisen sisältösi. Jatketaanko?",
     "collabStopOverridePrompt": "Istunnon lopettaminen korvaa aiemman, paikallisesti tallennetun piirustuksen. Jatketaanko?\n\n(Jos haluat säilyttää paikallisesti tallennetun piirustuksen, sulje selaimen välilehti lopettamisen sijaan.)",
     "errorAddingToLibrary": "Kohdetta ei voitu lisätä kirjastoon",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Tämä lisää {{numShapes}} muotoa kirjastoosi. Jatketaanko?",
     "imageDoesNotContainScene": "Tämä kuva ei näytä sisältävän piirrostietoja. Oletko ottanut käyttöön piirroksen tallennuksen viennin aikana?",
     "cannotRestoreFromImage": "Teosta ei voitu palauttaa tästä kuvatiedostosta",
-    "invalidSceneUrl": "Teosta ei voitu tuoda annetusta URL-osoitteesta. Tallenne on vioittunut, tai osoitteessa ei ole Excalidraw JSON-dataa.",
+    "invalidSceneUrl": "Teosta ei voitu tuoda annetusta URL-osoitteesta. Tallenne on vioittunut, tai osoitteessa ei ole Doodly JSON-dataa.",
     "resetLibrary": "Tämä tyhjentää kirjastosi. Jatketaanko?",
     "removeItemsFromsLibrary": "Poista {{count}} kohdetta kirjastosta?",
     "invalidEncryptionKey": "Salausavaimen on oltava 22 merkkiä pitkä. Live-yhteistyö ei ole käytössä.",
@@ -338,7 +332,7 @@
     "bucketfill": "",
     "hand": "Käsi (panning-työkalu)",
     "extraTools": "Lisää työkaluja",
-    "mermaidToExcalidraw": "Mermaid Excalidrawiksi",
+    "mermaidToExcalidraw": "Mermaid Doodlyiksi",
     "convertElementType": ""
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Mikäli sivun lataaminen uudelleen ei auta, yritä <button>tyhjentää piirtoalue.</button>",
     "clearCanvasCaveat": " Tämä johtaa työn menetykseen ",
     "trackedToSentry": "Virhe tunnisteella {{eventId}} tallennettiin järjestelmäämme.",
-    "openIssueMessage": "Olimme varovaisia emmekä sisällyttäneet tietoa piirroksestasi virheeseen. Mikäli piirroksesi ei ole yksityinen, harkitsethan kertovasi meille <button>virheenseurantajärjestelmässämme.</button> Sisällytä alla olevat tiedot kopioimalla ne GitHub-ongelmaan.",
     "sceneContent": "Piirroksen tiedot:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "Jaettu istunto on nyt käynnissä.",
     "desc_shareLink": "Jaa tämä linkki kenelle tahansa, jonka kanssa haluat tehdä yhteistyötä:",
     "desc_exitSession": "Istunnon pysäyttäminen katkaisee yhteyden huoneeseen, mutta voit vielä jatkaa työskentelyä paikallisesti. Huomaa, että tämä ei vaikuta muihin käyttäjiin ja he voivat jatkaa oman versionsa parissa työskentelyä.",
-    "shareTitle": "Liity Excalidraw live-yhteistyöistuntoon"
+    "shareTitle": "Liity Doodly live-yhteistyöistuntoon"
   },
   "errorDialog": {
     "title": "Virhe"
@@ -437,10 +430,7 @@
     "disk_button": "Tallenna tiedostoon",
     "link_title": "Jaettava linkki",
     "link_details": "Vie vain luku -linkkinä.",
-    "link_button": "Vie linkkinä",
-    "excalidrawplus_description": "Tallenna teos Excalidraw+ tilaan.",
-    "excalidrawplus_button": "Vie",
-    "excalidrawplus_exportError": "Ei voitu viedä Excalidraw+-palveluun tällä hetkellä..."
+    "link_button": "Vie linkkinä"
   },
   "helpDialog": {
     "blog": "Lue blogiamme",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Pyyhi piirtoalue"
   },
-  "publishDialog": {
-    "title": "Julkaise kirjasto",
-    "itemName": "Kohteen nimi",
-    "authorName": "Tekijän nimi",
-    "githubUsername": "GitHub-käyttäjätunnus",
-    "twitterUsername": "Twitter-käyttäjätunnus",
-    "libraryName": "Kirjaston nimi",
-    "libraryDesc": "Kirjaston kuvaus",
-    "website": "Verkkosivu",
-    "placeholder": {
-      "authorName": "Nimesi tai käyttäjänimesi",
-      "libraryName": "Kirjastosi nimi",
-      "libraryDesc": "Kirjaston kuvaus, joka auttaa ihmisiä ymmärtämään sen käyttötarkoitukset",
-      "githubHandle": "GitHub-tunnuksesi (valinnainen), jotta voit muokata kirjastoa sen jälkeen kun se on lähetetty tarkastettavaksi",
-      "twitterHandle": "Twitter-tunnus (valinnainen), jotta tiedämme ketä kiittää kun viestimme Twitterissä",
-      "website": "Linkki henkilökohtaiselle verkkosivustollesi tai muualle (valinnainen)"
-    },
-    "errors": {
-      "required": "Pakollinen",
-      "website": "Syötä oikeamuotoinen URL-osoite"
-    },
-    "noteDescription": "Lähetä kirjastosi, jotta se voidaan sisällyttää <link>julkisessa kirjastolistauksessa</link>muiden käyttöön omissa piirrustuksissaan.",
-    "noteGuidelines": "Kirjasto on ensin hyväksyttävä manuaalisesti. Ole hyvä ja lue <link>ohjeet</link> ennen lähettämistä. Tarvitset GitHub-tilin, jotta voit viestiä ja tehdä muutoksia pyydettäessä, mutta se ei ole ehdottoman välttämätöntä.",
-    "noteLicense": "Lähettämällä hyväksyt että kirjasto julkaistaan <link>MIT-lisenssin </link>alla, mikä lyhyesti antaa muiden käyttää sitä ilman rajoituksia.",
-    "noteItems": "Jokaisella kirjaston kohteella on oltava oma nimensä suodatusta varten. Seuraavat kirjaston kohteet sisältyvät:",
-    "atleastOneLibItem": "Valitse vähintään yksi kirjaston kohde aloittaaksesi",
-    "republishWarning": "Huom! Osa valituista kohteista on merkitty jo julkaistu/lähetetyiksi. Lähetä kohteita uudelleen vain päivitettäessä olemassa olevaa kirjastoa tai ehdotusta."
-  },
-  "publishSuccessDialog": {
-    "title": "Kirjasto lähetetty",
-    "content": "Kiitos {{authorName}}. Kirjastosi on lähetetty tarkistettavaksi. Voit seurata sen tilaa<link>täällä</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Tyhjennä kirjasto",
     "removeItemsFromLib": "Poista valitut kohteet kirjastosta"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Kopioi leikepöydälle"
     }
   },
-  "encrypted": {
-    "tooltip": "Piirroksesi ovat päästä-päähän-salattuja, joten Excalidrawin palvelimet eivät koskaan näe niitä.",
-    "link": "Blogiartikkeli päästä päähän -salauksesta Excalidraw:ssa"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Kulma",
     "shapes": "",
@@ -596,7 +551,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Haluatko sen sijaan mennä Excalidraw+:aan?",
+      "center_heading_plus": "Haluatko sen sijaan mennä Doodly:aan?",
       "menuHint": "Vie, asetukset, kielet, ..."
     },
     "defaults": {
@@ -628,11 +583,6 @@
       "saveToDisk": {
         "title": "Tallenna levylle",
         "button": "Tallenna levylle",
-        "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Vie Excalidraw+:aan",
         "description": ""
       }
     },
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

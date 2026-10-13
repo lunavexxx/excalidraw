@@ -116,7 +116,6 @@
     "addToLibrary": "সংগ্রহে যোগ করুন",
     "removeFromLibrary": "সংগ্রহ থেকে বের করুন",
     "libraryLoadingMessage": "সংগ্রহ তৈরি হচ্ছে",
-    "libraries": "সংগ্রহ দেখুন",
     "loadingScene": "দৃশ্য তৈরি হচ্ছে",
     "loadScene": "",
     "align": "পংক্তিবিন্যাস",
@@ -168,15 +167,12 @@
       "lockAll": "সব আবদ্ধ করুন",
       "unlockAll": "সব বিচ্ছিন্ন করুন"
     },
-    "statusPublished": "প্রকাশিত",
     "sidebarLock": "লক",
     "selectAllElementsInFrame": "ফ্রেমের ভিতরের সব উপকরণ বাছাই করুন",
     "removeAllElementsFromFrame": "ফ্রেম থেকে সব উপকরণ মুছুন",
     "eyeDropper": "ক্যানভাস থেকে রঙ বাছাই করুন",
     "textToDiagram": "লেখা থেকে ডায়াগ্রাম",
     "prompt": "",
-    "followUs": "",
-    "discordChat": "",
     "zoomToFitViewport": "",
     "zoomToFitSelection": "",
     "zoomToFit": "",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "",
     "exitZenMode": "জেন মোড বন্ধ করুন",
     "cancel": "বাতিল",
-    "saveLibNames": "",
     "clear": "সাফ",
     "remove": "বিয়োগ",
     "embed": "",
-    "publishLibrary": "",
     "submit": "জমা করুন",
     "confirm": "নিশ্চিত করুন",
     "embeddableInteractionButton": ""
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "যদি পুনরায় লোড করা কাজ না করে, চেষ্টা করুন <button>ক্যানভাস পরিষ্কার করার।</button>",
     "clearCanvasCaveat": " এর ফলে কাজের ক্ষতি হবে ",
     "trackedToSentry": "ত্রুটি {{eventId}} আমাদের সিস্টেমে ট্র্যাক করা হয়েছিল।",
-    "openIssueMessage": "আমরা ত্রুটিতে আপনার দৃশ্যের তথ্য অন্তর্ভুক্ত না করার জন্য খুব সতর্ক ছিলাম। আপনার দৃশ্য ব্যক্তিগত না হলে, আমাদের অনুসরণ করার কথা বিবেচনা করুন <button>ত্রুটি ইতিবৃত্ত।</button> অনুগ্রহ করে GitHub ইস্যুতে অনুলিপি এবং পেস্ট করে নীচের তথ্য অন্তর্ভুক্ত করুন।",
     "sceneContent": "দৃশ্য বিষয়বস্তু:"
   },
   "shareDialog": {
@@ -437,10 +430,7 @@
     "disk_button": "",
     "link_title": "",
     "link_details": "",
-    "link_button": "",
-    "excalidrawplus_description": "",
-    "excalidrawplus_button": "নিবদ্ধ",
-    "excalidrawplus_exportError": ""
+    "link_button": ""
   },
   "helpDialog": {
     "blog": "",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": ""
   },
-  "publishDialog": {
-    "title": "",
-    "itemName": "",
-    "authorName": "",
-    "githubUsername": "",
-    "twitterUsername": "",
-    "libraryName": "",
-    "libraryDesc": "",
-    "website": "",
-    "placeholder": {
-      "authorName": "",
-      "libraryName": "",
-      "libraryDesc": "",
-      "githubHandle": "",
-      "twitterHandle": "",
-      "website": ""
-    },
-    "errors": {
-      "required": "",
-      "website": ""
-    },
-    "noteDescription": "",
-    "noteGuidelines": "",
-    "noteLicense": "",
-    "noteItems": "",
-    "atleastOneLibItem": "",
-    "republishWarning": ""
-  },
-  "publishSuccessDialog": {
-    "title": "",
-    "content": ""
-  },
   "confirmDialog": {
     "resetLibrary": "",
     "removeItemsFromLib": ""
@@ -538,10 +496,7 @@
       "copyPngToClipboard": ""
     }
   },
-  "encrypted": {
-    "tooltip": "",
-    "link": ""
-  },
+  "encrypted": {},
   "stats": {
     "angle": "কোণ",
     "shapes": "",
@@ -629,11 +584,6 @@
         "title": "",
         "button": "",
         "description": ""
-      },
-      "excalidrawPlus": {
-        "title": "",
-        "button": "",
-        "description": ""
       }
     },
     "modal": {
@@ -702,8 +652,7 @@
       "messageLimit": "",
       "generalRateLimit": "",
       "messageLimitInputPlaceholder": ""
-    },
-    "upsellBtnLabel": ""
+    }
   },
   "quickSearch": {
     "placeholder": ""

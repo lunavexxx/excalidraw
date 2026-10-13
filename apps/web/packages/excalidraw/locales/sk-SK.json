@@ -72,7 +72,7 @@
     "arrowtype_elbowed": "Zalomená šípka",
     "fontSize": "Veľkosť písma",
     "fontFamily": "Písmo",
-    "addWatermark": "Pridať \"Vytvorené s Excalidraw\"",
+    "addWatermark": "Pridať \"Vytvorené s Doodly\"",
     "handDrawn": "Ručne písané",
     "normal": "Normálne",
     "code": "Kód",
@@ -107,7 +107,7 @@
     "untitled": "Bez názvu",
     "name": "Meno",
     "yourName": "Vaše meno",
-    "madeWithExcalidraw": "Vytvorené s Excalidraw",
+    "madeWithExcalidraw": "Vytvorené s Doodly",
     "group": "Zoskupiť",
     "ungroup": "Zrušiť zoskupenie",
     "collaborators": "Spolupracovníci",
@@ -116,7 +116,6 @@
     "addToLibrary": "Pridať do knižnice",
     "removeFromLibrary": "Odstrániť z knižnice",
     "libraryLoadingMessage": "Načítavanie knižnice…",
-    "libraries": "Prehliadať knižnice",
     "loadingScene": "Načítavanie scény…",
     "loadScene": "Načítať scénu zo súboru",
     "align": "Zarovnanie",
@@ -138,7 +137,7 @@
     "toggleTheme": "Prepnúť svetlú/tmavú tému",
     "theme": "Téma",
     "personalLib": "Moja knižnica",
-    "excalidrawLib": "Excalidraw knižnica",
+    "excalidrawLib": "Doodly knižnica",
     "decreaseFontSize": "Zmenšiť veľkosť písma",
     "increaseFontSize": "Zväčšiť veľkosť písma",
     "unbindText": "Zrušiť previazanie textu",
@@ -168,19 +167,16 @@
       "lockAll": "Zamknúť všetko",
       "unlockAll": "Odomknúť všetko"
     },
-    "statusPublished": "Zverejnené",
     "sidebarLock": "Nechať bočný panel otvorený",
     "selectAllElementsInFrame": "Vybrať všetky prvky v ráme",
     "removeAllElementsFromFrame": "Odstrániť všetky prvky z rámu",
     "eyeDropper": "Vybrať farbu z plátna",
     "textToDiagram": "Text na diagram",
     "prompt": "Inštrukcia",
-    "followUs": "Sledujte nás",
-    "discordChat": "Discord chat",
     "zoomToFitViewport": "Priblížiť na veľkosť zobrazenia",
     "zoomToFitSelection": "Priblížiť na výber",
     "zoomToFit": "Priblížiť aby boli zahrnuté všetky prvky",
-    "installPWA": "Inštalovať Excalidraw lokálne (PWA)",
+    "installPWA": "Inštalovať Doodly lokálne (PWA)",
     "autoResize": "Zapnúť automatickú zmenu veľkosti textu",
     "imageCropping": "Orezanie obrázka",
     "unCroppedDimension": "Pôvodné rozmery",
@@ -254,11 +250,9 @@
     "objectsSnapMode": "Prichytiť k objektom",
     "exitZenMode": "Zrušiť režim zen",
     "cancel": "Zrušiť",
-    "saveLibNames": "Uložiť názvy a ukončiť",
     "clear": "Vymazať",
     "remove": "Odstrániť",
     "embed": "Prepnúť zapustenie",
-    "publishLibrary": "Premenovať a zverejniť",
     "submit": "Potvrdiť",
     "confirm": "Potvrdiť",
     "embeddableInteractionButton": "Kliknite pre interakciu"
@@ -272,7 +266,7 @@
     "cannotExportEmptyCanvas": "Nie je možné exportovať prázdne plátno.",
     "couldNotCopyToClipboard": "Kopírovanie do schránky sa nepodarilo.",
     "decryptFailed": "Nepodarilo sa rozšifrovať údaje.",
-    "uploadedSecurly": "Nahratie je zabezpečené end-to-end šifrovaním, takže Excalidraw server a tretie strany nedokážu prečítať jeho obsah.",
+    "uploadedSecurly": "Nahratie je zabezpečené end-to-end šifrovaním, takže Doodly server a tretie strany nedokážu prečítať jeho obsah.",
     "loadSceneOverridePrompt": "Nahratie externej kresby nahradí existujúci obsah. Prajete si pokračovať?",
     "collabStopOverridePrompt": "Ukončenie schôdze nahradí vašu predchádzajúcu lokálne uloženú scénu. Ste si istý?\n\n(Ak si chcete ponechať lokálnu scénu, jednoducho iba zavrite kartu prehliadača.)",
     "errorAddingToLibrary": "Nepodarilo sa pridať položku do knižnice",
@@ -280,7 +274,7 @@
     "confirmAddLibrary": "Týmto sa pridá {{numShapes}} tvar(ov) do vašej knižnice. Ste si istí?",
     "imageDoesNotContainScene": "Tento obrázok neobsahuje žiadne údaje scény. Zvolili ste možnosť zahrnúť scénu počas exportu?",
     "cannotRestoreFromImage": "Nepodarilo sa obnoviť scénu z tohto obrázkového súboru",
-    "invalidSceneUrl": "Nepodarilo sa načítať scénu z poskytnutej URL. Je nevalidná alebo neobsahuje žiadne validné Excalidraw JSON dáta.",
+    "invalidSceneUrl": "Nepodarilo sa načítať scénu z poskytnutej URL. Je nevalidná alebo neobsahuje žiadne validné Doodly JSON dáta.",
     "resetLibrary": "Týmto vyprázdnite vašu knižnicu. Ste si istý?",
     "removeItemsFromsLibrary": "Odstrániť {{count}} položiek z knižnice?",
     "invalidEncryptionKey": "Šifrovací kľúč musí mať 22 znakov. Živá spolupráca je vypnutá.",
@@ -338,7 +332,7 @@
     "bucketfill": "",
     "hand": "Ruka (nástroj pre pohyb plátna)",
     "extraTools": "Ďalšie nástroje",
-    "mermaidToExcalidraw": "Mermaid do Excalidraw",
+    "mermaidToExcalidraw": "Mermaid do Doodly",
     "convertElementType": "Prepnúť typ tvaru"
   },
   "bucketfill": {
@@ -408,7 +402,6 @@
     "clearCanvasMessage": "Ak obnovenie stránky nepomáha, vyskúšajte <button>vyčistiť plátno.</button>",
     "clearCanvasCaveat": " To bude mať za následok stratu práce ",
     "trackedToSentry": "Chyba s identifikátorom {{eventId}} bola zaznamenaná v našom systéme.",
-    "openIssueMessage": "Boli sme veľmi opatrní, aby informácie vašej scény neboli v chybe zaznamenané. Ak vaša scéna nie je súkromná, prosím zvážte pokračovanie na naše <button>hlásenie chýb.</button> Prosím zahrňte informácie nižšie pomocou kopírovania a prilepenia do GitHub issue.",
     "sceneContent": "Obsah scény:"
   },
   "shareDialog": {
@@ -422,7 +415,7 @@
     "desc_inProgressIntro": "Práve prebieha živá schôdza.",
     "desc_shareLink": "Zdieľajte tento odkaz s osobou, s ktorou chcete spolupracovať:",
     "desc_exitSession": "Ukončenie schôdze vás odpojí z miestnosti, avšak naďalej budete môcť pokračovať v práci na scéne lokálne. Toto neovplyvní ostatných spolupracovníkov a stále budú môcť spolupracovať na ich verzii.",
-    "shareTitle": "Pripojiť sa k živej schôdzi na Excalidraw"
+    "shareTitle": "Pripojiť sa k živej schôdzi na Doodly"
   },
   "errorDialog": {
     "title": "Chyba"
@@ -437,10 +430,7 @@
     "disk_button": "Uložiť do súboru",
     "link_title": "Odkaz na zdieľanie",
     "link_details": "Exportovať ako odkaz iba na čítanie.",
-    "link_button": "Exportovať ako odkaz",
-    "excalidrawplus_description": "Uložiť scénu do vášho Excalidraw+ pracovného priestoru.",
-    "excalidrawplus_button": "Exportovať",
-    "excalidrawplus_exportError": "Nepodarilo sa vykonať export do Excalidraw+..."
+    "link_button": "Exportovať ako odkaz"
   },
   "helpDialog": {
     "blog": "Prečítajte si náš blog",
@@ -478,38 +468,6 @@
   "clearCanvasDialog": {
     "title": "Vyčistiť plátno"
   },
-  "publishDialog": {
-    "title": "Uverejniť knižnicu",
-    "itemName": "Názov položky",
-    "authorName": "Meno autora",
-    "githubUsername": "Github užívateľské meno",
-    "twitterUsername": "Twitter užívateľské meno",
-    "libraryName": "Názov knižnice",
-    "libraryDesc": "Popis knižnice",
-    "website": "Webová stránka",
-    "placeholder": {
-      "authorName": "Vaše meno alebo užívateľské meno",
-      "libraryName": "Názov vašej knižnice",
-      "libraryDesc": "Popis vašej knižnice, ktorý ostatným pomôže porozumieť jej vhodnému použitiu",
-      "githubHandle": "GitHub užívateľské meno (nepovinné), aby ste mohli robiť úpravy po tom, čo bude knižnica uverejnená na schválenie",
-      "twitterHandle": "Twitter užívateľské meno (nepovinné), aby sme vedeli komu pripísať zásluhu pri propagovaní cez Twitter",
-      "website": "Odkaz na vašu osobnú webovú stránku alebo niekam inam (nepovinné)"
-    },
-    "errors": {
-      "required": "Povinné",
-      "website": "Zadajte platnú adresu URL"
-    },
-    "noteDescription": "Uverejnite vašu knižnicu vo <link>verejnom zozname knižníc</link>aby ju aj ostatní mohli použiť v ich náčrtoch.",
-    "noteGuidelines": "Knižnica musí byť najprv manuálne schválená. Prosím prečítajte si <link>pokyny</link> pred uverejnením. Budete potrebovať Github účet na komunikáciu a vykonanie zmien, ak budú potrebné, avšak nie je to úplne povinné.",
-    "noteLicense": "Potvrdením súhlasíte, že knižnica bude zverejnená s <link>MIT licenciou, </link>čo v skratke znamená, že ju môže použiť hocikto bez obmedzení.",
-    "noteItems": "Každá položka v knižnici musí mať svoje vlastné meno, aby sa dala vyhľadať. Súčasťou knižnice budú nasledujúce položky:",
-    "atleastOneLibItem": "Začnite prosím zvolením aspoň jednej položky z knižnice",
-    "republishWarning": "Poznámka: Niektoré z vybraných položiek sú už označené ako zverejnené. Ich znovu uverejnenie by ste mali vykovať iba vtedy ak aktualizujete už existujúcu knižnicu alebo požiadavku na uverejnenie."
-  },
-  "publishSuccessDialog": {
-    "title": "Knižnica uverejnená",
-    "content": "Ďakujeme vám {{authorName}}. Vaša knižnica bola uverejnená na posúdenie. Stav môžete skontrolovať<link>tu</link>"
-  },
   "confirmDialog": {
     "resetLibrary": "Obnoviť knižnicu",
     "removeItemsFromLib": "Odstrániť zvolené položky z knižnice"
@@ -538,10 +496,7 @@
       "copyPngToClipboard": "Kopírovať do schránky"
     }
   },
-  "encrypted": {
-    "tooltip": "Vaše kresby používajú end-to-end šifrovanie, takže ich Excalidraw server nedokáže prečítať.",
-    "link": "Blog o end-to-end šifrovaní v Excalidraw"
-  },
+  "encrypted": {},
   "stats": {
     "angle": "Uhol",
     "shapes": "Tvary",
@@ -596,7 +551,7 @@
       "center_heading": "Vaše kresby sú uložené v pamäti vášho prehliadača.",
       "center_heading_line2": "Pamäť prehliadača môže byť neočakávane vymazaná.",
       "center_heading_line3": "Pravidelne si ukladajte si vašu prácu do súboru, aby ste ju nestratili.",
-      "center_heading_plus": "Chceli ste namiesto toho prejsť do Excalidraw+?",
+      "center_heading_plus": "Chceli ste namiesto toho prejsť do Doodly?",
       "menuHint": "Exportovanie, nastavenia, jazyky, ..."
     },
     "defaults": {
@@ -629,11 +584,6 @@
         "title": "Uložiť na disk",
         "button": "Uložiť na disk",
         "description": "Exportovať údaje scény do súboru, z ktorého môžu byť neskôr importované."
-      },
-      "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Exportovať ako Excalidraw+",
-        "description": "Uložiť scénu do vášho Excalidraw+ pracovného priestoru."
       }
     },
     "modal": {
@@ -650,9 +600,9 @@
     }
   },
   "mermaid": {
-    "title": "Mermaid do Excalidraw",
+    "title": "Mermaid do Doodly",
     "button": "Vložiť",
-    "description": "Aktuálne sú podporované iba <flowchartLink>vývojové diagramy</flowchartLink>, <sequenceLink>sekvenčné diagramy</sequenceLink>, <classLink>diagramy tried</classLink> a <erdLink>vzťahové diagramy</erdLink>. Ostatné typy budú v Excalidraw vykreslené ako obrázky.",
+    "description": "Aktuálne sú podporované iba <flowchartLink>vývojové diagramy</flowchartLink>, <sequenceLink>sekvenčné diagramy</sequenceLink>, <classLink>diagramy tried</classLink> a <erdLink>vzťahové diagramy</erdLink>. Ostatné typy budú v Doodly vykreslené ako obrázky.",
     "syntax": "Mermaid syntax",
     "preview": "Ukážka",
     "label": "Mermaid",
@@ -699,11 +649,10 @@
       "mermaidParseError": "Chyba syntax Mermaid"
     },
     "rateLimit": {
-      "messageLimit": "Dosiahli ste limit pre AI v pláne zadarmo. Vyskúšajte viac s Excalidraw+ alebo sa vráťte opäť zajtra.",
+      "messageLimit": "Dosiahli ste limit pre AI v pláne zadarmo. Vyskúšajte viac s Doodly alebo sa vráťte opäť zajtra.",
       "generalRateLimit": "Spomaľte, ste príliš rýchly! Prosím počkajte chvíľu predtým ako to skúsite znovu.",
       "messageLimitInputPlaceholder": "Dosiali ste denný limit správ"
-    },
-    "upsellBtnLabel": "Vylepšiť na Plus"
+    }
   },
   "quickSearch": {
     "placeholder": "Rýchle vyhľadávanie"
